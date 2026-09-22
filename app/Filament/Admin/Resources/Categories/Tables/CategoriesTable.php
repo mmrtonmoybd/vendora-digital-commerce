@@ -12,6 +12,10 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TrashedFilter;
 
 final class CategoriesTable
 {
@@ -33,6 +37,19 @@ final class CategoriesTable
             ->filters([
                 TernaryFilter::make('is_active')->label('Active'),
                 TernaryFilter::make('show_on_home')->label('On home page'),
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('from')->label('Created from')->native(false),
+                        DatePicker::make('until')->label('Created until')->native(false),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $q, string $date): Builder => $q->whereDate('created_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $q, string $date): Builder => $q->whereDate('created_at', '<=', $date)))
+                    ->indicateUsing(fn (array $data): array => array_values(array_filter([
+                        ($data['from'] ?? null) ? 'Created from '.$data['from'] : null,
+                        ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
+                    ]))),
+                TrashedFilter::make(),
             ])
             ->recordActions([ActionGroup::make([EditAction::make()])])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);

@@ -22,6 +22,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Password;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\TrashedFilter;
 
 final class UsersTable
 {
@@ -49,6 +51,19 @@ final class UsersTable
                 Filter::make('never_ordered')
                     ->label('Never ordered')
                     ->query(fn (Builder $query): Builder => $query->whereDoesntHave('orders')),
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('from')->label('Joined from')->native(false),
+                        DatePicker::make('until')->label('Joined until')->native(false),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $q, string $date): Builder => $q->whereDate('created_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $q, string $date): Builder => $q->whereDate('created_at', '<=', $date)))
+                    ->indicateUsing(fn (array $data): array => array_values(array_filter([
+                        ($data['from'] ?? null) ? 'Joined from '.$data['from'] : null,
+                        ($data['until'] ?? null) ? 'Joined until '.$data['until'] : null,
+                    ]))),
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 ActionGroup::make([

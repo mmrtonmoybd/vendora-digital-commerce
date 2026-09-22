@@ -27,6 +27,8 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\TrashedFilter;
 
 final class ProductsTable
 {
@@ -64,6 +66,19 @@ final class ProductsTable
                 Filter::make('out_of_stock')
                     ->label('Out of stock')
                     ->query(fn (Builder $query): Builder => $query->where('stock', '<=', 0)),
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('from')->label('Created from')->native(false),
+                        DatePicker::make('until')->label('Created until')->native(false),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $q, string $date): Builder => $q->whereDate('created_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $q, string $date): Builder => $q->whereDate('created_at', '<=', $date)))
+                    ->indicateUsing(fn (array $data): array => array_values(array_filter([
+                        ($data['from'] ?? null) ? 'Created from '.$data['from'] : null,
+                        ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
+                    ]))),
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 ActionGroup::make([

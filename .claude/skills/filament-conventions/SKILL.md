@@ -13,6 +13,9 @@ description: Use whenever creating or editing Filament resources, pages, widgets
 - Status columns use enum `label()`/`color()`/`icon()`; money columns use `Money::format()`.
 - Tables: searchable, sortable, filters, per-page options `[10, 25, 50, 100]`, default sort newest first.
 - Heavy widgets are cached (60s) and lazy-loaded.
+- On a `ListRecords` page with tabs, the first tab is the default and must NOT carry a
+  `modifyQueryUsing` closure — Filament resolves it before the model context exists and the
+  page 500s. Put an unfiltered "All" tab first.
 - Stats widgets extend `StatsOverviewWidget` and use the `SummarisesTable` concern so the figures
   describe exactly the rows the operator is filtering.
 - Panel look is configured only through the theme CSS in `resources/css/filament/admin/`

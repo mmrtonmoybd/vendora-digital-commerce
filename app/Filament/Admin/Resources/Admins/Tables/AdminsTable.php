@@ -15,6 +15,10 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Filters\TrashedFilter;
 
 final class AdminsTable
 {
@@ -39,6 +43,19 @@ final class AdminsTable
             ->filters([
                 SelectFilter::make('status')->options(UserStatus::class),
                 SelectFilter::make('roles')->relationship('roles', 'name')->preload()->multiple(),
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('from')->label('Added from')->native(false),
+                        DatePicker::make('until')->label('Added until')->native(false),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $q, string $date): Builder => $q->whereDate('created_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $q, string $date): Builder => $q->whereDate('created_at', '<=', $date)))
+                    ->indicateUsing(fn (array $data): array => array_values(array_filter([
+                        ($data['from'] ?? null) ? 'Added from '.$data['from'] : null,
+                        ($data['until'] ?? null) ? 'Added until '.$data['until'] : null,
+                    ]))),
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 ActionGroup::make([
