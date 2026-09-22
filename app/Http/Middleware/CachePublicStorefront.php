@@ -10,14 +10,38 @@ use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Marks a storefront response cacheable at the edge, or explicitly not.
+ * Decides whether LiteSpeed may keep a copy of this response.
  *
- * The default is not: a page is only cached when it is a plain GET, returned 200, belongs
- * to nobody in particular, and carries no flash message. Anything else — a cart, a
- * validation error, a signed-in header — must never be handed to the next visitor.
+ * The edge cache stores a whole page and replays it to the next visitor, which is only
+ * safe when the HTML contains nothing that belongs to one person. The storefront's public
+ * pages are built that way on purpose: the CSRF token, cart count, sign-in state and wallet
+ * balance are left out of the markup and fetched afterwards from /storefront/state.
+ *
+ * Everything else — the cart, checkout, an order page, the auth screens, both panels — is
+ * inherently per-visitor and is marked no-cache. The allowlist is by route name rather than
+ * a deny-list, so a new route is private until somebody deliberately makes it public.
  */
 final class CachePublicStorefront
 {
+    /**
+     * Routes whose HTML is identical for every signed-out visitor.
+     *
+     * @var array<int, string>
+     */
+    private const CACHEABLE_ROUTES = [
+        'home',
+        'category.show',
+        'product.show',
+        'search',
+        'blog.index',
+        'blog.show',
+        'page.show',
+        'our-story',
+        'sitemap',
+        'sitemap.section',
+        'robots',
+    ];
+
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
@@ -47,6 +71,10 @@ final class CachePublicStorefront
             return false;
         }
 
+        if (! in_array((string) $request->route()?->getName(), self::CACHEABLE_ROUTES, true)) {
+            return false;
+        }
+
         foreach (['web', 'admin'] as $guard) {
             if (Auth::guard($guard)->check()) {
                 return false;
@@ -59,6 +87,7 @@ final class CachePublicStorefront
             return false;
         }
 
+        // A page carrying a flash message was rendered for one person's last action.
         if ($request->hasSession()) {
             $flashed = array_merge(
                 (array) $request->session()->get('_flash.old', []),

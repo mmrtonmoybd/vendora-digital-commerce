@@ -17,6 +17,7 @@ use App\Http\Controllers\Storefront\ProductController;
 use App\Http\Controllers\Storefront\SearchController;
 use App\Http\Controllers\Storefront\SeoController;
 use App\Http\Controllers\Storefront\SocialLoginController;
+use App\Http\Controllers\Storefront\StorefrontStateController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -85,6 +86,12 @@ Route::get('/files/{path}', PrivateFileController::class)
     ->where('path', '.*')
     ->middleware(['auth', 'signed'])
     ->name('files.show');
+
+/*
+ | Per-visitor state for pages served from the edge cache. See the controller for why the
+ | cached HTML deliberately contains none of this.
+ */
+Route::get('/storefront/state', StorefrontStateController::class)->name('storefront.state');
 
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/sitemap-{section}.xml', [SeoController::class, 'sitemapSection'])

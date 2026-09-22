@@ -13,6 +13,7 @@
  */
 import './bootstrap'
 import './tracking'
+import './hydrate'
 
 const currency = document.documentElement.dataset.currency || '৳'
 

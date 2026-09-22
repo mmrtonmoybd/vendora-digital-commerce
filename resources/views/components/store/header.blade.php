@@ -2,7 +2,6 @@
     $general = $store->general();
     $contact = $store->contact();
     $headerMenu = $store->menu(\App\Enums\MenuLocation::Header);
-    $user = auth()->user();
 @endphp
 
 <!-- ================= HEADER ================= -->
@@ -35,27 +34,26 @@
       <div class="ml-auto flex items-center gap-2">
         <a href="{{ route('search') }}" class="hidden sm:grid place-items-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20" aria-label="Search"><svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></a>
 
-        @guest
-        <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center gap-2 h-10 px-4 rounded-full bg-white text-brand-700 font-semibold text-sm hover:bg-brand-50"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg> Sign in</a>
-        @endguest
-        @auth
-        <div class="relative hidden sm:block" x-data="{open:false}" @click.outside="open=false">
+        <a href="{{ route('login') }}" data-guest-only x-cloak class="hidden sm:inline-flex items-center gap-2 h-10 px-4 rounded-full bg-white text-brand-700 font-semibold text-sm hover:bg-brand-50"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg> Sign in</a>
+        <div data-auth-only x-cloak class="relative hidden sm:block" x-data="{open:false}" @click.outside="open=false">
           <button @click="open=!open" class="inline-flex items-center gap-2 h-10 pl-1.5 pr-3 rounded-full bg-white text-ink text-sm font-semibold hover:bg-brand-50">
             <span class="grid place-items-center w-7 h-7 rounded-full bg-brand-600 text-white"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span>
             My account
-            <span class="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-bold">{{ \App\Support\Money::format((int) $user->balance) }}</span>
+            <span data-user-balance class="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs font-bold"></span>
           </button>
           <div x-show="open" x-transition.origin.top.right x-cloak class="absolute right-0 mt-2 w-56 rounded-2xl bg-white text-ink shadow-xl ring-1 ring-black/5 p-2 z-50">
-            <div class="px-3 py-2 border-b border-stone-100 mb-1"><p class="font-semibold text-sm">{{ $user->name }}</p><p class="text-xs text-stone-500">{{ $user->email }}</p></div>
+            <div class="px-3 py-2 border-b border-stone-100 mb-1"><p data-user-name class="font-semibold text-sm"></p><p data-user-email class="text-xs text-stone-500"></p></div>
             <a href="{{ url('/customer') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand-50 text-sm"><svg class="w-4 h-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg> Dashboard</a>
             <a href="{{ url('/customer/orders') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand-50 text-sm"><svg class="w-4 h-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> My orders</a>
             <a href="{{ url('/customer/deposits/create') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand-50 text-sm"><svg class="w-4 h-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg> Add money</a>
             <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-brand-50 text-sm"><svg class="w-4 h-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg> Log out</button></form>
           </div>
         </div>
-        @endauth
 
-        <livewire:cart-counter />
+        <a href="{{ route('cart') }}" class="relative inline-flex items-center gap-2 h-10 px-4 rounded-full bg-amber-300 text-ink font-semibold text-sm hover:bg-amber-200">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span class="hidden sm:inline">My Cart</span>
+          <span data-cart-badge data-cart-count x-cloak class="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 grid place-items-center rounded-full bg-ink text-white text-[11px] font-bold"></span>
+        </a>
         <button @click="nav=true" class="lg:hidden grid place-items-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20" aria-label="Open menu"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
       </div>
     </nav>

@@ -194,6 +194,9 @@ final class DemoParitySeeder extends Seeder
                     'fulfillment_sla_minutes' => 30,
                     'warranty_days' => 7,
                     'customer_instructions' => 'Check your inbox (and spam) for the invitation, then accept it to get access.',
+                    'features' => "Access granted to your own email\nWorks on every device you sign in from\n7-day replacement warranty\nReal human support, 9AM – 2AM",
+                    'rating' => 49,
+                    'reviews_count' => 100 + ((int) $data['stock'] * 7),
                 ],
             );
 

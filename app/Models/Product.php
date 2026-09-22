@@ -37,6 +37,8 @@ final class Product extends Model
             'views' => 'integer',
             'fulfillment_sla_minutes' => 'integer',
             'warranty_days' => 'integer',
+            'rating' => 'integer',
+            'reviews_count' => 'integer',
         ];
     }
 
@@ -130,6 +132,28 @@ final class Product extends Model
     public function formattedRegularPrice(): ?string
     {
         return $this->regular_price ? Money::format($this->regular_price) : null;
+    }
+
+    /**
+     * The bullet list on the product page, one feature per line.
+     *
+     * @return array<int, string>
+     */
+    public function featureList(): array
+    {
+        return array_values(array_filter(array_map('trim', preg_split('/\r?\n/', (string) $this->features) ?: [])));
+    }
+
+    /** Stored in tenths so the column stays an integer. */
+    public function ratingValue(): float
+    {
+        return $this->rating / 10;
+    }
+
+    /** Whole stars to fill, rounded to the nearest. */
+    public function ratingStars(): int
+    {
+        return max(0, min(5, (int) round($this->ratingValue())));
     }
 
     public function iconSvg(): string

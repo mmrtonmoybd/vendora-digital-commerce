@@ -71,6 +71,19 @@ final class HomepageSettings extends Settings
 
     public string $cta_secondary_url;
 
+    // Our story page
+    public string $story_badge;
+
+    public string $story_eyebrow;
+
+    public string $story_title;
+
+    public string $story_body;
+
+    public string $team_eyebrow;
+
+    public string $team_title;
+
     public static function group(): string
     {
         return 'homepage';

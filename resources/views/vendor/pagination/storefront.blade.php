@@ -1,0 +1,7 @@
+@if ($paginator->hasPages())
+    <nav class="mt-10 flex justify-center gap-1.5" aria-label="Pagination">
+      @if (! $paginator->onFirstPage())<a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="grid place-items-center w-10 h-10 rounded-xl bg-white ring-1 ring-stone-200" aria-label="Previous page"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></a>@endif
+      @foreach ($elements as $element)@if (is_string($element))<span class="grid place-items-center w-10 h-10 rounded-xl text-sm font-semibold bg-white ring-1 ring-stone-200">{{ $element }}</span>@endif @if (is_array($element))@foreach ($element as $page => $url)<a href="{{ $url }}" @if ($page == $paginator->currentPage()) aria-current="page" @endif class="grid place-items-center w-10 h-10 rounded-xl text-sm font-semibold {{ $page == $paginator->currentPage() ? 'bg-brand-600 text-white' : 'bg-white ring-1 ring-stone-200 hover:ring-brand-300' }}">{{ $page }}</a>@endforeach @endif @endforeach
+      @if ($paginator->hasMorePages())<a href="{{ $paginator->nextPageUrl() }}" rel="next" class="grid place-items-center w-10 h-10 rounded-xl bg-white ring-1 ring-stone-200" aria-label="Next page"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>@endif
+    </nav>
+@endif
