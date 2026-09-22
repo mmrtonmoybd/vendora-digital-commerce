@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages\Settings;
 
+use App\Services\NotificationDispatcher;
 use App\Settings\TelegramSettings;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -70,7 +71,7 @@ final class NotificationSettingsPage extends BaseSettingsPage
                 ->icon('heroicon-o-paper-airplane')
                 ->color('gray')
                 ->action(function (): void {
-                    app(\App\Services\NotificationDispatcher::class)
+                    app(NotificationDispatcher::class)
                         ->telegram('Test alert from your shop. If you can read this, alerts are working.');
 
                     Notification::make()

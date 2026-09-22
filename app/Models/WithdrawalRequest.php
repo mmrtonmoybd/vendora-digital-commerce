@@ -6,13 +6,14 @@ namespace App\Models;
 
 use App\Enums\WithdrawalStatus;
 use App\Support\Money;
+use Database\Factories\WithdrawalRequestFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class WithdrawalRequest extends Model
 {
-    /** @use HasFactory<\Database\Factories\WithdrawalRequestFactory> */
+    /** @use HasFactory<WithdrawalRequestFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];

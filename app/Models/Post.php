@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Support\Str;
 
 final class Post extends Model
 {
-    /** @use HasFactory<\Database\Factories\PostFactory> */
+    /** @use HasFactory<PostFactory> */
     use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
@@ -31,7 +32,7 @@ final class Post extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (self $post): void {
+        self::saving(function (self $post): void {
             $post->slug = $post->slug ? Str::slug($post->slug) : Str::slug($post->title);
             $post->read_minutes = max(1, (int) ceil(str_word_count(strip_tags((string) $post->body)) / 200));
         });

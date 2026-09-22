@@ -6,9 +6,9 @@ namespace App\Services;
 
 use App\Models\OrderSource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Collection;
 
 /**
  * Works out which platform sent this visitor, and remembers it until they buy.

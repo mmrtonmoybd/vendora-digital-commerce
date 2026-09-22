@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\CouponType;
 use App\Support\Money;
+use Database\Factories\CouponFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ use Illuminate\Support\Str;
 
 final class Coupon extends Model
 {
-    /** @use HasFactory<\Database\Factories\CouponFactory> */
+    /** @use HasFactory<CouponFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];
@@ -38,7 +39,7 @@ final class Coupon extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (self $coupon): void {
+        self::saving(function (self $coupon): void {
             $coupon->code = Str::upper(trim($coupon->code));
         });
     }

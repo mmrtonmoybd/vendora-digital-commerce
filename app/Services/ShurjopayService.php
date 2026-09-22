@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\PaymentStatus;
+use App\Events\OrderPaid;
 use App\Events\PaymentFailed;
 use App\Events\PaymentVerified;
 use App\Exceptions\DomainException;
@@ -200,7 +201,7 @@ final class ShurjopayService
         match (true) {
             $payable instanceof Order => (function () use ($payable, $source): void {
                 $this->orders->markPaid($payable, 'gateway:'.$source);
-                \App\Events\OrderPaid::dispatch($payable->refresh());
+                OrderPaid::dispatch($payable->refresh());
             })(),
             $payable instanceof Deposit => (function () use ($payable, $payment): void {
                 $payable->forceFill(['payment_id' => $payment->getKey()])->save();

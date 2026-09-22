@@ -10,7 +10,6 @@ use App\Enums\UserStatus;
 use App\Models\LoginHistory;
 use App\Models\User;
 use App\Services\CartService;
-use App\Settings\AuthSettings;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;

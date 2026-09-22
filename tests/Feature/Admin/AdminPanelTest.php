@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\UserStatus;
+use App\Filament\Admin\Resources\Categories\Pages\CreateCategory;
 use App\Filament\Admin\Resources\Categories\Pages\ListCategories;
 use App\Filament\Admin\Resources\Orders\Pages\ListOrders;
 use App\Filament\Admin\Resources\Products\Pages\ListProducts;
@@ -49,7 +50,7 @@ it('lists products', function (): void {
 });
 
 it('creates a category through the panel', function (): void {
-    livewire(App\Filament\Admin\Resources\Categories\Pages\CreateCategory::class)
+    livewire(CreateCategory::class)
         ->fillForm([
             'name' => 'Streaming & OTT',
             'slug' => 'streaming-otx',

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\StockLogReason;
 use App\Exceptions\DomainException;
 use App\Models\Product;
 use App\Services\StockService;
@@ -67,7 +68,7 @@ it('writes a stock log for every movement', function (): void {
     $stock = app(StockService::class);
 
     $stock->reserve($product, 3);
-    $stock->adjust($product->fresh(), 2, App\Enums\StockLogReason::Refund);
+    $stock->adjust($product->fresh(), 2, StockLogReason::Refund);
 
     $logs = $product->fresh()->stockLogs()->orderBy('id')->get();
 

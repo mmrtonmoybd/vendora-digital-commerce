@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\InvoiceStatus;
 use App\Support\Money;
+use Database\Factories\CustomInvoiceFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class CustomInvoice extends Model
 {
-    /** @use HasFactory<\Database\Factories\CustomInvoiceFactory> */
+    /** @use HasFactory<CustomInvoiceFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];

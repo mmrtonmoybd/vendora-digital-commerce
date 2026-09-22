@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Enums\OrderPaymentStatus;
 use App\Enums\OrderStatus;
-use App\Enums\UserStatus;
 use App\Exceptions\DomainException;
 use App\Exceptions\InvalidTransition;
 use App\Models\Admin;

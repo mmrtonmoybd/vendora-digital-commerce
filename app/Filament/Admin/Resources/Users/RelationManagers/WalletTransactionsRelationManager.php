@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Users\RelationManagers;
 
+use App\Enums\WalletTxType;
 use App\Models\WalletTransaction;
 use App\Support\Money;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -43,7 +44,7 @@ final class WalletTransactionsRelationManager extends RelationManager
                 TextColumn::make('admin.name')->label('By')->placeholder('System')->toggleable(),
             ])
             ->filters([
-                SelectFilter::make('type')->options(\App\Enums\WalletTxType::class)->multiple(),
+                SelectFilter::make('type')->options(WalletTxType::class)->multiple(),
             ]);
     }
 }

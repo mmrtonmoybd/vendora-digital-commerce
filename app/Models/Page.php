@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\PageTemplate;
+use Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Illuminate\Support\Str;
 
 final class Page extends Model
 {
-    /** @use HasFactory<\Database\Factories\PageFactory> */
+    /** @use HasFactory<PageFactory> */
     use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
@@ -29,7 +30,7 @@ final class Page extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (self $page): void {
+        self::saving(function (self $page): void {
             $page->slug = $page->slug ? Str::slug($page->slug) : Str::slug($page->title);
         });
     }

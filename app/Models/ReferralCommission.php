@@ -6,13 +6,14 @@ namespace App\Models;
 
 use App\Enums\CommissionStatus;
 use App\Support\Money;
+use Database\Factories\ReferralCommissionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class ReferralCommission extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReferralCommissionFactory> */
+    /** @use HasFactory<ReferralCommissionFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];

@@ -4,19 +4,22 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\AccessStatus;
 use App\Enums\OrderPaymentStatus;
 use App\Enums\OrderStatus;
 use App\Support\Money;
+use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class Order extends Model
 {
-    /** @use HasFactory<\Database\Factories\OrderFactory> */
+    /** @use HasFactory<OrderFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];
@@ -116,7 +119,7 @@ final class Order extends Model
     }
 
     /** @return BelongsTo<ReferralCommission, self> */
-    public function commission(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function commission(): HasOne
     {
         return $this->hasOne(ReferralCommission::class);
     }
@@ -187,12 +190,12 @@ final class Order extends Model
         return $this->items->contains(fn (OrderItem $item): bool => $item->access_status->isOpen());
     }
 
-    /** @param \Illuminate\Database\Eloquent\Builder<self> $query */
-    public function scopeAwaitingAccess(\Illuminate\Database\Eloquent\Builder $query): void
+    /** @param Builder<self> $query */
+    public function scopeAwaitingAccess(Builder $query): void
     {
         $query->paid()->whereHas('items', fn ($q) => $q->whereIn('access_status', [
-            \App\Enums\AccessStatus::Awaiting->value,
-            \App\Enums\AccessStatus::InProgress->value,
+            AccessStatus::Awaiting->value,
+            AccessStatus::InProgress->value,
         ]));
     }
 }

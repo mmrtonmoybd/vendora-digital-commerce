@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages\Settings;
 
+use App\Services\StorefrontCache;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -70,7 +71,7 @@ abstract class BaseSettingsPage extends Page
         // Settings feed the storefront chrome, the mailer and the gateway. Clearing here
         // means the change is live on the next request rather than up to ten minutes later.
         Cache::forget('spatie.settings.'.static::settingsClass());
-        app(\App\Services\StorefrontCache::class)->invalidate();
+        app(StorefrontCache::class)->invalidate();
 
         Notification::make()->success()->title('Settings saved')->send();
     }

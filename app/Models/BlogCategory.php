@@ -23,7 +23,7 @@ final class BlogCategory extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (self $category): void {
+        self::saving(function (self $category): void {
             $category->slug = $category->slug ? Str::slug($category->slug) : Str::slug($category->name);
         });
     }

@@ -12,6 +12,7 @@ use App\Payments\Contracts\PaymentGateway;
 use App\Payments\Contracts\VerificationResult;
 use App\Settings\ShurjopaySettings;
 use App\Support\Money;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -225,7 +226,7 @@ final class ShurjopayGateway implements PaymentGateway
             ->timeout(self::TIMEOUT_SECONDS)
             // Retry only connection-level failures. A 4xx from the gateway is an answer,
             // not a blip, and hammering it would not change the reply.
-            ->retry(2, 500, fn (\Throwable $e): bool => $e instanceof \Illuminate\Http\Client\ConnectionException, false)
+            ->retry(2, 500, fn (\Throwable $e): bool => $e instanceof ConnectionException, false)
             ->withOptions(['verify' => $this->settings->ssl_verify]);
     }
 

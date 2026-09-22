@@ -6,13 +6,14 @@ namespace App\Models;
 
 use App\Enums\PaymentMethodType;
 use App\Support\Money;
+use Database\Factories\PaymentMethodFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 final class PaymentMethod extends Model
 {
-    /** @use HasFactory<\Database\Factories\PaymentMethodFactory> */
+    /** @use HasFactory<PaymentMethodFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];

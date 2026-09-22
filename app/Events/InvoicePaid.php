@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use App\Models\CustomInvoice;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -11,5 +12,5 @@ final class InvoicePaid
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public readonly \App\Models\CustomInvoice $invoice) {}
+    public function __construct(public readonly CustomInvoice $invoice) {}
 }

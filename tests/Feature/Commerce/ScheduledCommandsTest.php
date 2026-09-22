@@ -6,12 +6,12 @@ use App\Enums\AccessStatus;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\WalletTxType;
-use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\CheckoutService;
+use App\Services\OrderService;
 use App\Services\WalletService;
 use App\Settings\CommerceSettings;
 
@@ -58,7 +58,7 @@ it('never cancels an order whose receipt is waiting on staff', function (): void
         method: $method, couponCode: null, user: null, guestEmail: 'a@example.com',
     );
 
-    app(App\Services\OrderService::class)->submitManualProof($order, '01700000000', 'TRX999999');
+    app(OrderService::class)->submitManualProof($order, '01700000000', 'TRX999999');
     $order->forceFill(['created_at' => now()->subDays(2)])->save();
 
     $this->artisan('orders:cancel-unpaid')->assertSuccessful();

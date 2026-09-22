@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Enums\PaymentMethodType;
 use App\Exceptions\DomainException;
 use App\Models\CartItem;
 use App\Models\PaymentMethod;
 use App\Services\CartService;
 use App\Services\CheckoutService;
 use App\Services\CouponService;
+use App\Services\OrderService;
 use App\Services\TrackingService;
+use App\Settings\FulfillmentSettings;
 use App\Support\Money;
 use Illuminate\Support\Collection;
 use Livewire\Component;
@@ -113,7 +116,7 @@ final class CheckoutPage extends Component
             );
 
             if ($method->isManual() && $this->sender !== '' && $this->trx !== '') {
-                app(\App\Services\OrderService::class)
+                app(OrderService::class)
                     ->submitManualProof($order, $this->sender, mb_strtoupper($this->trx), $screenshotPath);
             }
         } catch (DomainException $e) {
@@ -177,7 +180,7 @@ final class CheckoutPage extends Component
         return view('livewire.checkout-page', [
             'items' => $cart->items,
             'methods' => $this->methods(),
-            'deliveryHelp' => app(\App\Settings\FulfillmentSettings::class)->delivery_email_help,
+            'deliveryHelp' => app(FulfillmentSettings::class)->delivery_email_help,
             'trackPayload' => app(TrackingService::class)->basket(
                 $cart->items->map(fn (CartItem $item): array => [
                     'slug' => $item->product?->slug,
@@ -225,7 +228,7 @@ final class CheckoutPage extends Component
     {
         $methods = $this->methods();
         $user = auth()->user();
-        $wallet = $methods->firstWhere('type', \App\Enums\PaymentMethodType::Wallet);
+        $wallet = $methods->firstWhere('type', PaymentMethodType::Wallet);
 
         if ($wallet !== null && $user !== null && (int) $user->balance >= $carts->current()->load('items.product')->subtotal()) {
             return $wallet->key;

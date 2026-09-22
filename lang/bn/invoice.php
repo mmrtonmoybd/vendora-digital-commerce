@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => 'ইনভয়েস',
+    'print' => 'প্রিন্ট করুন',
+    'download_pdf' => 'পিডিএফ ডাউনলোড',
+    'issued' => 'ইস্যুর তারিখ',
+    'status_paid' => 'পরিশোধিত',
+    'status_refunded' => 'ফেরত দেওয়া হয়েছে',
+    'status_part_refunded' => 'আংশিক ফেরত',
+    'billed_to' => 'গ্রাহক',
+    'delivery_email' => 'ডেলিভারি ইমেইল',
+    'payment' => 'পেমেন্ট',
+    'not_recorded' => 'উল্লেখ নেই',
+    'transaction_id' => 'ট্রানজেকশন আইডি',
+    'paid_on' => 'পরিশোধের সময়',
+    'currency' => 'মুদ্রা',
+    'item' => 'পণ্য',
+    'qty' => 'পরিমাণ',
+    'unit_price' => 'একক দাম',
+    'amount' => 'মোট',
+    'access_for' => 'অ্যাক্সেস পাবে',
+    'deleted_product' => 'পণ্যটি আর নেই',
+    'customer_note' => 'গ্রাহকের নোট',
+    'subtotal' => 'সাবটোটাল',
+    'discount' => 'ছাড়',
+    'fee' => 'পেমেন্ট ফি',
+    'total' => 'সর্বমোট',
+    'refunded' => 'ফেরত',
+    'net_paid' => 'প্রকৃত পরিশোধ',
+    'footer_note' => 'এই ইনভয়েসটি :site কর্তৃক ইলেকট্রনিকভাবে তৈরি, স্বাক্ষর ছাড়াই বৈধ।',
+    'footer_support' => 'ইনভয়েস নিয়ে প্রশ্ন থাকলে :email ঠিকানায় লিখুন।',
+];

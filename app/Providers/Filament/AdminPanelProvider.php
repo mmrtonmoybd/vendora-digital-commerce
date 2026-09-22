@@ -35,6 +35,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Northwestern\FilamentTheme\NorthwesternTheme;
@@ -73,7 +74,7 @@ final class AdminPanelProvider extends PanelProvider
             ->darkModeBrandLogo(fn () => view('filament.admin.brand'))
             ->brandLogoHeight('2.25rem')
             ->favicon(fn (): ?string => ($icon = SafeSettings::favicon())
-                ? \Illuminate\Support\Facades\Storage::disk('public')->url($icon)
+                ? Storage::disk('public')->url($icon)
                 : null)
             ->sidebarCollapsibleOnDesktop()
             ->sidebarWidth('16rem')

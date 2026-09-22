@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use App\Support\Money;
 
@@ -126,7 +127,7 @@ final class CouponService
 
         $allowedByCategory = $categoryIds === []
             ? []
-            : \App\Models\Product::whereIn('category_id', $categoryIds)->pluck('id')->all();
+            : Product::whereIn('category_id', $categoryIds)->pluck('id')->all();
 
         $allowed = array_flip([...$productIds, ...$allowedByCategory]);
 

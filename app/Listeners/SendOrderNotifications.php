@@ -17,6 +17,7 @@ use App\Services\SmsService;
 use App\Settings\SmsSettings;
 use App\Support\Money;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Everything a customer and the back office hear about an order.
@@ -126,7 +127,7 @@ final class SendOrderNotifications implements ShouldQueue
             $order->customerEmail(),
             $templateKey,
             $variables + ['name' => 'there'],
-            \Illuminate\Support\Facades\URL::signedRoute('order.pay', ['order' => $order->order_number]),
+            URL::signedRoute('order.pay', ['order' => $order->order_number]),
             'View your order',
             $fallbackTitle,
             $fallbackBody,

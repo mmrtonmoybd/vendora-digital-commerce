@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\OrderInvoiceController as AdminOrderInvoiceController;
 use App\Http\Controllers\Storefront\AuthController;
 use App\Http\Controllers\Storefront\BlogController;
 use App\Http\Controllers\Storefront\CartController;
@@ -38,6 +39,8 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::get('/order/{order:order_number}/pay', [OrderPayController::class, 'show'])->name('order.pay');
 Route::get('/order/{order:order_number}/invoice', [OrderPayController::class, 'invoice'])
     ->name('order.invoice');
+Route::get('/order/{order:order_number}/invoice/print', [OrderPayController::class, 'invoicePrint'])
+    ->name('order.invoice.print');
 
 /*
  | Access-grant delivery. The confirm and problem links are signed so they work from an
@@ -92,6 +95,15 @@ Route::get('/files/{path}', PrivateFileController::class)
  | cached HTML deliberately contains none of this.
  */
 Route::get('/storefront/state', StorefrontStateController::class)->name('storefront.state');
+
+/*
+ | Staff invoice copies. Separate from the customer routes because the authorisation
+ | question is different — see the controller.
+ */
+Route::middleware('auth:admin')->prefix('admin/order')->name('admin.order.')->group(function (): void {
+    Route::get('/{order:order_number}/invoice', [AdminOrderInvoiceController::class, 'download'])->name('invoice');
+    Route::get('/{order:order_number}/invoice/print', [AdminOrderInvoiceController::class, 'print'])->name('invoice.print');
+});
 
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/sitemap-{section}.xml', [SeoController::class, 'sitemapSection'])

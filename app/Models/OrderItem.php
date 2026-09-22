@@ -6,13 +6,15 @@ namespace App\Models;
 
 use App\Enums\AccessStatus;
 use App\Support\Money;
+use Database\Factories\OrderItemFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class OrderItem extends Model
 {
-    /** @use HasFactory<\Database\Factories\OrderItemFactory> */
+    /** @use HasFactory<OrderItemFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];
@@ -50,14 +52,14 @@ final class OrderItem extends Model
         return $this->belongsTo(Admin::class, 'granted_by');
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<AccessEvent> */
-    public function accessEvents(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /** @return HasMany<AccessEvent> */
+    public function accessEvents(): HasMany
     {
         return $this->hasMany(AccessEvent::class)->oldest();
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<AccessProblemReport> */
-    public function problemReports(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /** @return HasMany<AccessProblemReport> */
+    public function problemReports(): HasMany
     {
         return $this->hasMany(AccessProblemReport::class)->latest();
     }

@@ -2,16 +2,18 @@
 
 declare(strict_types=1);
 
+use App\Enums\DepositStatus;
 use App\Enums\OrderPaymentStatus;
 use App\Enums\PaymentStatus;
-use App\Models\Deposit;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\WalletTransaction;
 use App\Payments\Contracts\CustomerDetails;
 use App\Services\CheckoutService;
+use App\Services\DepositService;
 use App\Services\ShurjopayService;
 use App\Settings\ShurjopaySettings;
 use Illuminate\Support\Facades\Http;
@@ -213,7 +215,7 @@ it('keeps an unknown status pending so reconcile can ask again', function (): vo
 it('credits a wallet deposit exactly once through the gateway', function (): void {
     $method = PaymentMethod::factory()->gateway()->create(['key' => 'card-dep']);
 
-    $deposit = app(App\Services\DepositService::class)->createGateway($this->user, $method, 50_000);
+    $deposit = app(DepositService::class)->createGateway($this->user, $method, 50_000);
 
     gatewaySays($this, ['sp_code' => '1000'], 'SPDEP');
     $payment = $this->shurjopay->start($deposit, $this->user, $this->customer, $deposit->payable)['payment'];
@@ -229,8 +231,8 @@ it('credits a wallet deposit exactly once through the gateway', function (): voi
     $this->shurjopay->verifyAndApply('SPDEP', 'ipn');
 
     expect($this->user->fresh()->balance)->toBe(50_000)
-        ->and($deposit->fresh()->status)->toBe(App\Enums\DepositStatus::Completed)
-        ->and(App\Models\WalletTransaction::where('user_id', $this->user->id)->count())->toBe(1);
+        ->and($deposit->fresh()->status)->toBe(DepositStatus::Completed)
+        ->and(WalletTransaction::where('user_id', $this->user->id)->count())->toBe(1);
 });
 
 it('records every callback it receives', function (): void {

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\FieldType;
+use Database\Factories\ProductFieldFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class ProductField extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductFieldFactory> */
+    /** @use HasFactory<ProductFieldFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use App\Enums\UserStatus;
 use App\Filament\Admin\Pages\Settings\GeneralSettingsPage;
-use App\Filament\Admin\Pages\Settings\ShurjopaySettingsPage;
 use App\Models\Admin;
+use App\Services\ShurjopayService;
 use App\Settings\GeneralSettings;
 use App\Settings\ShurjopaySettings;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -65,7 +65,7 @@ it('stores the gateway password encrypted', function (): void {
 });
 
 it('shows the callback urls staff must register with the gateway', function (): void {
-    $urls = app(App\Services\ShurjopayService::class)->callbackUrls();
+    $urls = app(ShurjopayService::class)->callbackUrls();
 
     expect($urls)->toHaveKeys(['return_url', 'cancel_url', 'ipn_url'])
         ->and($urls['ipn_url'])->toContain('/payments/shurjopay/ipn');

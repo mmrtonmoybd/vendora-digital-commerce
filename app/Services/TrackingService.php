@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Product;
 use App\Settings\SeoSettings;
+use App\Support\Money;
 use Illuminate\Support\Str;
 
 /**
@@ -46,7 +47,7 @@ final class TrackingService
             'quantity' => $quantity,
             'price' => $this->units($product->price),
             'value' => $this->units($product->price * $quantity),
-            'currency' => $this->settings ? \App\Support\Money::currencyCode() : 'BDT',
+            'currency' => $this->settings ? Money::currencyCode() : 'BDT',
         ];
     }
 
@@ -68,7 +69,7 @@ final class TrackingService
             'content_type' => 'product',
             'num_items' => array_sum(array_column($lines, 'quantity')),
             'value' => $this->units($value),
-            'currency' => \App\Support\Money::currencyCode(),
+            'currency' => Money::currencyCode(),
             'event_id' => $eventId ?? $this->eventId('checkout'),
         ];
     }
@@ -100,7 +101,7 @@ final class TrackingService
     {
         return [
             'search_string' => $term,
-            'currency' => \App\Support\Money::currencyCode(),
+            'currency' => Money::currencyCode(),
         ];
     }
 

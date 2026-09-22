@@ -9,6 +9,8 @@ use App\Filament\Admin\Resources\AdminMessages\Pages\CreateAdminMessage;
 use App\Filament\Admin\Resources\AdminMessages\Pages\EditAdminMessage;
 use App\Filament\Admin\Resources\AdminMessages\Pages\ListAdminMessages;
 use App\Models\AdminMessage;
+use App\Models\Category;
+use App\Models\Product;
 use App\Services\AdminMessageService;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -82,14 +84,14 @@ final class AdminMessageResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->options(fn (): array => \App\Models\Product::pluck('name', 'id')->all())
+                    ->options(fn (): array => Product::pluck('name', 'id')->all())
                     ->visible(fn (Get $get): bool => $get('audience') === MessageAudience::BuyersOfProduct->value),
                 Select::make('audience_meta.category_ids')
                     ->label('Categories')
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->options(fn (): array => \App\Models\Category::pluck('name', 'id')->all())
+                    ->options(fn (): array => Category::pluck('name', 'id')->all())
                     ->visible(fn (Get $get): bool => $get('audience') === MessageAudience::BuyersOfCategory->value),
             ]),
         ]);

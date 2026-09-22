@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\UserStatus;
 use App\Support\Money;
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
@@ -17,12 +18,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 
 final class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     protected $guarded = ['id'];
@@ -49,7 +51,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Mus
 
     protected static function booted(): void
     {
-        static::creating(function (self $user): void {
+        self::creating(function (self $user): void {
             $user->referral_code ??= self::generateReferralCode();
         });
     }
@@ -74,7 +76,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Mus
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar_url ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->avatar_url) : null;
+        return $this->avatar_url ? Storage::disk('public')->url($this->avatar_url) : null;
     }
 
     public function formattedBalance(): string

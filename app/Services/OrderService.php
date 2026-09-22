@@ -21,7 +21,9 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use App\Settings\CommerceSettings;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -291,7 +293,7 @@ final class OrderService
 
                 $this->transition($locked, OrderStatus::Refunded, "Refunded in full: {$reason}", $admin, false);
             } else {
-                $this->history($locked, $locked->status, $locked->status, 'Partial refund '.\App\Support\Money::format($value).": {$reason}", $admin);
+                $this->history($locked, $locked->status, $locked->status, 'Partial refund '.Money::format($value).": {$reason}", $admin);
             }
 
             return $locked;
@@ -329,7 +331,7 @@ final class OrderService
         return $order;
     }
 
-    private function history(Order $order, ?OrderStatus $from, OrderStatus $to, string $note, Model|null $actor): void
+    private function history(Order $order, ?OrderStatus $from, OrderStatus $to, string $note, ?Model $actor): void
     {
         $order->histories()->create([
             'from_status' => $from,
@@ -355,8 +357,8 @@ final class OrderService
         }
     }
 
-    /** @return \Illuminate\Support\Collection<int, OrderItem> */
-    public function itemsFor(Order $order): \Illuminate\Support\Collection
+    /** @return Collection<int, OrderItem> */
+    public function itemsFor(Order $order): Collection
     {
         return $order->items()->with('product')->get();
     }

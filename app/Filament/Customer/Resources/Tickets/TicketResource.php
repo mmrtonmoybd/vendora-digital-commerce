@@ -10,6 +10,7 @@ use App\Filament\Customer\Concerns\BelongsToCustomer;
 use App\Filament\Customer\Resources\Tickets\Pages\CreateTicket;
 use App\Filament\Customer\Resources\Tickets\Pages\ListTickets;
 use App\Filament\Customer\Resources\Tickets\Pages\ViewTicket;
+use App\Models\Order;
 use App\Models\Ticket;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
@@ -50,7 +51,7 @@ final class TicketResource extends Resource
                     ->placeholder('Not about a specific order')
                     // Only the customer's own orders. Anything else would let a ticket
                     // become a way to read somebody else's order.
-                    ->options(fn (): array => \App\Models\Order::query()
+                    ->options(fn (): array => Order::query()
                         ->where('user_id', auth()->id())
                         ->latest()
                         ->limit(50)

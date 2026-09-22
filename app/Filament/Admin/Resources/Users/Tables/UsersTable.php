@@ -7,29 +7,32 @@ namespace App\Filament\Admin\Resources\Users\Tables;
 use App\Enums\DepositStatus;
 use App\Enums\UserStatus;
 use App\Enums\WalletTxType;
+use App\Exceptions\InsufficientBalance;
 use App\Filament\Support\MoneyColumn;
 use App\Filament\Support\MoneyInput;
-use App\Models\User;
 use App\Models\Deposit;
 use App\Models\PaymentMethod;
+use App\Models\User;
 use App\Services\DepositService;
 use App\Services\WalletService;
+use App\Support\Money;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Password;
-use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\TrashedFilter;
+use Illuminate\Support\Str;
 
 final class UsersTable
 {
@@ -102,7 +105,7 @@ final class UsersTable
                                 $data['direction'] === 'credit'
                                     ? $wallet->credit($record, $amount, WalletTxType::AdminCredit, null, null, $data['reason'], $admin)
                                     : $wallet->debit($record, $amount, WalletTxType::AdminDebit, null, null, $data['reason'], $admin);
-                            } catch (\App\Exceptions\InsufficientBalance $e) {
+                            } catch (InsufficientBalance $e) {
                                 Notification::make()->danger()->title('Not enough balance')->body($e->getMessage())->send();
 
                                 return;
@@ -161,7 +164,7 @@ final class UsersTable
                             }
 
                             $deposit = Deposit::create([
-                                'deposit_number' => 'DP-'.now()->format('ym').'-'.\Illuminate\Support\Str::upper(\Illuminate\Support\Str::random(6)),
+                                'deposit_number' => 'DP-'.now()->format('ym').'-'.Str::upper(Str::random(6)),
                                 'user_id' => $record->getKey(),
                                 'payment_method_id' => $method->getKey(),
                                 'amount' => $amount,
@@ -178,7 +181,7 @@ final class UsersTable
 
                             Notification::make()->success()
                                 ->title('Deposit recorded')
-                                ->body(\App\Support\Money::format($amount).' added to '.$record->name.'\'s wallet.')
+                                ->body(Money::format($amount).' added to '.$record->name.'\'s wallet.')
                                 ->send();
                         }),
 

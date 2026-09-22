@@ -18,7 +18,6 @@ use App\Models\OrderItem;
 use App\Models\User;
 use App\Settings\FulfillmentSettings;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -82,7 +81,7 @@ final class AccessFulfillmentService
         $this->notifications->toAdmins(
             'New order awaiting access',
             "{$order->order_number} — grant access to {$order->delivery_email}",
-            url("/admin/access-queue"),
+            url('/admin/access-queue'),
             'heroicon-o-key',
         );
 
@@ -265,7 +264,7 @@ final class AccessFulfillmentService
     }
 
     /** The customer says the invitation arrived and they accepted it. */
-    public function confirm(OrderItem $item, User|null $actor = null): OrderItem
+    public function confirm(OrderItem $item, ?User $actor = null): OrderItem
     {
         if (! $item->access_status->isLive()) {
             throw new DomainException('This item has no access to confirm yet.');
@@ -502,6 +501,9 @@ final class AccessFulfillmentService
                 url('/customer/orders'),
                 'View your order',
                 'heroicon-o-clock',
+                // The receipt rides along with the payment confirmation, so nobody has to
+                // go looking for it.
+                invoiceOrderNumber: $order->order_number,
             );
         }
     }

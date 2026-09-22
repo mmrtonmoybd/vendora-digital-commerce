@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\PdfService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,10 +28,32 @@ final class OrderPayController extends Controller
 
         abort_unless($order->isPaid(), 404);
 
-        $order->load(['items', 'paymentMethod', 'user']);
+        return PdfService::download(
+            'pdf.invoice',
+            ['order' => $this->invoiceData($order), 'print' => false],
+            "invoice-{$order->order_number}.pdf",
+        );
+    }
 
-        return Pdf::loadView('pdf.invoice', ['order' => $order])
-            ->download("invoice-{$order->order_number}.pdf");
+    /**
+     * The same document as a normal page, for people who would rather hit Ctrl+P.
+     *
+     * Kept as its own route rather than a query flag on the download so it can be linked,
+     * bookmarked and — unlike the PDF — opened on a phone that has no PDF viewer.
+     */
+    public function invoicePrint(Request $request, Order $order): View
+    {
+        $this->authorizeView($request, $order);
+
+        abort_unless($order->isPaid(), 404);
+
+        return view('pdf.invoice', ['order' => $this->invoiceData($order), 'print' => true]);
+    }
+
+    /** Everything the invoice prints, loaded in one place so the two copies cannot diverge. */
+    private function invoiceData(Order $order): Order
+    {
+        return $order->load(['items.product.platform', 'paymentMethod', 'user', 'coupon']);
     }
 
     /**

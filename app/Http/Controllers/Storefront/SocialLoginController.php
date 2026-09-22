@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Storefront;
 
 use App\Enums\UserStatus;
+use App\Events\UserRegistered;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AffiliateService;
@@ -76,7 +77,7 @@ final class SocialLoginController extends Controller
             ]);
 
             $this->affiliate->attachReferrer($user, $request->cookie('ref'));
-            event(new \App\Events\UserRegistered($user));
+            event(new UserRegistered($user));
         }
 
         if ($user->status !== UserStatus::Active) {

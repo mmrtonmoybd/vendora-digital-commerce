@@ -7,7 +7,6 @@ namespace App\Filament\Admin\Widgets;
 use App\Enums\OrderPaymentStatus;
 use App\Models\Order;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 

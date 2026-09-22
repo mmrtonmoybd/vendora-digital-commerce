@@ -14,7 +14,7 @@ final class Tag extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (self $tag): void {
+        self::saving(function (self $tag): void {
             $tag->slug = $tag->slug ? Str::slug($tag->slug) : Str::slug($tag->name);
         });
     }

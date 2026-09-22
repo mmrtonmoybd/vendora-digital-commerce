@@ -6,6 +6,7 @@ namespace App\Filament\Customer\Resources\Invoices;
 
 use App\Enums\InvoiceStatus;
 use App\Exceptions\DomainException;
+use App\Exceptions\InsufficientBalance;
 use App\Filament\Customer\Concerns\BelongsToCustomer;
 use App\Filament\Customer\Resources\Invoices\Pages\ListInvoices;
 use App\Models\CustomInvoice;
@@ -66,7 +67,7 @@ final class InvoiceResource extends Resource
                             try {
                                 app(InvoiceService::class)->payWithWallet($record);
                                 Notification::make()->success()->title('Invoice paid')->send();
-                            } catch (DomainException|\App\Exceptions\InsufficientBalance $e) {
+                            } catch (DomainException|InsufficientBalance $e) {
                                 Notification::make()->danger()->title('Could not pay')->body($e->getMessage())->send();
                             }
                         }),

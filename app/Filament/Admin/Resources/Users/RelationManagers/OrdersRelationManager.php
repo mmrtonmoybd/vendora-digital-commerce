@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Users\RelationManagers;
 
+use App\Filament\Admin\Resources\Orders\OrderResource;
 use App\Filament\Support\MoneyColumn;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
@@ -27,6 +28,6 @@ final class OrdersRelationManager extends RelationManager
                 TextColumn::make('status')->badge(),
                 TextColumn::make('created_at')->dateTime()->sortable(),
             ])
-            ->recordUrl(fn ($record): string => \App\Filament\Admin\Resources\Orders\OrderResource::getUrl('view', ['record' => $record]));
+            ->recordUrl(fn ($record): string => OrderResource::getUrl('view', ['record' => $record]));
     }
 }

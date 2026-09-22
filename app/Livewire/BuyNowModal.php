@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Enums\PaymentMethodType;
 use App\Exceptions\DomainException;
 use App\Models\PaymentMethod;
 use App\Models\Product;
@@ -349,7 +350,7 @@ final class BuyNowModal extends Component
     {
         $methods = $this->methods();
         $user = auth()->user();
-        $wallet = $methods->firstWhere('type', \App\Enums\PaymentMethodType::Wallet);
+        $wallet = $methods->firstWhere('type', PaymentMethodType::Wallet);
 
         if ($wallet !== null && $user !== null && (int) $user->balance >= $product->price * $product->min_qty) {
             return $wallet->key;

@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Storefront;
 use App\Http\Controllers\Controller;
 use App\Settings\AuthSettings;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -44,7 +45,7 @@ final class AuthController extends Controller
         ]);
     }
 
-    public function showVerifyEmail(Request $request): View|\Illuminate\Http\RedirectResponse
+    public function showVerifyEmail(Request $request): View|RedirectResponse
     {
         if ($request->user()?->hasVerifiedEmail()) {
             return redirect()->intended('/customer');

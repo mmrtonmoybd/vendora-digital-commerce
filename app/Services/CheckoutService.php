@@ -16,6 +16,7 @@ use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\User;
 use App\Settings\CommerceSettings;
+use App\Support\Money;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -165,7 +166,7 @@ final class CheckoutService
         $total = max(0, $subtotal - $discount + $fee);
 
         if (! $method->acceptsAmount($total)) {
-            throw new DomainException("{$method->name} does not accept an amount of ".\App\Support\Money::format($total).'.');
+            throw new DomainException("{$method->name} does not accept an amount of ".Money::format($total).'.');
         }
 
         $order = DB::transaction(function () use ($lines, $deliveryEmail, $method, $couponResult, $user, $guestEmail, $customerPhone, $customerNote, $subtotal, $discount, $fee, $total): Order {

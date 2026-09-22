@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Customer\Pages\Dashboard;
 use App\Http\Middleware\RedirectGuestsToStorefrontLogin;
 use App\Support\SafeSettings;
 use Filament\Enums\ThemeMode;
@@ -26,6 +27,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Northwestern\FilamentTheme\NorthwesternTheme;
@@ -56,7 +58,7 @@ final class CustomerPanelProvider extends PanelProvider
             ->darkModeBrandLogo(fn () => view('filament.admin.brand'))
             ->brandLogoHeight('2.25rem')
             ->favicon(fn (): ?string => ($icon = SafeSettings::favicon())
-                ? \Illuminate\Support\Facades\Storage::disk('public')->url($icon)
+                ? Storage::disk('public')->url($icon)
                 : null)
             ->sidebarCollapsibleOnDesktop()
             ->sidebarWidth('16rem')
@@ -84,7 +86,7 @@ final class CustomerPanelProvider extends PanelProvider
                 NavigationGroup::make()->label('Affiliate'),
                 NavigationGroup::make()->label('Support'),
             ])
-            ->pages([\App\Filament\Customer\Pages\Dashboard::class])
+            ->pages([Dashboard::class])
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\Filament\Customer\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\Filament\Customer\Pages')
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\Filament\Customer\Widgets')

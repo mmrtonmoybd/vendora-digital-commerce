@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\OrderPaymentStatus;
 use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Services\OrderService;
@@ -32,7 +33,7 @@ final class CancelUnpaidOrders extends Command
             ->where('created_at', '<', $cutoff)
             // A submitted receipt is waiting on staff, not on the customer. Cancelling it
             // would throw away a payment somebody has already made.
-            ->where('payment_status', '!=', \App\Enums\OrderPaymentStatus::Submitted->value)
+            ->where('payment_status', '!=', OrderPaymentStatus::Submitted->value)
             ->with('items')
             ->get();
 

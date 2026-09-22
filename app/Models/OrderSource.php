@@ -32,12 +32,12 @@ final class OrderSource extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (self $source): void {
+        self::saving(function (self $source): void {
             $source->key = Str::slug($source->key ?: $source->name);
         });
 
         // Exactly one default, enforced here rather than hoped for.
-        static::saved(function (self $source): void {
+        self::saved(function (self $source): void {
             if ($source->is_default) {
                 self::whereKeyNot($source->getKey())->where('is_default', true)->update(['is_default' => false]);
             }

@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use App\Mail\TemplatedMail;
+use App\Models\EmailTemplate;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\CheckoutService;
-use App\Services\OrderService;
 use Database\Seeders\EmailTemplateSeeder;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
@@ -58,7 +58,7 @@ it('renders a templated email without throwing', function (): void {
 });
 
 it('substitutes template variables', function (): void {
-    $template = App\Models\EmailTemplate::where('key', 'order_completed')->firstOrFail();
+    $template = EmailTemplate::where('key', 'order_completed')->firstOrFail();
 
     $body = $template->render('body', [
         'name' => 'Sadia',

@@ -10,6 +10,7 @@ use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 final class CategoryController extends Controller
 {
@@ -43,7 +44,7 @@ final class CategoryController extends Controller
     }
 
     /** The chip row: sub-categories if there are any, otherwise the siblings. */
-    private function chips(Category $category): \Illuminate\Support\Collection
+    private function chips(Category $category): Collection
     {
         $children = $category->children()->where('is_active', true)->get();
 

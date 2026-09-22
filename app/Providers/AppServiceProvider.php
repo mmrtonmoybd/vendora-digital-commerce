@@ -6,16 +6,23 @@ namespace App\Providers;
 
 use App\Models\Admin;
 use App\Models\Category;
+use App\Models\CustomInvoice;
+use App\Models\Deposit;
 use App\Models\HeroSlide;
 use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Page;
+use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Models\Post;
 use App\Models\Product;
+use App\Models\ReferralCommission;
 use App\Models\Testimonial;
+use App\Models\Ticket;
 use App\Models\User;
+use App\Models\WithdrawalRequest;
 use App\Observers\CacheBustingObserver;
 use App\Settings\MailSettings;
 use App\View\Composers\StorefrontComposer;
@@ -101,13 +108,13 @@ final class AppServiceProvider extends ServiceProvider
             'admin' => Admin::class,
             'order' => Order::class,
             'product' => Product::class,
-            'deposit' => \App\Models\Deposit::class,
-            'invoice' => \App\Models\CustomInvoice::class,
-            'payment' => \App\Models\Payment::class,
-            'ticket' => \App\Models\Ticket::class,
-            'withdrawal' => \App\Models\WithdrawalRequest::class,
-            'commission' => \App\Models\ReferralCommission::class,
-            'order_item' => \App\Models\OrderItem::class,
+            'deposit' => Deposit::class,
+            'invoice' => CustomInvoice::class,
+            'payment' => Payment::class,
+            'ticket' => Ticket::class,
+            'withdrawal' => WithdrawalRequest::class,
+            'commission' => ReferralCommission::class,
+            'order_item' => OrderItem::class,
         ]);
     }
 

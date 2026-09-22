@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\DepositStatus;
 use App\Support\Money;
+use Database\Factories\DepositFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 final class Deposit extends Model
 {
-    /** @use HasFactory<\Database\Factories\DepositFactory> */
+    /** @use HasFactory<DepositFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];

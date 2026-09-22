@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Enums\MenuLocation;
 use App\Models\Category;
 use App\Models\Menu;
+use App\Models\MenuItem;
 use App\Models\PaymentMethod;
 use App\Settings\CommerceSettings;
 use App\Settings\ContactSettings;
@@ -26,7 +27,7 @@ final class StorefrontData
 {
     public function __construct(private readonly StorefrontCache $cache) {}
 
-    /** @return Collection<int, \App\Models\MenuItem> */
+    /** @return Collection<int, MenuItem> */
     public function menu(MenuLocation $location): Collection
     {
         return $this->cache->remember("menu:{$location->value}", function () use ($location): Collection {

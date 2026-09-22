@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use App\Enums\DepositStatus;
+use App\Exceptions\DomainException;
 use App\Models\Admin;
 use App\Models\Deposit;
 use App\Models\PaymentMethod;
 use App\Models\User;
+use App\Models\WalletTransaction;
 use App\Services\DepositService;
 
 it('lets an admin credit a customer wallet by recording a deposit', function (): void {
@@ -49,10 +51,10 @@ it('credits the wallet only once however many times approval is retried', functi
     app(DepositService::class)->forceApprove($deposit, $admin, 'First');
 
     expect(fn () => app(DepositService::class)->forceApprove($deposit->fresh(), $admin, 'Again'))
-        ->toThrow(App\Exceptions\DomainException::class, 'already completed');
+        ->toThrow(DomainException::class, 'already completed');
 
     expect($customer->fresh()->balance)->toBe(20_000)
-        ->and(App\Models\WalletTransaction::where('user_id', $customer->id)->count())->toBe(1);
+        ->and(WalletTransaction::where('user_id', $customer->id)->count())->toBe(1);
 });
 
 it('refuses a manual approval without a reason', function (): void {
@@ -68,7 +70,7 @@ it('refuses a manual approval without a reason', function (): void {
     ]);
 
     expect(fn () => app(DepositService::class)->forceApprove($deposit, $admin, '  '))
-        ->toThrow(App\Exceptions\DomainException::class, 'A reason is required');
+        ->toThrow(DomainException::class, 'A reason is required');
 
     expect($customer->fresh()->balance)->toBe(0);
 });

@@ -84,10 +84,15 @@ final class OrderResource extends Resource
                         ->visible(fn (Order $record): bool => ! $record->isPaid())
                         ->url(fn (Order $record): string => route('order.pay', $record), shouldOpenInNewTab: true),
                     Action::make('invoice')
-                        ->label('Download invoice')
+                        ->label(__('invoice.download_pdf'))
                         ->icon('heroicon-o-document-arrow-down')
                         ->visible(fn (Order $record): bool => $record->isPaid())
                         ->url(fn (Order $record): string => route('order.invoice', $record), shouldOpenInNewTab: true),
+                    Action::make('invoicePrint')
+                        ->label(__('invoice.print'))
+                        ->icon('heroicon-o-printer')
+                        ->visible(fn (Order $record): bool => $record->isPaid())
+                        ->url(fn (Order $record): string => route('order.invoice.print', $record), shouldOpenInNewTab: true),
                 ]),
             ]);
     }

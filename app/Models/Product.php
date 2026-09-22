@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Support\Money;
+use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ use Illuminate\Support\Str;
 
 final class Product extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductFactory> */
+    /** @use HasFactory<ProductFactory> */
     use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
@@ -44,7 +45,7 @@ final class Product extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (self $product): void {
+        self::saving(function (self $product): void {
             $product->slug = $product->slug ? Str::slug($product->slug) : Str::slug($product->name);
         });
     }

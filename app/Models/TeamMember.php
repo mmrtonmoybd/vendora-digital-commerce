@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 final class TeamMember extends Model
 {
@@ -28,7 +29,7 @@ final class TeamMember extends Model
 
     public function initials(): string
     {
-        return \Illuminate\Support\Str::of($this->name)
+        return Str::of($this->name)
             ->explode(' ')
             ->take(2)
             ->map(fn (string $part): string => mb_substr($part, 0, 1))

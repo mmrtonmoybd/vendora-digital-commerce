@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
+use Filament\Notifications\Actions\Action;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
@@ -35,7 +36,7 @@ final class GenericDatabaseNotification extends Notification
             ->icon($this->icon)
             ->iconColor($this->color)
             ->when($this->url !== null, fn ($n) => $n->actions([
-                \Filament\Notifications\Actions\Action::make('view')->label('View')->url($this->url)->markAsRead(),
+                Action::make('view')->label('View')->url($this->url)->markAsRead(),
             ]))
             ->getDatabaseMessage();
     }

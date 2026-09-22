@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Orders\Support;
 
 use App\Enums\OrderPaymentStatus;
 use App\Enums\OrderStatus;
+use App\Events\OrderPaid;
 use App\Exceptions\DomainException;
 use App\Filament\Support\MoneyInput;
 use App\Models\Order;
@@ -15,7 +16,6 @@ use App\Support\Money;
 use Filament\Actions\Action;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 
@@ -42,6 +42,7 @@ final class OrderActions
             self::refund(),
             self::cancel(),
             self::invoice(),
+            self::printInvoice(),
         ];
     }
 
@@ -62,7 +63,7 @@ final class OrderActions
             ))
             ->action(fn (Order $record) => self::run(function () use ($record): void {
                 $order = app(OrderService::class)->markPaid($record, 'manual', auth('admin')->user());
-                \App\Events\OrderPaid::dispatch($order);
+                OrderPaid::dispatch($order);
 
                 Notification::make()->success()->title('Payment verified')->send();
             }));
@@ -218,7 +219,16 @@ final class OrderActions
             ->label('Download invoice')
             ->icon('heroicon-o-document-arrow-down')
             ->visible(fn (Order $record): bool => $record->isPaid())
-            ->url(fn (Order $record): string => route('order.invoice', $record), shouldOpenInNewTab: true);
+            ->url(fn (Order $record): string => route('admin.order.invoice', $record), shouldOpenInNewTab: true);
+    }
+
+    public static function printInvoice(): Action
+    {
+        return Action::make('printInvoice')
+            ->label('Print invoice')
+            ->icon('heroicon-o-printer')
+            ->visible(fn (Order $record): bool => $record->isPaid())
+            ->url(fn (Order $record): string => route('admin.order.invoice.print', $record), shouldOpenInNewTab: true);
     }
 
     /** Turn a business-rule refusal into a notification instead of a stack trace. */

@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 final class Testimonial extends Model
 {
@@ -28,6 +29,6 @@ final class Testimonial extends Model
 
     public function initials(): string
     {
-        return \Illuminate\Support\Str::of($this->name)->substr(0, 1)->upper()->value();
+        return Str::of($this->name)->substr(0, 1)->upper()->value();
     }
 }

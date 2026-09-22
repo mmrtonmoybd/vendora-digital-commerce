@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'title' => 'Invoice',
+    'print' => 'Print',
+    'download_pdf' => 'Download PDF',
+    'issued' => 'Issued',
+    'status_paid' => 'PAID',
+    'status_refunded' => 'REFUNDED',
+    'status_part_refunded' => 'PARTLY REFUNDED',
+    'billed_to' => 'Billed to',
+    'delivery_email' => 'Delivery email',
+    'payment' => 'Payment',
+    'not_recorded' => 'Not recorded',
+    'transaction_id' => 'Transaction ID',
+    'paid_on' => 'Paid on',
+    'currency' => 'Currency',
+    'item' => 'Item',
+    'qty' => 'Qty',
+    'unit_price' => 'Unit price',
+    'amount' => 'Amount',
+    'access_for' => 'Access for',
+    'deleted_product' => 'Product no longer available',
+    'customer_note' => 'Customer note',
+    'subtotal' => 'Subtotal',
+    'discount' => 'Discount',
+    'fee' => 'Payment fee',
+    'total' => 'Total',
+    'refunded' => 'Refunded',
+    'net_paid' => 'Net paid',
+    'footer_note' => 'This invoice was issued electronically by :site and is valid without a signature.',
+    'footer_support' => 'Questions about this invoice? Write to :email.',
+];

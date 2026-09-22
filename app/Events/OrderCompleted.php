@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use App\Models\Order;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -11,5 +12,5 @@ final class OrderCompleted
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public readonly \App\Models\Order $order) {}
+    public function __construct(public readonly Order $order) {}
 }

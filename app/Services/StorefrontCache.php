@@ -7,6 +7,7 @@ namespace App\Services;
 use Closure;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use Litespeed\LSCache\LSCache;
 
 /**
  * Versioned storefront cache.
@@ -42,8 +43,8 @@ final class StorefrontCache
     {
         Cache::forever(self::VERSION_KEY, (string) Str::uuid());
 
-        if (config('storefront-cache.lscache.enabled', true) && class_exists(\Litespeed\LSCache\LSCache::class)) {
-            \Litespeed\LSCache\LSCache::purgeTags([self::LSCACHE_TAG], false);
+        if (config('storefront-cache.lscache.enabled', true) && class_exists(LSCache::class)) {
+            LSCache::purgeTags([self::LSCACHE_TAG], false);
         }
     }
 

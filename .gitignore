@@ -32,3 +32,4 @@ Thumbs.db
 /design/vendora/node_modules
 /storage/visual-diffs
 /public/css/storefront.css
+/storage/framework/mpdf

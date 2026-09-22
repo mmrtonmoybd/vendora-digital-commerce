@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Exceptions\DomainException;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
@@ -58,7 +59,7 @@ final class CartService
             }
 
             if ($cart->items()->count() >= $this->settings->max_cart_items) {
-                throw new \App\Exceptions\DomainException('Your cart is full.');
+                throw new DomainException('Your cart is full.');
             }
 
             return $cart->items()->create([

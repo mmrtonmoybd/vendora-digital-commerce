@@ -2,12 +2,17 @@
 
 declare(strict_types=1);
 
+use App\Enums\DepositStatus;
+use App\Enums\InvoiceStatus;
+use App\Enums\UserStatus;
 use App\Enums\WalletTxType;
+use App\Exceptions\DomainException;
 use App\Filament\Customer\Resources\Deposits\DepositResource;
 use App\Filament\Customer\Resources\Invoices\InvoiceResource;
 use App\Filament\Customer\Resources\Orders\OrderResource;
 use App\Filament\Customer\Resources\Tickets\TicketResource;
 use App\Filament\Customer\Resources\WalletTransactions\WalletTransactionResource;
+use App\Models\CustomInvoice;
 use App\Models\Deposit;
 use App\Models\PaymentMethod;
 use App\Models\Product;
@@ -86,7 +91,7 @@ it('shows a customer only their own deposits', function (): void {
     $bobDeposit = Deposit::create([
         'deposit_number' => 'DP-B', 'user_id' => $this->bob->id,
         'payment_method_id' => $this->method->id, 'amount' => 5_000,
-        'fee' => 0, 'payable' => 5_000, 'status' => App\Enums\DepositStatus::Pending,
+        'fee' => 0, 'payable' => 5_000, 'status' => DepositStatus::Pending,
     ]);
 
     $this->actingAs($this->alice);
@@ -104,10 +109,10 @@ it('refuses to open another customer\'s ticket', function (): void {
 });
 
 it('refuses to open another customer\'s invoice list entry', function (): void {
-    $bobInvoice = App\Models\CustomInvoice::create([
+    $bobInvoice = CustomInvoice::create([
         'invoice_number' => 'INV-B', 'user_id' => $this->bob->id,
         'product_name' => 'Private work', 'amount' => 20_000,
-        'status' => App\Enums\InvoiceStatus::Unpaid,
+        'status' => InvoiceStatus::Unpaid,
     ]);
 
     $this->actingAs($this->alice);
@@ -124,7 +129,7 @@ it('will not attach another customer\'s order to a ticket', function (): void {
         $bobOrder,
         'Prying',
         'Let me see this order.',
-    ))->toThrow(App\Exceptions\DomainException::class, 'does not belong to you');
+    ))->toThrow(DomainException::class, 'does not belong to you');
 });
 
 it('keeps the panel closed to a guest', function (): void {
@@ -132,7 +137,7 @@ it('keeps the panel closed to a guest', function (): void {
 });
 
 it('keeps the panel closed to a suspended customer', function (): void {
-    $this->alice->update(['status' => App\Enums\UserStatus::Suspended]);
+    $this->alice->update(['status' => UserStatus::Suspended]);
 
     expect($this->alice->canAccessPanel(Filament::getPanel('customer')))->toBeFalse();
 });

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Tickets\Pages;
 
-use App\Enums\TicketStatus;
 use App\Exceptions\DomainException;
+use App\Filament\Admin\Resources\Orders\OrderResource;
 use App\Filament\Admin\Resources\Tickets\TicketResource;
 use App\Models\CannedResponse;
 use App\Models\Ticket;
@@ -117,7 +117,7 @@ final class ViewTicket extends ViewRecord
                 ->label('Open the order')
                 ->icon('heroicon-o-shopping-bag')
                 ->visible(fn (Ticket $record): bool => $record->order !== null)
-                ->url(fn (Ticket $record): string => \App\Filament\Admin\Resources\Orders\OrderResource::getUrl('view', ['record' => $record->order])),
+                ->url(fn (Ticket $record): string => OrderResource::getUrl('view', ['record' => $record->order])),
         ];
     }
 }

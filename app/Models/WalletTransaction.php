@@ -31,11 +31,11 @@ final class WalletTransaction extends Model
 
     protected static function booted(): void
     {
-        static::updating(function (): never {
+        self::updating(function (): never {
             throw new RuntimeException('Wallet transactions are immutable. Post a compensating entry instead.');
         });
 
-        static::deleting(function (): never {
+        self::deleting(function (): never {
             throw new RuntimeException('Wallet transactions cannot be deleted.');
         });
     }

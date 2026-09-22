@@ -24,7 +24,7 @@ final class Platform extends Model
 
     protected static function booted(): void
     {
-        static::saving(function (self $platform): void {
+        self::saving(function (self $platform): void {
             $platform->slug = $platform->slug ? Str::slug($platform->slug) : Str::slug($platform->name);
         });
     }

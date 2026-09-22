@@ -148,7 +148,7 @@ final class CreateDeposit extends CreateRecord
             return route('payments.shurjopay.start', ['type' => 'deposit', 'id' => $deposit->getKey()]);
         }
 
-        return static::getResource()::getUrl('index');
+        return self::getResource()::getUrl('index');
     }
 
     private static function limitsFor(mixed $methodId): string

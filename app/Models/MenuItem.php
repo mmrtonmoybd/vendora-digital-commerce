@@ -8,6 +8,7 @@ use App\Enums\MenuLinkType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Route;
 
 final class MenuItem extends Model
 {
@@ -61,10 +62,10 @@ final class MenuItem extends Model
 
     private function safeRoute(string $name): string
     {
-        return \Illuminate\Support\Facades\Route::has($name) ? route($name) : url('/');
+        return Route::has($name) ? route($name) : url('/');
     }
 
-    /** @param class-string<\Illuminate\Database\Eloquent\Model> $model */
+    /** @param class-string<Model> $model */
     private function modelUrl(string $model, string $routeName): string
     {
         $record = $this->link_target_id ? $model::find($this->link_target_id) : null;

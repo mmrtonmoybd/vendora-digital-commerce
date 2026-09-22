@@ -6,7 +6,6 @@ namespace App\Filament\Admin\Pages\Settings;
 
 use App\Settings\GeneralSettings;
 use BackedEnum;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;

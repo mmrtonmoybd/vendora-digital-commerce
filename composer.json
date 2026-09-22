@@ -8,7 +8,6 @@
     "require": {
         "php": "^8.3",
         "awcodes/overlook": "^4.0",
-        "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-shield": "^4.1",
         "caresome/filament-auth-designer": "^3.0",
         "charrafimed/global-search-modal": "^5.0",
@@ -22,6 +21,7 @@
         "litespeed/lscache-laravel": "^2.0",
         "maatwebsite/excel": "^4.0",
         "mews/purifier": "^3.4",
+        "mpdf/mpdf": "^8.2",
         "northwestern-sysdev/northwestern-filament-theme": "^2.3",
         "spatie/laravel-activitylog": "^5.1",
         "spatie/laravel-backup": "^10.3",

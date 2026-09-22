@@ -41,6 +41,7 @@ final class NotificationDispatcher
         ?string $actionUrl = null,
         ?string $actionText = null,
         ?string $icon = null,
+        ?string $invoiceOrderNumber = null,
     ): void {
         $template = $this->template($templateKey);
 
@@ -55,7 +56,7 @@ final class NotificationDispatcher
         $subject = $template->render('subject', $variables);
         $body = $template->render('body', $variables);
 
-        Mail::to($user->email)->queue(new TemplatedMail($subject, $body, $variables, $actionUrl, $actionText));
+        Mail::to($user->email)->queue(new TemplatedMail($subject, $body, $variables, $actionUrl, $actionText, $invoiceOrderNumber));
 
         $user->notify(new GenericDatabaseNotification(
             title: $subject,
@@ -82,6 +83,7 @@ final class NotificationDispatcher
         ?string $actionText = null,
         ?string $fallbackSubject = null,
         ?string $fallbackBody = null,
+        ?string $invoiceOrderNumber = null,
     ): void {
         $template = $this->template($templateKey);
 
@@ -94,7 +96,7 @@ final class NotificationDispatcher
             return;
         }
 
-        Mail::to($email)->queue(new TemplatedMail($subject, $body, $variables, $actionUrl, $actionText));
+        Mail::to($email)->queue(new TemplatedMail($subject, $body, $variables, $actionUrl, $actionText, $invoiceOrderNumber));
     }
 
     /** Bell notification only, no email. */

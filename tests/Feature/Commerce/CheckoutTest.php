@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
+use App\Enums\CouponType;
+use App\Enums\FieldType;
 use App\Enums\OrderPaymentStatus;
 use App\Enums\OrderStatus;
 use App\Exceptions\DomainException;
+use App\Exceptions\InsufficientBalance;
 use App\Models\Coupon;
+use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\User;
 use App\Services\CheckoutService;
-use App\Services\OrderService;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function (): void {
@@ -74,11 +77,11 @@ it('refuses a wallet order the balance cannot cover', function (): void {
         method: $this->wallet,
         couponCode: null,
         user: $user,
-    ))->toThrow(App\Exceptions\InsufficientBalance::class);
+    ))->toThrow(InsufficientBalance::class);
 
     // Nothing may survive the rollback.
     expect($this->product->fresh()->stock)->toBe(10)
-        ->and(App\Models\Order::count())->toBe(0);
+        ->and(Order::count())->toBe(0);
 });
 
 it('refuses to sell more than the stock on hand', function (): void {
@@ -100,7 +103,7 @@ it('applies a percentage coupon to the total', function (): void {
     Coupon::create([
         'code' => 'SAVE10',
         'label' => '10% off applied!',
-        'type' => App\Enums\CouponType::Percent,
+        'type' => CouponType::Percent,
         'value' => 10,
         'min_order' => 0,
         'is_active' => true,
@@ -125,7 +128,7 @@ it('applies a percentage coupon to the total', function (): void {
 it('refuses a coupon below its minimum order', function (): void {
     Coupon::create([
         'code' => 'BIG',
-        'type' => App\Enums\CouponType::Fixed,
+        'type' => CouponType::Fixed,
         'value' => 10_000,
         'min_order' => 500_000,
         'is_active' => true,
@@ -167,7 +170,7 @@ it('requires a value for every required product field', function (): void {
     $product->fields()->create([
         'key' => 'player_id',
         'label' => 'Player / UID',
-        'type' => App\Enums\FieldType::Text,
+        'type' => FieldType::Text,
         'required' => true,
         'sort_order' => 0,
     ]);
