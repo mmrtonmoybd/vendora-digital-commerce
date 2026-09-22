@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Http\Middleware\RedirectGuestsToStorefrontLogin;
-use App\Settings\GeneralSettings;
-use App\Settings\ThemeSettings;
+use App\Support\SafeSettings;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -18,6 +17,8 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color as FilamentColor;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Table;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -37,17 +38,24 @@ use Northwestern\FilamentTheme\NorthwesternTheme;
  */
 final class CustomerPanelProvider extends PanelProvider
 {
+    public function boot(): void
+    {
+        Table::configureUsing(function (Table $table): void {
+            $table->recordActionsPosition(RecordActionsPosition::BeforeCells);
+        });
+    }
+
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->id('customer')
             ->path('customer')
             ->authGuard('web')
-            ->brandName(fn (): string => app(GeneralSettings::class)->site_name)
+            ->brandName(fn (): string => SafeSettings::siteName())
             ->brandLogo(fn () => view('filament.admin.brand'))
             ->darkModeBrandLogo(fn () => view('filament.admin.brand'))
             ->brandLogoHeight('2.25rem')
-            ->favicon(fn (): ?string => ($icon = app(GeneralSettings::class)->favicon)
+            ->favicon(fn (): ?string => ($icon = SafeSettings::favicon())
                 ? \Illuminate\Support\Facades\Storage::disk('public')->url($icon)
                 : null)
             ->sidebarCollapsibleOnDesktop()
@@ -57,7 +65,7 @@ final class CustomerPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->defaultThemeMode(ThemeMode::Light)
-            ->colors(['primary' => FilamentColor::hex(app(ThemeSettings::class)->brand_hex)])
+            ->colors(['primary' => FilamentColor::hex(SafeSettings::brandHex())])
             ->renderHook(
                 PanelsRenderHook::TOPBAR_END,
                 fn (): string => auth()->check() ? view('filament.customer.wallet-pill')->render() : '',

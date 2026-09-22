@@ -8,8 +8,7 @@ use App\Filament\Admin\Pages\Dashboard;
 use App\Http\Middleware\EnforceAdminIpAllowlist;
 use App\Http\Middleware\EnforceAdminTwoFactor;
 use App\Models\Admin;
-use App\Settings\GeneralSettings;
-use App\Settings\ThemeSettings;
+use App\Support\SafeSettings;
 use Awcodes\Overlook\OverlookPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
@@ -28,6 +27,8 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color as FilamentColor;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Table;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -40,6 +41,16 @@ use Northwestern\FilamentTheme\NorthwesternTheme;
 
 final class AdminPanelProvider extends PanelProvider
 {
+    public function boot(): void
+    {
+        // Row actions sit on the left of every table, collapsed into one three-dot menu.
+        // With a dozen actions on an order, a row of buttons would push the data off the
+        // screen; a single trigger in a fixed position is also easier to hit repeatedly.
+        Table::configureUsing(function (Table $table): void {
+            $table->recordActionsPosition(RecordActionsPosition::BeforeCells);
+        });
+    }
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -57,11 +68,11 @@ final class AdminPanelProvider extends PanelProvider
                 url('/admin/orders/*/invoice'),
                 url('/admin/reports/export/*'),
             ])
-            ->brandName(fn (): string => app(GeneralSettings::class)->site_name)
+            ->brandName(fn (): string => SafeSettings::siteName())
             ->brandLogo(fn () => view('filament.admin.brand'))
             ->darkModeBrandLogo(fn () => view('filament.admin.brand'))
             ->brandLogoHeight('2.25rem')
-            ->favicon(fn (): ?string => ($icon = app(GeneralSettings::class)->favicon)
+            ->favicon(fn (): ?string => ($icon = SafeSettings::favicon())
                 ? \Illuminate\Support\Facades\Storage::disk('public')->url($icon)
                 : null)
             ->sidebarCollapsibleOnDesktop()
@@ -72,7 +83,7 @@ final class AdminPanelProvider extends PanelProvider
             ->databaseNotificationsPolling('30s')
             ->unsavedChangesAlerts()
             ->defaultThemeMode(ThemeMode::Light)
-            ->colors(['primary' => FilamentColor::hex(app(ThemeSettings::class)->admin_primary_hex)])
+            ->colors(['primary' => FilamentColor::hex(SafeSettings::adminPrimaryHex())])
             ->renderHook(
                 PanelsRenderHook::FOOTER,
                 fn (): string => auth('admin')->check() ? view('filament.admin.footer')->render() : '',

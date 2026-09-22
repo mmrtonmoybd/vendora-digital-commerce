@@ -97,30 +97,36 @@ final class AppServiceProvider extends ServiceProvider
      */
     private function configureMailer(): void
     {
+        // Spatie settings load their properties on first access, not on resolve, so the
+        // whole read has to sit inside the guard — including the property access.
         try {
             $mail = app(MailSettings::class);
-        } catch (\Throwable) {
-            return;
-        }
 
-        if ($mail->mailer === 'smtp' && $mail->host !== '') {
-            Config::set('mail.mailers.smtp', [
-                'transport' => 'smtp',
-                'host' => $mail->host,
-                'port' => $mail->port,
-                'encryption' => $mail->encryption,
-                'username' => $mail->username ?: null,
-                'password' => $mail->password ?: null,
-                'timeout' => null,
-                'local_domain' => parse_url((string) config('app.url'), PHP_URL_HOST),
+            $mailer = $mail->mailer;
+            $host = $mail->host;
+
+            if ($mailer === 'smtp' && $host !== '') {
+                Config::set('mail.mailers.smtp', [
+                    'transport' => 'smtp',
+                    'host' => $host,
+                    'port' => $mail->port,
+                    'encryption' => $mail->encryption,
+                    'username' => $mail->username ?: null,
+                    'password' => $mail->password ?: null,
+                    'timeout' => null,
+                    'local_domain' => parse_url((string) config('app.url'), PHP_URL_HOST),
+                ]);
+            }
+
+            Config::set('mail.default', $mailer);
+            Config::set('mail.from', [
+                'address' => $mail->from_address,
+                'name' => $mail->from_name,
             ]);
+        } catch (\Throwable) {
+            // No settings table yet (a fresh clone, or a test refreshing the database).
+            // The .env mailer stays in force, which is what we want during install.
         }
-
-        Config::set('mail.default', $mail->mailer);
-        Config::set('mail.from', [
-            'address' => $mail->from_address,
-            'name' => $mail->from_name,
-        ]);
     }
 
     private function configureViews(): void

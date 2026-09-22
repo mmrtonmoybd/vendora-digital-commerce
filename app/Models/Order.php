@@ -86,6 +86,18 @@ final class Order extends Model
         return $this->belongsTo(Admin::class, 'assigned_admin_id');
     }
 
+    /** Which platform sent this customer — the last touch before they bought. */
+    public function orderSource(): BelongsTo
+    {
+        return $this->belongsTo(OrderSource::class);
+    }
+
+    /** Where they first arrived from, kept separately so both questions stay answerable. */
+    public function firstTouchSource(): BelongsTo
+    {
+        return $this->belongsTo(OrderSource::class, 'first_touch_source_id');
+    }
+
     /** @return MorphMany<Payment> */
     public function payments(): MorphMany
     {
