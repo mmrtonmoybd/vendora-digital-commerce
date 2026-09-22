@@ -74,6 +74,69 @@ final class RolesAndPermissionsSeeder extends Seeder
             'view_reports', 'refund_orders',
         ]);
 
+        $this->grantResourcePermissions();
+
         app(PermissionRegistrar::class)->forgetCachedPermissions();
+    }
+
+    /**
+     * Hand each role the Shield-generated resource permissions its job needs.
+     *
+     * Shield writes one permission per action per resource ("Update:Product"). Matching
+     * them by resource name keeps this seeder correct after a new resource is added and
+     * shield:generate is re-run, without listing 90 strings by hand.
+     */
+    private function grantResourcePermissions(): void
+    {
+        $readOnly = ['ViewAny', 'View'];
+        // Shield also generates Restore/ForceDelete for soft-deleting models; the roles
+        // below get the actions their job actually needs.
+        $full = ['ViewAny', 'View', 'Create', 'Update', 'Delete', 'DeleteAny', 'Restore', 'ForceDelete'];
+
+        $matrix = [
+            'manager' => [
+                'Product' => $full, 'Category' => $full, 'Order' => $full,
+                'User' => ['ViewAny', 'View', 'Update'],
+            ],
+            'order_manager' => [
+                'Order' => ['ViewAny', 'View', 'Update'],
+                'Product' => $readOnly,
+                'User' => $readOnly,
+            ],
+            'support' => [
+                'Order' => $readOnly,
+                'User' => $readOnly,
+                'Product' => $readOnly,
+            ],
+            'content_editor' => [
+                'Product' => $full,
+                'Category' => $full,
+            ],
+            'accountant' => [
+                'Order' => $readOnly,
+                'User' => $readOnly,
+            ],
+        ];
+
+        foreach ($matrix as $roleName => $resources) {
+            $role = Role::findByName($roleName, 'admin');
+
+            $names = [];
+
+            foreach ($resources as $resource => $actions) {
+                foreach ($actions as $action) {
+                    $names[] = "{$action}:{$resource}";
+                }
+            }
+
+            // findOrCreate rather than filtering to what already exists: a fresh install
+            // runs `migrate --seed` and must end up with a working permission set without
+            // anyone remembering to run shield:generate first.
+            foreach ($names as $name) {
+                Permission::findOrCreate($name, 'admin');
+            }
+
+            $role->givePermissionTo($names);
+        }
     }
 }

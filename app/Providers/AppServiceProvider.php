@@ -22,6 +22,7 @@ use App\View\Composers\StorefrontComposer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -35,6 +36,7 @@ final class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->configureAuthorization();
         $this->configureModels();
         $this->configureMorphMap();
         $this->configureMailer();
@@ -43,6 +45,27 @@ final class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
+    }
+
+    /**
+     * A super admin is allowed everything.
+     *
+     * Shield writes one permission per action per resource, which is the right granularity
+     * for the other roles but would mean the owner's access silently depends on somebody
+     * having re-run shield:generate after adding a resource. The bypass is explicit, and
+     * only the super_admin role on the admin guard gets it.
+     */
+    private function configureAuthorization(): void
+    {
+        Gate::before(function ($user, string $ability): ?bool {
+            if (! $user instanceof Admin) {
+                return null;
+            }
+
+            // null, not false: anything other than a super admin falls through to the
+            // policy rather than being denied here.
+            return $user->hasRole('super_admin') ? true : null;
+        });
     }
 
     /**
