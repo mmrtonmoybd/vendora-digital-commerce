@@ -1,0 +1,60 @@
+/* ==========================================================================
+   Vendora — shared styles (Tailwind handles 95%; this file holds tokens + a few
+   shapes Tailwind can't express nicely).
+   BRAND COLOR: change the --brand-* RGB triplets below (space-separated RGB).
+   Default = crimson #dc2626 scale.
+   ========================================================================== */
+:root {
+  --brand-50: 254 242 242;
+  --brand-100: 254 226 226;
+  --brand-200: 254 202 202;
+  --brand-300: 252 165 165;
+  --brand-400: 248 113 113;
+  --brand-500: 239 68 68;
+  --brand-600: 220 38 38;   /* primary  #dc2626 */
+  --brand-700: 185 28 28;   /* hover    #b91c1c */
+  --brand-800: 153 27 27;   /* deep     #991b1b */
+  --brand-900: 127 29 29;   /* darkest  #7f1d1d */
+  --surface: 252 248 247;   /* page bg  #fcf8f7 */
+  --ink: 28 16 17;          /* text     #1c1011 */
+}
+
+[x-cloak] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { font-family: "Hind Siliguri", system-ui, sans-serif; }
+.font-display { font-family: "Poppins", system-ui, sans-serif; }
+.font-script { font-family: "Kaushan Script", cursive; }
+
+/* Red header ground: layered gradient + soft dot grid */
+.hero-ground {
+  background:
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / .12) 1px, transparent 0) 0 0 / 22px 22px,
+    radial-gradient(1200px 500px at 85% -10%, rgb(var(--brand-400) / .55), transparent 60%),
+    linear-gradient(135deg, rgb(var(--brand-600)) 0%, rgb(var(--brand-800)) 70%, rgb(var(--brand-900)) 100%);
+}
+
+/* Corner ribbon on product cards */
+.ribbon { position: absolute; top: 0; right: 0; width: 110px; height: 110px; overflow: hidden; z-index: 5; pointer-events: none; }
+.ribbon span {
+  position: absolute; top: 22px; right: -34px; width: 150px; transform: rotate(45deg);
+  text-align: center; font: 700 10px/1 "Poppins", sans-serif; letter-spacing: .08em; color: #fff; padding: 6px 0;
+  background: linear-gradient(90deg, rgb(var(--brand-600)), rgb(var(--brand-800)));
+  box-shadow: 0 4px 10px rgb(var(--brand-900) / .35);
+}
+.ribbon.ribbon-amber span { background: linear-gradient(90deg, #f59e0b, #d97706); color: #1c1011; }
+.ribbon.ribbon-dark span { background: linear-gradient(90deg, #292524, #0c0a09); }
+
+/* Card art: subtle rings behind product icon */
+.art-rings { position: relative; }
+.art-rings::before { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background-image: radial-gradient(circle at 82% 18%, rgb(255 255 255 / .22) 0 16%, transparent 16.5%), radial-gradient(circle at 12% 92%, rgb(255 255 255 / .14) 0 24%, transparent 24.5%); }
+
+.shadow-card { box-shadow: 0 1px 2px rgb(28 16 17 / .04), 0 8px 24px -8px rgb(28 16 17 / .10); }
+.shadow-card-hover:hover { box-shadow: 0 2px 4px rgb(28 16 17 / .05), 0 18px 40px -12px rgb(var(--brand-700) / .30); }
+
+/* Hide number input spinners (qty controls) */
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
