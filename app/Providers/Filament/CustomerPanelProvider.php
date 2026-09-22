@@ -84,6 +84,7 @@ final class CustomerPanelProvider extends PanelProvider
                 NavigationGroup::make()->label('Affiliate'),
                 NavigationGroup::make()->label('Support'),
             ])
+            ->pages([\App\Filament\Customer\Pages\Dashboard::class])
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\Filament\Customer\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\Filament\Customer\Pages')
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\Filament\Customer\Widgets')

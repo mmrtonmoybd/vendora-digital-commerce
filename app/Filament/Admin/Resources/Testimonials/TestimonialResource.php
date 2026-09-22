@@ -67,7 +67,7 @@ final class TestimonialResource extends Resource
             ->columns([
                 TextColumn::make('name')->searchable()->weight('semibold'),
                 TextColumn::make('quote')->limit(60)->wrap(),
-                TextColumn::make('rating')->badge()->formatStateUsing(fn (int $s): string => str_repeat('★', $s)),
+                TextColumn::make('rating')->badge()->formatStateUsing(fn (int $state): string => str_repeat('★', $state)),
                 IconColumn::make('is_active')->label('Active')->boolean(),
             ])
             ->filters([
