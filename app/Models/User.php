@@ -17,12 +17,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Illuminate\Support\Str;
 
 final class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     protected $guarded = ['id'];
 
@@ -79,6 +80,12 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Mus
     public function formattedBalance(): string
     {
         return Money::format($this->balance);
+    }
+
+    /** Which platform's ad brought this customer to the shop. */
+    public function signupSource(): BelongsTo
+    {
+        return $this->belongsTo(OrderSource::class, 'signup_source_id');
     }
 
     /** @return BelongsTo<self, self> */

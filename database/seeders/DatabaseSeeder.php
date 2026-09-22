@@ -24,5 +24,9 @@ final class DatabaseSeeder extends Seeder
         if (filter_var(env('SEED_DEMO', false), FILTER_VALIDATE_BOOL)) {
             $this->call(DemoActivitySeeder::class);
         }
+
+        // Thumbnails are drawn from each record's own gradient and icon, so the catalogue
+        // has artwork without reaching for the network or a placeholder service.
+        $this->command?->call('demo:images');
     }
 }
