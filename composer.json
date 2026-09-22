@@ -19,6 +19,7 @@
         "laravel/framework": "^13.17",
         "laravel/socialite": "^5.31",
         "laravel/tinker": "^3.0",
+        "litespeed/lscache-laravel": "^2.0",
         "maatwebsite/excel": "^4.0",
         "mews/purifier": "^3.4",
         "northwestern-sysdev/northwestern-filament-theme": "^2.3",
@@ -71,7 +72,8 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

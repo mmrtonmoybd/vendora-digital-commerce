@@ -18,6 +18,7 @@ return [
         App\Settings\SmsSettings::class,
         App\Settings\TelegramSettings::class,
         App\Settings\SeoSettings::class,
+        App\Settings\FulfillmentSettings::class,
         App\Settings\SecuritySettings::class,
     ],
 

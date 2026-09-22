@@ -35,6 +35,8 @@ final class Product extends Model
             'requires_delivery_email' => 'boolean',
             'total_sold' => 'integer',
             'views' => 'integer',
+            'fulfillment_sla_minutes' => 'integer',
+            'warranty_days' => 'integer',
         ];
     }
 
@@ -54,6 +56,12 @@ final class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /** @return BelongsTo<Platform, self> */
+    public function platform(): BelongsTo
+    {
+        return $this->belongsTo(Platform::class);
     }
 
     /** @return HasMany<ProductField> */
@@ -146,6 +154,10 @@ final class Product extends Model
             'icon_key' => $this->icon_key,
             'gradient' => $this->gradient,
             'category_name' => $this->category?->name,
+            'platform_name' => $this->platform?->name,
+            'access_role' => $this->access_role,
+            'fulfillment_sla_minutes' => $this->fulfillment_sla_minutes,
+            'warranty_days' => $this->warranty_days,
             'price' => $this->price,
             'regular_price' => $this->regular_price,
         ];

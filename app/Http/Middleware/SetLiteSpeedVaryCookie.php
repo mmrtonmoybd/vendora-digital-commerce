@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * Tells LiteSpeed which cookie decides who gets which cached copy of a page.
+ *
+ * Anonymous visitors are deliberately left cookie-free so they all share one cached
+ * variant — otherwise every first-time visitor and every crawler would miss the cache.
+ * A signed-in customer gets their guard name, and a request carrying a flash message gets
+ * a one-off value so the flash is never baked into a shared page.
+ */
+final class SetLiteSpeedVaryCookie
+{
+    public function handle(Request $request, Closure $next): Response
+    {
+        $response = $next($request);
+
+        $cookieName = (string) config('storefront-cache.lscache.vary_cookie');
+        $cookieValue = $this->authenticatedGuard();
+
+        if ($request->hasSession() && (array) $request->session()->get('_flash.new', []) !== []) {
+            $cookieValue = 'bypass-'.mb_substr(hash('sha256', $request->session()->getId()), 0, 20);
+        }
+
+        if ($cookieValue === null) {
+            if ($request->cookies->has($cookieName)) {
+                $response->headers->setCookie(Cookie::forget(
+                    $cookieName,
+                    (string) config('session.path', '/'),
+                    config('session.domain'),
+                ));
+            }
+        } else {
+            $response->headers->setCookie(Cookie::make(
+                $cookieName,
+                $cookieValue,
+                (int) config('session.lifetime', 120),
+                (string) config('session.path', '/'),
+                config('session.domain'),
+                (bool) config('session.secure', false),
+                true,
+                false,
+                (string) config('session.same_site', 'lax'),
+            ));
+        }
+
+        $response->headers->set('X-LiteSpeed-Vary', 'cookie='.$cookieName);
+
+        if ($request->is('admin', 'admin/*', 'customer', 'customer/*')) {
+            $response->headers->set('X-LiteSpeed-Cache-Control', 'no-cache');
+        }
+
+        return $response;
+    }
+
+    private function authenticatedGuard(): ?string
+    {
+        foreach (['web', 'admin'] as $guard) {
+            if (Auth::guard($guard)->check()) {
+                return $guard;
+            }
+        }
+
+        return null;
+    }
+}

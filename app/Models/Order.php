@@ -34,6 +34,8 @@ final class Order extends Model
             'paid_at' => 'datetime',
             'completed_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'assigned_at' => 'datetime',
+            'sla_alerted' => 'boolean',
         ];
     }
 
@@ -76,6 +78,12 @@ final class Order extends Model
     public function processedBy(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'processed_by');
+    }
+
+    /** @return BelongsTo<Admin, self> */
+    public function assignedAdmin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'assigned_admin_id');
     }
 
     /** @return MorphMany<Payment> */
@@ -154,5 +162,20 @@ final class Order extends Model
     public function needsManualVerification(): bool
     {
         return $this->payment_status === OrderPaymentStatus::Submitted;
+    }
+
+    /** Items still waiting for an admin to grant access on the platform. */
+    public function hasOpenAccessItems(): bool
+    {
+        return $this->items->contains(fn (OrderItem $item): bool => $item->access_status->isOpen());
+    }
+
+    /** @param \Illuminate\Database\Eloquent\Builder<self> $query */
+    public function scopeAwaitingAccess(\Illuminate\Database\Eloquent\Builder $query): void
+    {
+        $query->paid()->whereHas('items', fn ($q) => $q->whereIn('access_status', [
+            \App\Enums\AccessStatus::Awaiting->value,
+            \App\Enums\AccessStatus::InProgress->value,
+        ]));
     }
 }

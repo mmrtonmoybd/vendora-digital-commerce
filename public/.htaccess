@@ -5,6 +5,24 @@
 
     RewriteEngine On
 
+    <IfModule LiteSpeed>
+        CacheLookup on
+
+        # Ad-click and campaign parameters must not fragment the cache: the same page with
+        # ?fbclid=… is the same page, and the pixel reads those from the URL client-side.
+        CacheKeyModify -qs:utm*
+        CacheKeyModify -qs:fbclid
+        CacheKeyModify -qs:ttclid
+        CacheKeyModify -qs:gclid
+        CacheKeyModify -qs:gbraid
+        CacheKeyModify -qs:wbraid
+        CacheKeyModify -qs:msclkid
+        CacheKeyModify -qs:ref
+        CacheKeyModify -qs:source_id
+
+        RewriteRule .* - [E=Cache-Vary:_lscache_vary_vendora]
+    </IfModule>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
