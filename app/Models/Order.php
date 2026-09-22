@@ -56,10 +56,15 @@ final class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    /** @return HasMany<OrderStatusHistory> */
+    /**
+     * The order's timeline, oldest first.
+     *
+     * Ordered by id rather than created_at: several transitions can land in the same
+     * second, and a timeline that reorders itself is worse than no timeline.
+     */
     public function histories(): HasMany
     {
-        return $this->hasMany(OrderStatusHistory::class)->oldest();
+        return $this->hasMany(OrderStatusHistory::class)->orderBy('id');
     }
 
     /** @return BelongsTo<Coupon, self> */
