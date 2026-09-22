@@ -131,6 +131,40 @@ return [
     |
     */
 
-    'serializable_classes' => false,
+    /*
+     | Laravel refuses to deserialize objects out of the cache unless they are named here,
+     | which stops a poisoned cache row from instantiating arbitrary classes. The storefront
+     | caches menus, categories and products as Eloquent collections, so those classes are
+     | listed explicitly rather than turning the protection off.
+     */
+    'serializable_classes' => [
+        Illuminate\Support\Collection::class,
+        Illuminate\Database\Eloquent\Collection::class,
+        Illuminate\Support\Carbon::class,
+        Carbon\Carbon::class,
+        Carbon\CarbonImmutable::class,
+        App\Models\Category::class,
+        App\Models\Product::class,
+        App\Models\ProductField::class,
+        App\Models\Menu::class,
+        App\Models\MenuItem::class,
+        App\Models\HeroSlide::class,
+        App\Models\Testimonial::class,
+        App\Models\Faq::class,
+        App\Models\TeamMember::class,
+        App\Models\Stat::class,
+        App\Models\PaymentMethod::class,
+        App\Models\Platform::class,
+        App\Models\BlogCategory::class,
+        App\Models\Post::class,
+        App\Models\OrderSource::class,
+        App\Models\EmailTemplate::class,
+        App\Enums\FieldType::class,
+        App\Enums\MenuLocation::class,
+        App\Enums\MenuLinkType::class,
+        App\Enums\FaqGroup::class,
+        App\Enums\PageTemplate::class,
+        App\Enums\PaymentMethodType::class,
+    ],
 
 ];

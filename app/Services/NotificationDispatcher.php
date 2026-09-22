@@ -65,6 +65,38 @@ final class NotificationDispatcher
         ));
     }
 
+    /**
+     * The same templated email, to an address with no account behind it.
+     *
+     * Guest checkout is supported, so order and access mail has to reach people who will
+     * never sign in. There is no bell notification to write — the signed link in the email
+     * is their only way back to the order.
+     *
+     * @param  array<string, string|int|null>  $variables
+     */
+    public function guestEmail(
+        string $email,
+        string $templateKey,
+        array $variables = [],
+        ?string $actionUrl = null,
+        ?string $actionText = null,
+        ?string $fallbackSubject = null,
+        ?string $fallbackBody = null,
+    ): void {
+        $template = $this->template($templateKey);
+
+        $subject = $template?->render('subject', $variables) ?? $fallbackSubject;
+        $body = $template?->render('body', $variables) ?? $fallbackBody;
+
+        if ($subject === null || $body === null) {
+            Log::warning('notification.missing_template', ['key' => $templateKey]);
+
+            return;
+        }
+
+        Mail::to($email)->queue(new TemplatedMail($subject, $body, $variables, $actionUrl, $actionText));
+    }
+
     /** Bell notification only, no email. */
     public function notifyCustomer(User $user, string $title, string $body, ?string $url = null, ?string $icon = null): void
     {

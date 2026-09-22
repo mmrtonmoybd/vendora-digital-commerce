@@ -19,6 +19,7 @@ return [
         App\Settings\TelegramSettings::class,
         App\Settings\SeoSettings::class,
         App\Settings\FulfillmentSettings::class,
+        App\Settings\HomepageSettings::class,
         App\Settings\SecuritySettings::class,
     ],
 
