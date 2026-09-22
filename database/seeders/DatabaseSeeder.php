@@ -1,25 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+final class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+            AdminSeeder::class,
+            OrderSourceSeeder::class,
+            EmailTemplateSeeder::class,
+            DemoParitySeeder::class,
         ]);
+
+        // Orders, deposits, tickets and commissions spread over 90 days, so the dashboards
+        // and reports have something to show. Opt-in via SEED_DEMO=true, because a real
+        // shop does not want fabricated orders in its books.
+        if (filter_var(env('SEED_DEMO', false), FILTER_VALIDATE_BOOL)) {
+            $this->call(DemoActivitySeeder::class);
+        }
     }
 }
