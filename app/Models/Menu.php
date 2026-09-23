@@ -33,13 +33,13 @@ final class Menu extends Model
         ];
     }
 
-    /** @return HasMany<MenuItem> */
+    /** @return HasMany<MenuItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(MenuItem::class)->whereNull('parent_id')->orderBy('sort_order');
     }
 
-    /** @return HasMany<MenuItem> */
+    /** @return HasMany<MenuItem, $this> */
     public function allItems(): HasMany
     {
         return $this->hasMany(MenuItem::class)->orderBy('sort_order');

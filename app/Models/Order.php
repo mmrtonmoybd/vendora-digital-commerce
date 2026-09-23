@@ -53,7 +53,7 @@ final class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    /** @return HasMany<OrderItem> */
+    /** @return HasMany<OrderItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
@@ -106,13 +106,13 @@ final class Order extends Model
         return $this->belongsTo(OrderSource::class, 'first_touch_source_id');
     }
 
-    /** @return MorphMany<Payment> */
+    /** @return MorphMany<Payment, $this> */
     public function payments(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable')->latest();
     }
 
-    /** @return HasMany<Ticket> */
+    /** @return HasMany<Ticket, $this> */
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);

@@ -89,13 +89,13 @@ final class Product extends Model
         return $this->belongsTo(Platform::class);
     }
 
-    /** @return HasMany<ProductField> */
+    /** @return HasMany<ProductField, $this> */
     public function fields(): HasMany
     {
         return $this->hasMany(ProductField::class)->orderBy('sort_order');
     }
 
-    /** @return BelongsToMany<Faq> */
+    /** @return BelongsToMany<Faq, $this> */
     public function faqs(): BelongsToMany
     {
         // orderByPivot, not orderBy('pivot_sort_order'): the aliased form only exists when
@@ -104,7 +104,7 @@ final class Product extends Model
         return $this->belongsToMany(Faq::class)->withPivot('sort_order')->orderByPivot('sort_order');
     }
 
-    /** @return BelongsToMany<self> */
+    /** @return BelongsToMany<self, $this> */
     public function related(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'related_products', 'product_id', 'related_id')
@@ -112,7 +112,7 @@ final class Product extends Model
             ->orderByPivot('sort_order');
     }
 
-    /** @return HasMany<ProductStockLog> */
+    /** @return HasMany<ProductStockLog, $this> */
     public function stockLogs(): HasMany
     {
         return $this->hasMany(ProductStockLog::class);

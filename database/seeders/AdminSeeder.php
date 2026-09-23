@@ -13,16 +13,16 @@ final class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = (string) env('ADMIN_EMAIL', 'admin@example.com');
+        $email = (string) config('seeding.admin.email');
         // A generated password is printed once rather than a guessable default being left
         // in place on a server nobody revisits.
-        $password = (string) env('ADMIN_PASSWORD') ?: Str::password(16);
+        $password = (string) config('seeding.admin.password') ?: Str::password(16);
 
         $admin = Admin::firstOrNew(['email' => $email]);
         $isNew = ! $admin->exists;
 
         $admin->fill([
-            'name' => (string) env('ADMIN_NAME', 'Moshiur Rahman'),
+            'name' => (string) config('seeding.admin.name'),
             'status' => UserStatus::Active,
         ]);
 

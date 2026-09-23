@@ -58,7 +58,7 @@ final class CustomInvoice extends Model
         return $this->belongsTo(Payment::class);
     }
 
-    /** @return MorphMany<Payment> */
+    /** @return MorphMany<Payment, $this> */
     public function payments(): MorphMany
     {
         return $this->morphMany(Payment::class, 'payable')->latest();

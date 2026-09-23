@@ -47,7 +47,7 @@ final class WalletTransactionResource extends Resource
                 TextColumn::make('type')->badge(),
                 TextColumn::make('description')->wrap()->placeholder('—'),
                 TextColumn::make('amount')
-                    ->formatStateUsing(fn (int $state): string => ($state > 0 ? '+' : '').Money::format($s))
+                    ->formatStateUsing(fn (int $state): string => ($state > 0 ? '+' : '').Money::format($state))
                     ->color(fn (WalletTransaction $r): string => $r->isCredit() ? 'success' : 'danger')
                     ->weight('semibold')
                     ->alignEnd(),

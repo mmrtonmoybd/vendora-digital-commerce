@@ -28,7 +28,7 @@ final class AdminMessage extends Model
         ];
     }
 
-    /** @return BelongsToMany<User> */
+    /** @return BelongsToMany<User, $this> */
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withPivot(['read_at'])->withTimestamps();

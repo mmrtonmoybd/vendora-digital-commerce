@@ -96,62 +96,62 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Mus
         return $this->belongsTo(self::class, 'referred_by_id');
     }
 
-    /** @return HasMany<self> */
+    /** @return HasMany<self, $this> */
     public function referrals(): HasMany
     {
         return $this->hasMany(self::class, 'referred_by_id');
     }
 
-    /** @return HasMany<Order> */
+    /** @return HasMany<Order, $this> */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }
 
-    /** @return HasMany<Deposit> */
+    /** @return HasMany<Deposit, $this> */
     public function deposits(): HasMany
     {
         return $this->hasMany(Deposit::class);
     }
 
-    /** @return HasMany<WalletTransaction> */
+    /** @return HasMany<WalletTransaction, $this> */
     public function walletTransactions(): HasMany
     {
         return $this->hasMany(WalletTransaction::class);
     }
 
-    /** @return HasMany<Ticket> */
+    /** @return HasMany<Ticket, $this> */
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
     }
 
-    /** @return HasMany<CustomInvoice> */
+    /** @return HasMany<CustomInvoice, $this> */
     public function customInvoices(): HasMany
     {
         return $this->hasMany(CustomInvoice::class);
     }
 
-    /** @return HasMany<ReferralCommission> */
+    /** @return HasMany<ReferralCommission, $this> */
     public function commissions(): HasMany
     {
         return $this->hasMany(ReferralCommission::class, 'referrer_id');
     }
 
-    /** @return HasMany<WithdrawalRequest> */
+    /** @return HasMany<WithdrawalRequest, $this> */
     public function withdrawalRequests(): HasMany
     {
         return $this->hasMany(WithdrawalRequest::class);
     }
 
-    /** @return HasMany<LoginHistory> */
+    /** @return HasMany<LoginHistory, $this> */
     public function loginHistories(): HasMany
     {
         return $this->hasMany(LoginHistory::class, 'authenticatable_id')
             ->where('authenticatable_type', self::class);
     }
 
-    /** @return BelongsToMany<AdminMessage> */
+    /** @return BelongsToMany<AdminMessage, $this> */
     public function adminMessages(): BelongsToMany
     {
         return $this->belongsToMany(AdminMessage::class)

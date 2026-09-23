@@ -7,6 +7,7 @@ use App\Models\EmailTemplate;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\User;
+use App\Notifications\GenericDatabaseNotification;
 use App\Services\CheckoutService;
 use Database\Seeders\EmailTemplateSeeder;
 use Illuminate\Support\Facades\Mail;
@@ -70,4 +71,38 @@ it('substitutes template variables', function (): void {
         ->toContain('VD-2601-000042')
         ->toContain('Invitation sent.')
         ->not->toContain('{{');
+});
+
+/**
+ * The bell notification must survive being turned into its database payload.
+ *
+ * It used to import Filament\Notifications\Actions\Action, which does not exist in
+ * Filament 5 — the class moved to Filament\Actions. Nothing noticed, because the only
+ * notifications any test built had no URL, and the action is only constructed when there
+ * is one to link to.
+ */
+it('builds a database notification with a link on it', function (): void {
+    $user = User::factory()->create();
+
+    $payload = (new GenericDatabaseNotification(
+        title: 'Your access is ready',
+        body: 'Open your order to accept the invite.',
+        url: url('/customer/orders'),
+        icon: 'heroicon-o-key',
+    ))->toArray($user);
+
+    expect($payload['title'])->toBe('Your access is ready')
+        ->and($payload['actions'])->toHaveCount(1);
+});
+
+it('builds one without a link too', function (): void {
+    $user = User::factory()->create();
+
+    $payload = (new GenericDatabaseNotification(
+        title: 'Wallet topped up',
+        body: 'Your balance has been updated.',
+    ))->toArray($user);
+
+    expect($payload['title'])->toBe('Wallet topped up')
+        ->and($payload['actions'] ?? [])->toBe([]);
 });

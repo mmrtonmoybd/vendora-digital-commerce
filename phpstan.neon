@@ -31,3 +31,10 @@ parameters:
         # Array value types on Filament schema/action arrays: every one of these is a
         # heterogeneous list of component objects and annotating them adds nothing.
         - identifier: missingType.iterableValue
+
+        # Larastan types a belongsTo/hasOne accessor as the related model rather than
+        # "model or null", so it reads every $order->user?->name as a redundant nullsafe.
+        # It is not: a guest order has no user, a deleted account leaves a dangling id.
+        # Removing the ?-> to satisfy this would introduce the null errors it claims
+        # cannot happen.
+        - identifier: nullsafe.neverNull

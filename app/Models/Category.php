@@ -66,19 +66,19 @@ final class Category extends Model
         return $this->belongsTo(self::class, 'parent_id');
     }
 
-    /** @return HasMany<self> */
+    /** @return HasMany<self, $this> */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order');
     }
 
-    /** @return HasMany<Product> */
+    /** @return HasMany<Product, $this> */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
     }
 
-    /** @return HasMany<Product> */
+    /** @return HasMany<Product, $this> */
     public function activeProducts(): HasMany
     {
         return $this->products()->where('is_active', true)->orderBy('sort_order')->orderByDesc('id');

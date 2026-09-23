@@ -18,7 +18,7 @@ final class Cart extends Model
         return $this->belongsTo(User::class);
     }
 
-    /** @return HasMany<CartItem> */
+    /** @return HasMany<CartItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(CartItem::class);

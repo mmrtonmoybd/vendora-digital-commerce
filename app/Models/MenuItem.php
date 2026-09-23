@@ -50,7 +50,7 @@ final class MenuItem extends Model
         return $this->belongsTo(self::class, 'parent_id');
     }
 
-    /** @return HasMany<self> */
+    /** @return HasMany<self, $this> */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->where('is_active', true)->orderBy('sort_order');

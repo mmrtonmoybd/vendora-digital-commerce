@@ -54,7 +54,7 @@ final class Ticket extends Model
         return $this->belongsTo(Admin::class, 'assigned_admin_id');
     }
 
-    /** @return HasMany<TicketReply> */
+    /** @return HasMany<TicketReply, $this> */
     public function replies(): HasMany
     {
         return $this->hasMany(TicketReply::class)->oldest();

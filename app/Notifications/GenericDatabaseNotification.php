@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use Filament\Notifications\Actions\Action;
+use Filament\Actions\Action;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 

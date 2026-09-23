@@ -49,7 +49,7 @@ final class Platform extends Model
         return 'slug';
     }
 
-    /** @return HasMany<Product> */
+    /** @return HasMany<Product, $this> */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

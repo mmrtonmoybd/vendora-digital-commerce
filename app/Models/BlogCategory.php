@@ -47,7 +47,7 @@ final class BlogCategory extends Model
         return 'slug';
     }
 
-    /** @return HasMany<Post> */
+    /** @return HasMany<Post, $this> */
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);

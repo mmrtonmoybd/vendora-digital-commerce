@@ -42,7 +42,7 @@ final class Faq extends Model
         ];
     }
 
-    /** @return BelongsToMany<Product> */
+    /** @return BelongsToMany<Product, $this> */
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class);

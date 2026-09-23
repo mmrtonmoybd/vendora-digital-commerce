@@ -60,7 +60,7 @@ final class Admin extends Authenticatable implements FilamentUser, HasAvatar
         return $this->hasRole('super_admin');
     }
 
-    /** @return HasMany<LoginHistory> */
+    /** @return HasMany<LoginHistory, $this> */
     public function loginHistories(): HasMany
     {
         return $this->hasMany(LoginHistory::class, 'authenticatable_id')

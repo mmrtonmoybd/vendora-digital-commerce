@@ -73,7 +73,7 @@ final class Post extends Model
         return $this->belongsTo(Admin::class, 'author_id');
     }
 
-    /** @return BelongsToMany<Tag> */
+    /** @return BelongsToMany<Tag, $this> */
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);

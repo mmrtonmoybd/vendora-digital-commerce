@@ -46,7 +46,7 @@ final class Payment extends Model
         return $this->belongsTo(User::class);
     }
 
-    /** @return HasMany<PaymentEvent> */
+    /** @return HasMany<PaymentEvent, $this> */
     public function events(): HasMany
     {
         return $this->hasMany(PaymentEvent::class)->latest();

@@ -21,7 +21,7 @@ final class DatabaseSeeder extends Seeder
         // Orders, deposits, tickets and commissions spread over 90 days, so the dashboards
         // and reports have something to show. Opt-in via SEED_DEMO=true, because a real
         // shop does not want fabricated orders in its books.
-        if (filter_var(env('SEED_DEMO', false), FILTER_VALIDATE_BOOL)) {
+        if (config('seeding.demo')) {
             $this->call(DemoActivitySeeder::class);
         }
 

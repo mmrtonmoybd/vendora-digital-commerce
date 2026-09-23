@@ -67,7 +67,7 @@ final class OrderResource extends Resource
                     ->color(fn (Order $record): string => $record->items->first()?->access_status->color() ?? 'gray'),
                 TextColumn::make('refunded_amount')
                     ->label('Refunded')
-                    ->formatStateUsing(fn (int $state): string => $state > 0 ? Money::format($s) : '—')
+                    ->formatStateUsing(fn (int $state): string => $state > 0 ? Money::format($state) : '—')
                     ->toggleable(),
                 TextColumn::make('created_at')->label('Placed')->dateTime()->sortable(),
             ])

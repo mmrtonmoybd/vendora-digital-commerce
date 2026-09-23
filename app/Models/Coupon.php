@@ -44,19 +44,19 @@ final class Coupon extends Model
         });
     }
 
-    /** @return BelongsToMany<Product> */
+    /** @return BelongsToMany<Product, $this> */
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class);
     }
 
-    /** @return BelongsToMany<Category> */
+    /** @return BelongsToMany<Category, $this> */
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class);
     }
 
-    /** @return HasMany<CouponUsage> */
+    /** @return HasMany<CouponUsage, $this> */
     public function usages(): HasMany
     {
         return $this->hasMany(CouponUsage::class);

@@ -52,13 +52,13 @@ final class OrderItem extends Model
         return $this->belongsTo(Admin::class, 'granted_by');
     }
 
-    /** @return HasMany<AccessEvent> */
+    /** @return HasMany<AccessEvent, $this> */
     public function accessEvents(): HasMany
     {
         return $this->hasMany(AccessEvent::class)->oldest();
     }
 
-    /** @return HasMany<AccessProblemReport> */
+    /** @return HasMany<AccessProblemReport, $this> */
     public function problemReports(): HasMany
     {
         return $this->hasMany(AccessProblemReport::class)->latest();
