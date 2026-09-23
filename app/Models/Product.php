@@ -98,7 +98,10 @@ final class Product extends Model
     /** @return BelongsToMany<Faq> */
     public function faqs(): BelongsToMany
     {
-        return $this->belongsToMany(Faq::class)->withPivot('sort_order')->orderBy('pivot_sort_order');
+        // orderByPivot, not orderBy('pivot_sort_order'): the aliased form only exists when
+        // Laravel builds the select for a relation load. Filament's relationship picker
+        // joins the pivot without that alias, and ordering on it fatals the edit page.
+        return $this->belongsToMany(Faq::class)->withPivot('sort_order')->orderByPivot('sort_order');
     }
 
     /** @return BelongsToMany<self> */
@@ -106,7 +109,7 @@ final class Product extends Model
     {
         return $this->belongsToMany(self::class, 'related_products', 'product_id', 'related_id')
             ->withPivot('sort_order')
-            ->orderBy('pivot_sort_order');
+            ->orderByPivot('sort_order');
     }
 
     /** @return HasMany<ProductStockLog> */

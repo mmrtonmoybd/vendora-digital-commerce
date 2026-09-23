@@ -11,6 +11,7 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
 use Illuminate\Support\Facades\URL;
 
 /**
@@ -35,7 +36,7 @@ final class OrderInfolist
                         ->label('Access email')
                         ->copyable()
                         ->weight('bold')
-                        ->size(TextEntry\TextEntrySize::Large)
+                        ->size(TextSize::Large)
                         ->helperText('Access is granted to this address.'),
                     TextEntry::make('user.name')->label('Customer')->placeholder('Guest checkout'),
                     TextEntry::make('customer_phone')->label('Phone')->copyable()->placeholder('—'),

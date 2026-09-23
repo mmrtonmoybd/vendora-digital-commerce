@@ -1,0 +1,33 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+
+    paths:
+        - app
+        - config
+        - database
+        - routes
+
+    excludePaths:
+        - database/migrations/*
+        - database/settings/*
+
+    # Larastan infers model attribute types from PHPDoc it generates itself, which is a
+    # good guess and not a fact — it cannot see a cast declared in a casts() method on a
+    # model using $guarded. Treating those guesses as certain produces a flood of
+    # "comparison will always evaluate to false" on enum casts that work correctly at
+    # runtime. The checks still run; they just stop being reported as proven.
+    treatPhpDocTypesAsCertain: false
+
+    # Filament and Livewire expose $this->form, $this->table and friends through __get.
+    # There is no property for PHPStan to find, and there is no bug either.
+    universalObjectCratesClasses:
+        - Filament\Pages\Page
+        - Livewire\Component
+
+    ignoreErrors:
+        # Array value types on Filament schema/action arrays: every one of these is a
+        # heterogeneous list of component objects and annotating them adds nothing.
+        - identifier: missingType.iterableValue
