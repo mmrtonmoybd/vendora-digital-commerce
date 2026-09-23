@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Support\Currencies;
 use App\Support\Locales;
 use Closure;
 use Illuminate\Http\Request;
@@ -19,9 +20,10 @@ use Symfony\Component\HttpFoundation\Response;
  * miss the cache. A signed-in customer gets their guard name, and a request carrying a flash
  * message gets a one-off value so the flash is never baked into a shared page.
  *
- * Once a second language is enabled that stops being safe: the same URL now renders
- * differently for a Bengali reader and an English one, so the locale joins the cookie and
- * anonymous visitors split into one cached variant per language.
+ * Once a second language or a second display currency is enabled that stops being safe:
+ * the same URL now renders differently for a Bengali reader and an English one, and shows
+ * different prices in dollars than in taka. Both join the cookie, and anonymous visitors
+ * split into one cached variant per combination.
  */
 final class SetLiteSpeedVaryCookie
 {
@@ -42,6 +44,12 @@ final class SetLiteSpeedVaryCookie
 
         if (Locales::isMultilingual()) {
             $cookieValue = ($cookieValue ?? 'guest').':'.app()->getLocale();
+        }
+
+        // Prices differ per currency, so a cached page is only reusable by someone browsing
+        // in the same one.
+        if (Currencies::isMultiCurrency()) {
+            $cookieValue = ($cookieValue ?? 'guest').':'.Currencies::current();
         }
 
         if ($request->hasSession() && (array) $request->session()->get('_flash.new', []) !== []) {

@@ -5,6 +5,7 @@ use App\Http\Middleware\CachePublicStorefront;
 use App\Http\Middleware\CaptureReferral;
 use App\Http\Middleware\CaptureSource;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetCurrency;
 use App\Http\Middleware\SetLiteSpeedVaryCookie;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             SecurityHeaders::class,
             SetLocale::class,
+            SetCurrency::class,
             CaptureSource::class,
             CaptureReferral::class,
             SetLiteSpeedVaryCookie::class,

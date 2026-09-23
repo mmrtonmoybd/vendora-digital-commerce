@@ -79,6 +79,15 @@
       </dl>
       @if ($error)<p class="mt-4 p-3 rounded-xl bg-red-50 text-red-700 text-sm font-semibold">{{ $error }}</p>@endif
       <button type="submit" class="mt-5 w-full h-12 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-800 text-white font-semibold shadow-lg shadow-brand-700/25 hover:from-brand-700 hover:to-brand-900"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> {{ __('shop.place_order') }} · <span>{{ $this->money($this->total()) }}</span></button>
+@php
+    $showSettlement = \App\Support\Currencies::current() !== \App\Support\Currencies::BASE
+        && (app(\App\Settings\CurrencySettings::class)->show_settlement_note ?? true);
+@endphp
+@if ($showSettlement)
+      {{-- The customer is quoted in one currency and charged in another. Saying so before
+           they commit is the difference between a conversion and a chargeback. --}}
+      <p class="mt-3 text-xs text-center text-stone-500">{{ __('shop.settlement_note', ['display' => \App\Support\Currencies::current(), 'base' => \App\Support\Money::formatBase($this->total())]) }}</p>
+@endif
       <p class="mt-3 text-xs text-center text-stone-500">{{ __('shop.agree_prefix') }} <a href="{{ url('/page/terms') }}" class="underline">{{ __('shop.terms') }}</a> &amp; <a href="{{ url('/page/refund-policy') }}" class="underline">{{ __('shop.refund_policy') }}</a>.</p>
     </aside>
   </form>

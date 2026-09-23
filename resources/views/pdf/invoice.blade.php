@@ -2,16 +2,26 @@
     The invoice document. Rendered twice from this one file: through mPDF for the download,
     and as a plain page for the "Print" link.
 
+    Every amount is Money::formatBase — the base currency, whatever the customer was
+    browsing in. An invoice states what was charged, and the charge is taken in taka; a
+    converted figure on a document like this would not reconcile against the bank.
+
     Every rule is inline here because the PDF engine does not run Vite — a print view that
     depended on the app bundle would start printing blank the first time the bundle moved.
 
-    The markup leans on tables rather than bordered <div>s on purpose: mPDF draws borders and
-    backgrounds on table cells reliably and on floated block elements only sometimes.
+    The markup leans on tables rather than bordered <div>s on purpose: mPDF draws borders
+    and backgrounds on table cells reliably and on floated block elements only sometimes.
+    Nested tables are avoided in the masthead because mPDF shrinks the whole table to fit
+    when it meets one, and the result is unreadable.
+
+    The accent colour is the shop's own brand colour, derived through BrandPalette, so the
+    invoice looks like it came from the same company as the site.
 
     $order   the order being invoiced
     $print   true when this is the browser-printable copy
 --}}
 @php
+    use App\Support\BrandPalette;
     use App\Support\Money;
 
     $print ??= false;
@@ -19,6 +29,15 @@
     $general = $store->general();
     $contact = $store->contact();
     $commerce = $store->commerce();
+
+    $palette = BrandPalette::fromHex($store->theme()->brand_hex);
+    $rgb = fn (int $shade): string => 'rgb('.str_replace(' ', ',', $palette[$shade]).')';
+
+    $brand = $rgb(600);
+    $brandDark = $rgb(800);
+    $brandDeep = $rgb(900);
+    $brandTint = $rgb(50);
+    $brandEdge = $rgb(200);
 
     $logoSrc = null;
     if ($general->logo && Storage::disk('public')->exists($general->logo)) {
@@ -47,31 +66,57 @@
 <meta charset="utf-8">
 <title>{{ __('invoice.title') }} {{ $order->order_number }}</title>
 <style>
-    body { font-family: '{{ \App\Services\PdfService::FONT_FAMILY }}', sans-serif; font-size: 9.5pt; color: #1f2937; }
+    body { font-family: '{{ \App\Services\PdfService::FONT_FAMILY }}', sans-serif; font-size: 9.5pt; color: #263043; }
     table { width: 100%; border-collapse: collapse; }
     td, th { vertical-align: top; }
-    .muted { color: #6b7280; }
+    .muted { color: #6b7385; }
     .right { text-align: right; }
-    .brand { font-size: 17pt; font-weight: bold; color: #111827; }
-    .doc-title { font-size: 17pt; font-weight: bold; color: #111827; }
-    .label { font-size: 7.5pt; letter-spacing: .5pt; color: #6b7280; font-weight: bold; text-transform: uppercase; }
-    .panel td { background: #f9fafb; border: 0.6pt solid #e5e7eb; padding: 7pt 9pt; }
-    .items th { text-align: left; font-size: 7.5pt; letter-spacing: .5pt; color: #6b7280;
-                text-transform: uppercase; font-weight: bold; border-bottom: 1pt solid #cbd1d9; padding: 5pt 4pt; }
-    .items td { padding: 6pt 4pt; border-bottom: 0.5pt solid #eef0f3; }
-    .totals td { padding: 3pt 4pt; }
-    .grand td { border-top: 1pt solid #cbd1d9; padding-top: 6pt; font-size: 12pt; font-weight: bold; color: #111827; }
-    .foot { border-top: 0.6pt solid #e5e7eb; padding-top: 7pt; font-size: 8pt; color: #6b7280; }
+
+    /* Masthead: a solid brand band, the one piece of colour that carries the document. */
+    /* The accent rule is a border on the band, not an empty row: mPDF will not collapse an
+       empty table cell and renders it as a tall block of colour. */
+    .masthead td { background: {{ $brand }}; color: #ffffff; padding: 16pt 16pt 14pt;
+                   border-bottom: 3pt solid {{ $brandDeep }}; }
+    /* Single-class selectors throughout: mPDF applies those reliably, and silently drops
+       class-descendant ones like ".masthead .brand" — which is how the masthead ended up
+       rendering at body size. */
+    .brand { font-size: 19pt; font-weight: bold; color: #ffffff; }
+    .tagline { color: #ffffff; font-size: 8.5pt; }
+    .doc-title { font-size: 19pt; font-weight: bold; color: #ffffff; letter-spacing: 1.5pt; }
+    .doc-meta { color: #ffffff; font-size: 8.5pt; }
+
+    .label { font-size: 7pt; letter-spacing: .8pt; color: {{ $brandDark }}; font-weight: bold; text-transform: uppercase; }
+    .panel td { background: {{ $brandTint }}; border: 0.6pt solid {{ $brandEdge }}; padding: 8pt 10pt; }
+    td.spacer { background: #ffffff; border: 0; }
+
+    /* Line items: a brand header row, then hairlines. Zebra striping is handled per row
+       because mPDF has no :nth-child. */
+    .items th { background: {{ $brandDark }}; color: #ffffff; text-align: left; font-size: 7.5pt;
+                letter-spacing: .6pt; text-transform: uppercase; font-weight: bold; padding: 6pt 7pt; }
+    .items td { padding: 7pt; border-bottom: 0.5pt solid #e6e9f0; }
+    tr.alt td { background: #fafbfd; }
+
+    .totals td { padding: 3.5pt 7pt; }
+    tr.sep td { border-top: 0.6pt solid #e6e9f0; }
+    .grand td { background: {{ $brand }}; color: #ffffff; font-size: 12pt; font-weight: bold; padding: 8pt 7pt; }
+
+    .stamp { font-weight: bold; font-size: 9pt; padding: 5pt 12pt; }
+    .thanks td { background: {{ $brandTint }}; border-left: 3pt solid {{ $brand }}; padding: 9pt 11pt; }
+    .foot { border-top: 0.6pt solid #e6e9f0; padding-top: 8pt; font-size: 7.5pt; color: #8a90a0; }
+
     .no-print { display: none; }
     @media screen {
-        body { background: #f3f4f6; margin: 0; padding: 24px 12px; font-size: 13px; }
-        .sheet { max-width: 780px; margin: 0 auto; background: #fff; padding: 36px 38px; border-radius: 6px; }
-        .no-print { display: block; max-width: 780px; margin: 0 auto 14px; text-align: right; }
+        body { background: #eef1f6; margin: 0; padding: 26px 12px; font-size: 13px; }
+        .sheet { max-width: 800px; margin: 0 auto; background: #fff; padding: 0 0 30px;
+                 border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(20,28,45,.12); }
+        .gutter { padding-left: 34px; padding-right: 34px; }
+        .no-print { display: block; max-width: 800px; margin: 0 auto 14px; text-align: right; }
     }
     @media print {
         .no-print { display: none; }
         body { background: #fff; padding: 0; }
-        .sheet { max-width: none; padding: 0; }
+        .sheet { max-width: none; padding: 0; box-shadow: none; }
+        .gutter { padding-left: 0; padding-right: 0; }
     }
 </style>
 </head>
@@ -80,11 +125,11 @@
 @if ($print)
 <div class="no-print">
     <button type="button" onclick="window.print()"
-            style="font:inherit;font-weight:700;cursor:pointer;background:#111827;color:#fff;border:0;border-radius:4px;padding:9px 18px">
+            style="font:inherit;font-weight:700;cursor:pointer;background:{{ $brand }};color:#fff;border:0;border-radius:6px;padding:10px 20px">
         {{ __('invoice.print') }}
     </button>
     <a href="{{ route('order.invoice', $order) }}"
-       style="font:inherit;font-weight:700;margin-left:8px;display:inline-block;background:#fff;color:#111827;border:1px solid #d1d5db;border-radius:4px;padding:9px 18px;text-decoration:none">
+       style="font:inherit;font-weight:700;margin-left:8px;display:inline-block;background:#fff;color:{{ $brandDark }};border:1px solid {{ $brandEdge }};border-radius:6px;padding:10px 20px;text-decoration:none">
         {{ __('invoice.download_pdf') }}
     </a>
 </div>
@@ -93,34 +138,42 @@
 <div class="sheet">
 
 {{-- Masthead --}}
-<table>
+<table class="masthead">
 <tr>
-    <td width="58%">
+    <td width="56%">
         @if ($logoSrc)
-            <img src="{{ $logoSrc }}" alt="{{ $general->site_name }}" style="max-height:38pt">
+            <img src="{{ $logoSrc }}" alt="{{ $general->site_name }}" style="max-height:34pt">
         @else
             <div class="brand">{{ $general->site_name }}</div>
         @endif
-        <div class="muted">{{ $general->tagline }}</div>
-        <div class="muted" style="margin-top:5pt">
-            @if ($contact->email){{ $contact->email }}<br>@endif
-            @if ($contact->phone){{ $contact->phone }}<br>@endif
-            @if ($contact->address){{ $contact->address }}@endif
-        </div>
+        <div class="tagline">{{ $store->st($general, 'tagline') }}</div>
     </td>
-    <td width="42%" class="right">
+    <td width="44%" class="right">
         <div class="doc-title">{{ __('invoice.title') }}</div>
-        <div style="margin-top:3pt"><strong>{{ $order->order_number }}</strong></div>
-        <div class="muted">{{ __('invoice.issued') }}: {{ ($order->paid_at ?? $order->created_at)->format('d M Y, g:i a') }}</div>
-        {{-- A block, not an inline badge: mPDF shrinks the whole masthead to fit if a
-             nested table turns up in here, and the result is unreadable. --}}
-        <div style="margin-top:6pt;background:{{ $statusBg }};color:{{ $statusFg }};font-weight:bold;font-size:8pt;padding:4pt 7pt;text-align:right">{{ $statusLabel }}</div>
+        <div class="doc-meta" style="margin-top:4pt"><strong>{{ $order->order_number }}</strong></div>
+        <div class="doc-meta">{{ __('invoice.issued') }}: {{ ($order->paid_at ?? $order->created_at)->format('d M Y, g:i a') }}</div>
+    </td>
+</tr>
+</table>
+
+<div class="gutter">
+
+{{-- Status stamp, on its own row so mPDF never shrinks the masthead to fit it --}}
+<table style="margin-top:12pt">
+<tr>
+    <td width="70%" class="muted" style="font-size:8.5pt;padding-top:3pt">
+        @if ($contact->email){{ $contact->email }}@endif
+        @if ($contact->phone) &nbsp;·&nbsp; {{ $contact->phone }}@endif
+        @if ($store->st($contact, 'address'))<br>{{ $store->st($contact, 'address') }}@endif
+    </td>
+    <td width="30%" class="right">
+        <span class="stamp" style="background:{{ $statusBg }};color:{{ $statusFg }}">{{ $statusLabel }}</span>
     </td>
 </tr>
 </table>
 
 {{-- Who and how --}}
-<table class="panel" style="margin-top:14pt">
+<table class="panel" style="margin-top:13pt">
 <tr>
     <td width="49%">
         <div class="label">{{ __('invoice.billed_to') }}</div>
@@ -131,10 +184,10 @@
             <span class="muted">{{ __('invoice.delivery_email') }}: {{ $order->delivery_email }}</span>
         @endif
     </td>
-    <td width="2%" style="background:#fff;border:0"></td>
+    <td width="2%" class="spacer"></td>
     <td width="49%">
         <div class="label">{{ __('invoice.payment') }}</div>
-        <strong>{{ $order->paymentMethod?->name ?? __('invoice.not_recorded') }}</strong><br>
+        <strong>{{ $order->paymentMethod?->t('name') ?? __('invoice.not_recorded') }}</strong><br>
         @if ($order->manual_transaction_id)
             <span class="muted">{{ __('invoice.transaction_id') }}: {{ $order->manual_transaction_id }}</span><br>
         @endif
@@ -147,7 +200,7 @@
 </table>
 
 {{-- Lines --}}
-<table class="items" style="margin-top:16pt">
+<table class="items" style="margin-top:15pt">
 <thead>
 <tr>
     <th width="52%">{{ __('invoice.item') }}</th>
@@ -157,12 +210,12 @@
 </tr>
 </thead>
 <tbody>
-@foreach ($order->items as $item)
+@foreach ($order->items as $index => $item)
     @php
         $snapshot = $item->product_snapshot ?? [];
         $name = $snapshot['name'] ?? $item->product?->name ?? __('invoice.deleted_product');
     @endphp
-    <tr>
+    <tr @class(['alt' => $index % 2 === 1])>
         <td>
             <strong>{{ $name }}</strong>
             @if ($platform = $item->platformName())
@@ -178,65 +231,76 @@
             @endforeach
         </td>
         <td class="right">{{ $item->quantity }}</td>
-        <td class="right">{{ Money::format($item->unit_price) }}</td>
-        <td class="right">{{ Money::format($item->line_total) }}</td>
+        <td class="right">{{ Money::formatBase($item->unit_price) }}</td>
+        <td class="right"><strong>{{ Money::formatBase($item->line_total) }}</strong></td>
     </tr>
 @endforeach
 </tbody>
 </table>
 
 {{-- Money --}}
-<table style="margin-top:12pt">
+<table style="margin-top:13pt">
 <tr>
-<td width="54%">
+<td width="52%" style="padding-right:12pt">
     @if ($order->customer_note)
         <div class="label">{{ __('invoice.customer_note') }}</div>
-        <div>{{ $order->customer_note }}</div>
+        <div style="margin-top:2pt">{{ $order->customer_note }}</div>
     @endif
 </td>
-<td width="46%">
+<td width="48%">
     <table class="totals">
         <tr>
             <td class="muted">{{ __('invoice.subtotal') }}</td>
-            <td class="right">{{ Money::format($order->subtotal) }}</td>
+            <td class="right">{{ Money::formatBase($order->subtotal) }}</td>
         </tr>
         @if ($order->discount > 0)
             <tr>
                 <td class="muted">{{ __('invoice.discount') }}@if ($order->coupon) ({{ $order->coupon->code }})@endif</td>
-                <td class="right">− {{ Money::format($order->discount) }}</td>
+                <td class="right">− {{ Money::formatBase($order->discount) }}</td>
             </tr>
         @endif
         @if ($order->fee > 0)
             <tr>
                 <td class="muted">{{ __('invoice.fee') }}</td>
-                <td class="right">{{ Money::format($order->fee) }}</td>
-            </tr>
-        @endif
-        <tr class="grand">
-            <td>{{ __('invoice.total') }}</td>
-            <td class="right">{{ Money::format($order->total) }}</td>
-        </tr>
-        @if ($order->refunded_amount > 0)
-            <tr>
-                <td class="muted">{{ __('invoice.refunded') }}</td>
-                <td class="right">− {{ Money::format($order->refunded_amount) }}</td>
-            </tr>
-            <tr>
-                <td><strong>{{ __('invoice.net_paid') }}</strong></td>
-                <td class="right"><strong>{{ Money::format($order->total - $order->refunded_amount) }}</strong></td>
+                <td class="right">{{ Money::formatBase($order->fee) }}</td>
             </tr>
         @endif
     </table>
+    <table class="totals grand">
+        <tr>
+            <td>{{ __('invoice.total') }}</td>
+            <td class="right">{{ Money::formatBase($order->total) }}</td>
+        </tr>
+    </table>
+    @if ($order->refunded_amount > 0)
+        <table class="totals">
+            <tr>
+                <td class="muted">{{ __('invoice.refunded') }}</td>
+                <td class="right">− {{ Money::formatBase($order->refunded_amount) }}</td>
+            </tr>
+            <tr class="sep">
+                <td><strong>{{ __('invoice.net_paid') }}</strong></td>
+                <td class="right"><strong>{{ Money::formatBase($order->total - $order->refunded_amount) }}</strong></td>
+            </tr>
+        </table>
+    @endif
 </td>
 </tr>
 </table>
 
-<div class="foot" style="margin-top:22pt">
-    {{ __('invoice.footer_note', ['site' => $general->site_name]) }}<br>
+<table class="thanks" style="margin-top:15pt">
+<tr><td>
+    <strong style="color:{{ $brandDark }}">{{ __('invoice.thanks_title', ['site' => $general->site_name]) }}</strong><br>
+    <span class="muted">{{ __('invoice.footer_note', ['site' => $general->site_name]) }}</span>
+</td></tr>
+</table>
+
+<div class="foot" style="margin-top:16pt">
     @if ($contact->email){{ __('invoice.footer_support', ['email' => $contact->email]) }}<br>@endif
-    <span style="color:#9ca3af">{{ $general->copyright_text }}</span>
+    {{ $store->st($general, 'copyright_text') }}
 </div>
 
+</div>{{-- /gutter --}}
 </div>
 </body>
 </html>

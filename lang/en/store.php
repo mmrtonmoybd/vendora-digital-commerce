@@ -57,4 +57,5 @@ return [
     'close' => 'Close',
     'increase' => 'Increase',
     'decrease' => 'Decrease',
+    'currency' => 'Currency',
 ];

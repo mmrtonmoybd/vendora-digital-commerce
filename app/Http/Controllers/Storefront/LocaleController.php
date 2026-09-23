@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Storefront;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\SetCurrency;
 use App\Http\Middleware\SetLocale;
+use App\Support\Currencies;
 use App\Support\Locales;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,6 +27,22 @@ use Illuminate\Support\Facades\Auth;
  */
 final class LocaleController extends Controller
 {
+    /** Switch the display currency. Same reasoning as the language switch above. */
+    public function currency(Request $request, string $currency): RedirectResponse
+    {
+        if (Currencies::isEnabled($currency)) {
+            $request->session()->put(SetCurrency::SESSION_KEY, $currency);
+
+            $user = Auth::guard('web')->user();
+
+            if ($user !== null) {
+                $user->forceFill(['currency' => $currency])->saveQuietly();
+            }
+        }
+
+        return redirect()->to($this->backTo($request));
+    }
+
     public function __invoke(Request $request, string $locale): RedirectResponse
     {
         if (Locales::isEnabled($locale)) {

@@ -101,6 +101,10 @@ Route::get('/language/{locale}', LocaleController::class)
     ->where('locale', '[a-z]{2}')
     ->name('locale.switch');
 
+Route::get('/currency/{currency}', [LocaleController::class, 'currency'])
+    ->where('currency', '[A-Z]{3}')
+    ->name('currency.switch');
+
 /*
  | Staff invoice copies. Separate from the customer routes because the authorisation
  | question is different — see the controller.

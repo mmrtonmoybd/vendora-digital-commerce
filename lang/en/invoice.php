@@ -32,4 +32,5 @@ return [
     'net_paid' => 'Net paid',
     'footer_note' => 'This invoice was issued electronically by :site and is valid without a signature.',
     'footer_support' => 'Questions about this invoice? Write to :email.',
+    'thanks_title' => 'Thank you for your order.',
 ];

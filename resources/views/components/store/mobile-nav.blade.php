@@ -23,6 +23,7 @@
     <nav class="p-2 flex-1 overflow-y-auto">@foreach ($mobileMenu as $item)<a href="{{ $item->resolvedUrl() }}"@if ($item->open_in_new_tab) target="_blank" rel="noopener"@endif class="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-brand-50 font-medium">{{ $item->t('label') }}<svg class="w-4 h-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
 @endforeach
       <x-store.language-switcher variant="panel" />
+      <x-store.currency-switcher variant="panel" />
 </nav>
     <div class="p-4 border-t border-stone-100 grid grid-cols-2 gap-2">
       <a href="{{ route('cart') }}" class="h-11 flex items-center justify-center gap-1 rounded-xl bg-amber-300 font-semibold">{{ __('store.my_cart') }} (<span data-cart-count>0</span>)</a>

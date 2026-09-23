@@ -19,7 +19,6 @@ declare(strict_types=1);
  * Usage:  php scripts/check-classes.php [--verbose]
  * Exit:   0 clean, 1 if a class was invented.
  */
-
 $root = dirname(__DIR__);
 $verbose = in_array('--verbose', $argv, true);
 
@@ -157,7 +156,7 @@ if ($offenders === []) {
     exit(0);
 }
 
-echo "Template parity: ".count($offenders)." class(es) appear in Blade but not in design/vendora.\n\n";
+echo 'Template parity: '.count($offenders)." class(es) appear in Blade but not in design/vendora.\n\n";
 
 foreach ($offenders as $class => $files) {
     $where = $verbose ? implode(', ', array_unique($files)) : array_unique($files)[0] ?? '';

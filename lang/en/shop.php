@@ -90,4 +90,5 @@ return [
     'each' => 'each',
     'balance' => 'Balance:',
     'sign_in_to_use_wallet' => 'Sign in to use wallet',
+    'settlement_note' => 'Prices are shown in :display for convenience. You will be charged :base.',
 ];

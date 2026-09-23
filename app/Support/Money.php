@@ -22,15 +22,58 @@ final class Money
      */
     public static function format(int $paisa, ?string $symbol = null, bool $forceDecimals = false): string
     {
-        $symbol ??= self::symbol();
-        $negative = $paisa < 0;
-        $abs = abs($paisa);
-        $taka = intdiv($abs, 100);
-        $fraction = $abs % 100;
+        $code = Currencies::current();
+
+        // A caller that names its own symbol is asking for the base currency explicitly —
+        // the invoice does this, because an invoice must state what was actually charged.
+        if ($symbol !== null || $code === Currencies::BASE) {
+            return self::render($paisa, $symbol ?? self::symbol(), 2, $forceDecimals);
+        }
+
+        // A foreign currency always shows its minor units. "$ 2,990" reads like a typo;
+        // the template's decimal-free style is a taka convention, not a money one.
+        return self::render(
+            Currencies::convert($paisa, $code),
+            Currencies::symbol($code),
+            Currencies::decimals($code),
+            forceDecimals: true,
+        );
+    }
+
+    /**
+     * Always the base currency, whatever the visitor is browsing in.
+     *
+     * Used wherever the number has to be the one that moved: the invoice, the amount the
+     * gateway is asked for, the ledger.
+     */
+    public static function formatBase(int $paisa, bool $forceDecimals = false): string
+    {
+        return self::render($paisa, self::symbol(), 2, $forceDecimals);
+    }
+
+    /**
+     * Render an amount already expressed in its own smallest unit.
+     *
+     * The fraction is only shown when there is one, because the template prints whole-taka
+     * prices without decimals ("৳ 2,990"). A currency with no minor unit in circulation
+     * (decimals 0) never shows one.
+     */
+    private static function render(int $amount, string $symbol, int $decimals, bool $forceDecimals): string
+    {
+        $negative = $amount < 0;
+        $abs = abs($amount);
+        $divisor = 10 ** max($decimals, 0);
+
+        if ($divisor === 1) {
+            return ($negative ? '-' : '').$symbol.' '.number_format($abs);
+        }
+
+        $whole = intdiv($abs, $divisor);
+        $fraction = $abs % $divisor;
 
         $number = $forceDecimals || $fraction !== 0
-            ? number_format($taka).'.'.str_pad((string) $fraction, 2, '0', STR_PAD_LEFT)
-            : number_format($taka);
+            ? number_format($whole).'.'.str_pad((string) $fraction, $decimals, '0', STR_PAD_LEFT)
+            : number_format($whole);
 
         return ($negative ? '-' : '').$symbol.' '.$number;
     }

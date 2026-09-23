@@ -105,6 +105,9 @@ final class CachePublicStorefront
             return false;
         }
 
+        // Currency is never auto-detected, so a cookie-less request is always answered in
+        // the default currency and is safe to cache under the no-cookie variant.
+
         // A page carrying a flash message was rendered for one person's last action.
         if ($request->hasSession()) {
             $flashed = array_merge(

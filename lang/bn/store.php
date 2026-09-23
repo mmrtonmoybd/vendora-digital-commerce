@@ -50,4 +50,5 @@ return [
     'close' => 'বন্ধ',
     'increase' => 'বাড়ান',
     'decrease' => 'কমান',
+    'currency' => 'মুদ্রা',
 ];
