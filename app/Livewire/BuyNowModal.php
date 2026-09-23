@@ -14,6 +14,7 @@ use App\Services\CouponService;
 use App\Services\TrackingService;
 use App\Settings\FulfillmentSettings;
 use App\Support\Money;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -78,7 +79,7 @@ final class BuyNowModal extends Component
         $this->paymentKey = $this->defaultPaymentKey($product);
         $this->show = true;
 
-        $this->dispatch('track', event: 'view_content', payload: app(TrackingService::class)->product($product));
+        $this->dispatch('track', name: 'view_content', payload: app(TrackingService::class)->product($product));
     }
 
     /**
@@ -189,12 +190,12 @@ final class BuyNowModal extends Component
 
         $this->dispatch('cart-updated');
         $this->dispatch('toast', message: $product->name.' added to cart');
-        $this->dispatch('track', event: 'add_to_cart', payload: app(TrackingService::class)->product($product, $this->qty));
+        $this->dispatch('track', name: 'add_to_cart', payload: app(TrackingService::class)->product($product, $this->qty));
 
         $this->close();
     }
 
-    public function checkout(CheckoutService $checkout)
+    public function checkout(CheckoutService $checkout): mixed
     {
         $product = $this->product();
         $method = $this->method();
@@ -287,7 +288,7 @@ final class BuyNowModal extends Component
         return PaymentMethod::forOrders()->get();
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.buy-now-modal', [
             'product' => $this->product(),

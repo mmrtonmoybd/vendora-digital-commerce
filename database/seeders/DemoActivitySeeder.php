@@ -91,7 +91,13 @@ final class DemoActivitySeeder extends Seeder
         ))->values();
     }
 
-    private function seedOrders($customers, $products, $methods, $sources): void
+    /**
+     * @param  Collection<int, User>  $customers
+     * @param  Collection<int, Product>  $products
+     * @param  Collection<int, PaymentMethod>  $methods
+     * @param  Collection<int, OrderSource>  $sources
+     */
+    private function seedOrders(Collection $customers, Collection $products, Collection $methods, Collection $sources): void
     {
         $coupon = Coupon::first();
         $statuses = [
@@ -177,7 +183,11 @@ final class DemoActivitySeeder extends Seeder
         }
     }
 
-    private function seedDeposits($customers, $methods): void
+    /**
+     * @param  Collection<int, User>  $customers
+     * @param  Collection<int, PaymentMethod>  $methods
+     */
+    private function seedDeposits(Collection $customers, Collection $methods): void
     {
         $manual = $methods->filter(fn (PaymentMethod $m): bool => $m->isManual());
 
@@ -212,7 +222,8 @@ final class DemoActivitySeeder extends Seeder
         }
     }
 
-    private function seedTickets($customers): void
+    /** @param  Collection<int, User>  $customers */
+    private function seedTickets(Collection $customers): void
     {
         $tickets = app(TicketService::class);
 

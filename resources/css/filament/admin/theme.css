@@ -1,5 +1,5 @@
-@import '../../../../vendor/filament/filament/resources/css/theme.css';
-@import '../../../../vendor/northwestern-sysdev/northwestern-filament-theme/dist/theme.css';
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+@import "../../../../vendor/northwestern-sysdev/northwestern-filament-theme/dist/theme.css";
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
@@ -9,8 +9,8 @@
 @source '../../../../vendor/bezhansalleh/filament-shield/resources/views/**/*.blade.php';
 @source '../../../../vendor/caresome/filament-auth-designer/resources/views/**/*.blade.php';
 
-@import './base.css';
-@import './components/index.css';
+@import "./base.css";
+@import "./components/index.css";
 
 :root {
     --primary-50: #fef2f2;
@@ -218,7 +218,7 @@
     height: 220px;
     border-radius: 999px;
     background: radial-gradient(circle, rgb(220 38 38 / 12%), rgb(220 38 38 / 0%));
-    content: '';
+    content: "";
     pointer-events: none;
 }
 
@@ -229,7 +229,7 @@
     height: 240px;
     border-radius: 999px;
     background: radial-gradient(circle, rgb(251 191 36 / 14%), rgb(251 191 36 / 0%));
-    content: '';
+    content: "";
     pointer-events: none;
 }
 

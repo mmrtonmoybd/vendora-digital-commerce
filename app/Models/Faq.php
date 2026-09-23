@@ -11,7 +11,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property string $question
+ * @property string $answer
+ * @property FaqGroup $group
+ * @property int $sort_order
+ * @property bool $is_active
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class Faq extends Model
 {
     use HasContentTranslations;
@@ -26,12 +41,15 @@ final class Faq extends Model
      *
      * Read through t(), never through the attribute directly — see the trait.
      *
-     * @var array<int, string>
+     * @return array<int, string>
      */
-    protected array $translatable = [
-        'question',
-        'answer',
-    ];
+    public function translatableFields(): array
+    {
+        return [
+            'question',
+            'answer',
+        ];
+    }
 
     protected function casts(): array
     {

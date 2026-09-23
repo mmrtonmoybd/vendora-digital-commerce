@@ -16,7 +16,60 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property string $order_number
+ * @property ?int $user_id
+ * @property ?string $guest_email
+ * @property string $delivery_email
+ * @property int $subtotal
+ * @property int $discount
+ * @property int $fee
+ * @property int $total
+ * @property int $refunded_amount
+ * @property ?int $coupon_id
+ * @property ?int $payment_method_id
+ * @property OrderPaymentStatus $payment_status
+ * @property OrderStatus $status
+ * @property ?string $manual_sender_number
+ * @property ?string $manual_transaction_id
+ * @property ?string $manual_screenshot
+ * @property ?string $customer_note
+ * @property ?string $delivery_note
+ * @property ?string $refund_reason
+ * @property ?string $customer_phone
+ * @property ?Carbon $paid_at
+ * @property ?Carbon $completed_at
+ * @property ?Carbon $cancelled_at
+ * @property ?int $processed_by
+ * @property ?int $assigned_admin_id
+ * @property ?Carbon $assigned_at
+ * @property bool $sla_alerted
+ * @property ?string $ip
+ * @property ?string $user_agent
+ * @property ?int $order_source_id
+ * @property ?string $utm_source
+ * @property ?string $utm_medium
+ * @property ?string $utm_campaign
+ * @property ?string $utm_term
+ * @property ?string $utm_content
+ * @property ?string $fbclid
+ * @property ?string $ttclid
+ * @property ?string $gclid
+ * @property ?string $fbp
+ * @property ?string $fbc
+ * @property ?string $referrer
+ * @property ?string $landing_url
+ * @property ?int $first_touch_source_id
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */
@@ -47,7 +100,7 @@ final class Order extends Model
         return 'order_number';
     }
 
-    /** @return BelongsTo<User, self> */
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -64,43 +117,53 @@ final class Order extends Model
      *
      * Ordered by id rather than created_at: several transitions can land in the same
      * second, and a timeline that reorders itself is worse than no timeline.
+     *
+     * @return HasMany<OrderStatusHistory, $this>
      */
     public function histories(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class)->orderBy('id');
     }
 
-    /** @return BelongsTo<Coupon, self> */
+    /** @return BelongsTo<Coupon, $this> */
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class);
     }
 
-    /** @return BelongsTo<PaymentMethod, self> */
+    /** @return BelongsTo<PaymentMethod, $this> */
     public function paymentMethod(): BelongsTo
     {
         return $this->belongsTo(PaymentMethod::class);
     }
 
-    /** @return BelongsTo<Admin, self> */
+    /** @return BelongsTo<Admin, $this> */
     public function processedBy(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'processed_by');
     }
 
-    /** @return BelongsTo<Admin, self> */
+    /** @return BelongsTo<Admin, $this> */
     public function assignedAdmin(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'assigned_admin_id');
     }
 
-    /** Which platform sent this customer — the last touch before they bought. */
+    /**
+     * Which platform sent this customer — the last touch before they bought.
+     *
+     * @return BelongsTo<OrderSource, $this>
+     */
     public function orderSource(): BelongsTo
     {
         return $this->belongsTo(OrderSource::class);
     }
 
-    /** Where they first arrived from, kept separately so both questions stay answerable. */
+    /**
+     * Where they first arrived from, kept separately so both questions stay answerable.
+     *
+     * @return BelongsTo<OrderSource, $this>
+     */
     public function firstTouchSource(): BelongsTo
     {
         return $this->belongsTo(OrderSource::class, 'first_touch_source_id');
@@ -118,7 +181,7 @@ final class Order extends Model
         return $this->hasMany(Ticket::class);
     }
 
-    /** @return BelongsTo<ReferralCommission, self> */
+    /** @return HasOne<ReferralCommission, $this> */
     public function commission(): HasOne
     {
         return $this->hasOne(ReferralCommission::class);

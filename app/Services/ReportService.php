@@ -72,7 +72,7 @@ final class ReportService
     /**
      * Revenue and orders bucketed by day or month.
      *
-     * @return Collection<int, object{bucket: string, revenue: int, orders: int}>
+     * @return Collection<int, \stdClass>
      */
     public function salesOverTime(Carbon $from, Carbon $to, bool $monthly = false): Collection
     {
@@ -98,7 +98,7 @@ final class ReportService
      * Reads the order items rather than the products table, so a product that has since
      * been renamed or deleted still shows what it sold.
      *
-     * @return Collection<int, object>
+     * @return Collection<int, \stdClass>
      */
     public function productPerformance(Carbon $from, Carbon $to, int $limit = 50): Collection
     {
@@ -122,7 +122,7 @@ final class ReportService
             ]));
     }
 
-    /** @return Collection<int, object> */
+    /** @return Collection<int, \stdClass> */
     public function categoryPerformance(Carbon $from, Carbon $to): Collection
     {
         return $this->remember('category-performance', $from, $to, fn (): Collection => DB::table('order_items')
@@ -140,7 +140,11 @@ final class ReportService
             ]));
     }
 
-    /** Money taken per payment method, and what share of it each one carries. */
+    /**
+     * Money taken per payment method, and what share of it each one carries.
+     *
+     * @return Collection<int, \stdClass>
+     */
     public function paymentMethodMix(Carbon $from, Carbon $to): Collection
     {
         return $this->remember('payment-mix', $from, $to, fn (): Collection => DB::table('orders')
@@ -227,7 +231,8 @@ final class ReportService
                     ->orderBy('minutes')
                     ->offset($offset)
                     ->limit(1)
-                    ->value(DB::raw('TIMESTAMPDIFF(MINUTE, orders.paid_at, order_items.granted_at) as minutes')) ?? 0);
+                    ->selectRaw('TIMESTAMPDIFF(MINUTE, orders.paid_at, order_items.granted_at) as minutes')
+                    ->value('minutes') ?? 0);
             }
 
             $breaches = (int) (clone $base)
@@ -253,7 +258,11 @@ final class ReportService
         });
     }
 
-    /** Grants per staff member, so workload is visible rather than assumed. */
+    /**
+     * Grants per staff member, so workload is visible rather than assumed.
+     *
+     * @return Collection<int, \stdClass>
+     */
     public function fulfillmentByAdmin(Carbon $from, Carbon $to): Collection
     {
         return $this->remember('fulfilment-by-admin', $from, $to, fn (): Collection => DB::table('order_items')
@@ -270,7 +279,11 @@ final class ReportService
             ]));
     }
 
-    /** Which platform's traffic turned into money. */
+    /**
+     * Which platform's traffic turned into money.
+     *
+     * @return Collection<int, \stdClass>
+     */
     public function sourcePerformance(Carbon $from, Carbon $to): Collection
     {
         return $this->remember('source-performance', $from, $to, fn (): Collection => DB::table('orders')
@@ -321,7 +334,7 @@ final class ReportService
         });
     }
 
-    /** @return Collection<int, object> */
+    /** @return Collection<int, \stdClass> */
     public function topCustomers(Carbon $from, Carbon $to, int $limit = 20): Collection
     {
         return $this->remember("top-customers:{$limit}", $from, $to, fn (): Collection => DB::table('orders')
@@ -372,7 +385,7 @@ final class ReportService
         });
     }
 
-    /** @return array<string, int> */
+    /** @return Collection<int, \stdClass> */
     public function couponUsage(Carbon $from, Carbon $to): Collection
     {
         return $this->remember('coupons', $from, $to, fn (): Collection => DB::table('coupon_usages')
@@ -390,6 +403,14 @@ final class ReportService
     }
 
     /** Cache per report per period. The key includes the dates, so a new range is a new key. */
+    /**
+     * Cache one report for one period.
+     *
+     * @template TValue
+     *
+     * @param  \Closure(): TValue  $resolver
+     * @return TValue
+     */
     private function remember(string $key, Carbon $from, Carbon $to, \Closure $resolver): mixed
     {
         $signature = sprintf('reports:%s:%s:%s', $key, $from->timestamp, $to->timestamp);

@@ -43,7 +43,11 @@ final class CategoryController extends Controller
         ]);
     }
 
-    /** The chip row: sub-categories if there are any, otherwise the siblings. */
+    /**
+     * The chip row: sub-categories if there are any, otherwise the siblings.
+     *
+     * @return Collection<int, Category>
+     */
     private function chips(Category $category): Collection
     {
         $children = $category->children()->where('is_active', true)->get();

@@ -14,8 +14,52 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property int $category_id
+ * @property ?int $platform_id
+ * @property ?string $access_role
+ * @property int $fulfillment_sla_minutes
+ * @property ?int $warranty_days
+ * @property ?string $customer_instructions
+ * @property string $name
+ * @property string $slug
+ * @property ?string $short
+ * @property ?string $features
+ * @property ?string $description
+ * @property ?string $delivery_info
+ * @property ?string $image
+ * @property ?array $gallery
+ * @property string $icon_key
+ * @property string $gradient
+ * @property int $price
+ * @property ?int $regular_price
+ * @property int $stock
+ * @property int $min_qty
+ * @property int $max_qty
+ * @property ?string $badge_text
+ * @property string $badge_style
+ * @property bool $is_featured
+ * @property bool $is_active
+ * @property bool $requires_delivery_email
+ * @property int $sort_order
+ * @property int $total_sold
+ * @property int $rating
+ * @property int $reviews_count
+ * @property int $views
+ * @property ?string $seo_title
+ * @property ?string $seo_description
+ * @property ?Carbon $deleted_at
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class Product extends Model
 {
     use HasContentTranslations;
@@ -30,19 +74,22 @@ final class Product extends Model
      *
      * Read through t(), never through the attribute directly — see the trait.
      *
-     * @var array<int, string>
+     * @return array<int, string>
      */
-    protected array $translatable = [
-        'name',
-        'short',
-        'features',
-        'description',
-        'delivery_info',
-        'customer_instructions',
-        'badge_text',
-        'seo_title',
-        'seo_description',
-    ];
+    public function translatableFields(): array
+    {
+        return [
+            'name',
+            'short',
+            'features',
+            'description',
+            'delivery_info',
+            'customer_instructions',
+            'badge_text',
+            'seo_title',
+            'seo_description',
+        ];
+    }
 
     protected function casts(): array
     {
@@ -77,13 +124,13 @@ final class Product extends Model
         return 'slug';
     }
 
-    /** @return BelongsTo<Category, self> */
+    /** @return BelongsTo<Category, $this> */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    /** @return BelongsTo<Platform, self> */
+    /** @return BelongsTo<Platform, $this> */
     public function platform(): BelongsTo
     {
         return $this->belongsTo(Platform::class);

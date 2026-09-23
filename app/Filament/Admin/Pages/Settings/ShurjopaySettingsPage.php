@@ -104,7 +104,7 @@ final class ShurjopaySettingsPage extends BaseSettingsPage
                             foreach (app(ShurjopayService::class)->callbackUrls() as $label => $url) {
                                 $rows .= sprintf(
                                     '<div class="flex flex-col gap-0.5 py-1"><span class="text-xs font-medium text-gray-500">%s</span><code class="text-sm">%s</code></div>',
-                                    e(str($label)->headline()),
+                                    e(str($label)->headline()->toString()),
                                     e($url),
                                 );
                             }

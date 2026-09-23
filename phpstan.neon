@@ -10,6 +10,11 @@ parameters:
         - database
         - routes
 
+    # Correcting third-party PHPDoc, which is what stubs are for — see the file.
+    stubFiles:
+        - phpstan/stubs/filament-widgets.stub
+        - phpstan/stubs/filament-pages.stub
+
     excludePaths:
         - database/migrations/*
         - database/settings/*

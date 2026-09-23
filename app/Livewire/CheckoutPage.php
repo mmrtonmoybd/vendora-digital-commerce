@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Enums\PaymentMethodType;
 use App\Exceptions\DomainException;
+use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\PaymentMethod;
 use App\Services\CartService;
@@ -15,6 +16,7 @@ use App\Services\OrderService;
 use App\Services\TrackingService;
 use App\Settings\FulfillmentSettings;
 use App\Support\Money;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -47,7 +49,8 @@ final class CheckoutPage extends Component
 
     public string $trx = '';
 
-    public $screenshot = null;
+    /** The uploaded proof. A TemporaryUploadedFile once Livewire has taken it, null before. */
+    public mixed $screenshot = null;
 
     public string $error = '';
 
@@ -86,7 +89,7 @@ final class CheckoutPage extends Component
         $this->discount = $result->discount;
     }
 
-    public function place(CheckoutService $checkout, CartService $carts)
+    public function place(CheckoutService $checkout, CartService $carts): mixed
     {
         $cart = $carts->current()->load('items.product');
         $method = $this->method();
@@ -173,7 +176,7 @@ final class CheckoutPage extends Component
         return Money::format($paisa);
     }
 
-    public function render(CartService $carts)
+    public function render(CartService $carts): View
     {
         $cart = $carts->current()->load('items.product.category');
 
@@ -193,7 +196,7 @@ final class CheckoutPage extends Component
         ]);
     }
 
-    private function validateInput($cart, ?PaymentMethod $method): string
+    private function validateInput(Cart $cart, ?PaymentMethod $method): string
     {
         if ($cart->items->isEmpty()) {
             return 'Your cart is empty.';

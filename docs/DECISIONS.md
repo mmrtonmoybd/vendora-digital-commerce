@@ -6,8 +6,7 @@ Choices that were not obvious, and why they were made.
 
 **Problem.** LiteSpeed caches a whole rendered page and replays it to the next visitor.
 Livewire embeds a CSRF token and a component snapshot in that HTML. Cached naively, visitor
-B receives visitor A's CSRF token (every Livewire action and every form POST then fails with
-419) and visitor A's component state (a cart badge reading "3" shown to someone with an
+B receives visitor A's CSRF token (every Livewire action and every form POST then fails with 419) and visitor A's component state (a cart badge reading "3" shown to someone with an
 empty cart).
 
 **What was checked.** Two facts in the installed Livewire (4.4) decide the shape of the fix:
@@ -24,7 +23,7 @@ empty cart).
 - `GET /storefront/state` returns the CSRF token, cart count, sign-in state and wallet
   balance, and is itself `no-cache`.
 - `resources/js/hydrate.js` fetches it once after paint and writes the CSRF token into the
-  meta tag *and* every `input[name="_token"]`, fills `[data-cart-count]`, reveals whichever
+  meta tag _and_ every `input[name="_token"]`, fills `[data-cart-count]`, reveals whichever
   of `[data-auth-only]` / `[data-guest-only]` applies, and fills the name, email and balance.
 - The cart counter is no longer a Livewire component — it was the one piece of cached markup
   that carried state. It is a plain `<span data-cart-count>`.

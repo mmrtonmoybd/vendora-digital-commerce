@@ -12,8 +12,33 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property ?int $parent_id
+ * @property string $name
+ * @property string $slug
+ * @property ?string $short_description
+ * @property string $icon_key
+ * @property ?string $image
+ * @property string $gradient
+ * @property ?string $section_title
+ * @property int $sort_order
+ * @property bool $is_active
+ * @property bool $show_on_home
+ * @property bool $show_in_nav
+ * @property ?string $seo_title
+ * @property ?string $seo_description
+ * @property ?Carbon $deleted_at
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class Category extends Model
 {
     use HasContentTranslations;
@@ -28,15 +53,18 @@ final class Category extends Model
      *
      * Read through t(), never through the attribute directly — see the trait.
      *
-     * @var array<int, string>
+     * @return array<int, string>
      */
-    protected array $translatable = [
-        'name',
-        'short_description',
-        'section_title',
-        'seo_title',
-        'seo_description',
-    ];
+    public function translatableFields(): array
+    {
+        return [
+            'name',
+            'short_description',
+            'section_title',
+            'seo_title',
+            'seo_description',
+        ];
+    }
 
     protected function casts(): array
     {
@@ -60,7 +88,7 @@ final class Category extends Model
         return 'slug';
     }
 
-    /** @return BelongsTo<self, self> */
+    /** @return BelongsTo<self, $this> */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');

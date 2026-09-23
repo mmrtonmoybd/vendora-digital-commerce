@@ -7,7 +7,22 @@ namespace App\Models;
 use App\Models\Concerns\HasContentTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property string $label
+ * @property string $value
+ * @property ?string $icon_key
+ * @property int $sort_order
+ * @property bool $is_active
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class Stat extends Model
 {
     use HasContentTranslations;
@@ -19,12 +34,15 @@ final class Stat extends Model
      *
      * Read through t(), never through the attribute directly — see the trait.
      *
-     * @var array<int, string>
+     * @return array<int, string>
      */
-    protected array $translatable = [
-        'label',
-        'value',
-    ];
+    public function translatableFields(): array
+    {
+        return [
+            'label',
+            'value',
+        ];
+    }
 
     protected function casts(): array
     {

@@ -18,10 +18,43 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property string $name
+ * @property ?string $username
+ * @property string $email
+ * @property ?string $locale
+ * @property ?string $currency
+ * @property ?string $phone
+ * @property ?Carbon $email_verified_at
+ * @property ?string $password
+ * @property ?string $avatar_url
+ * @property int $balance
+ * @property string $referral_code
+ * @property ?int $referred_by_id
+ * @property ?int $signup_source_id
+ * @property UserStatus $status
+ * @property ?string $google_id
+ * @property ?string $two_factor_secret
+ * @property ?string $two_factor_recovery_codes
+ * @property ?Carbon $two_factor_confirmed_at
+ * @property bool $marketing_opt_in
+ * @property ?Carbon $last_login_at
+ * @property ?string $last_login_ip
+ * @property ?string $remember_token
+ * @property ?Carbon $deleted_at
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
@@ -84,13 +117,17 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar, Mus
         return Money::format($this->balance);
     }
 
-    /** Which platform's ad brought this customer to the shop. */
+    /**
+     * Which platform's ad brought this customer to the shop.
+     *
+     * @return BelongsTo<OrderSource, $this>
+     */
     public function signupSource(): BelongsTo
     {
         return $this->belongsTo(OrderSource::class, 'signup_source_id');
     }
 
-    /** @return BelongsTo<self, self> */
+    /** @return BelongsTo<self, $this> */
     public function referrer(): BelongsTo
     {
         return $this->belongsTo(self::class, 'referred_by_id');

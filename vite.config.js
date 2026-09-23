@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import laravel from 'laravel-vite-plugin'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+import tailwindcss from "@tailwindcss/vite";
 
 /**
  * One Tailwind v4 pipeline for the whole application: the storefront and the Filament
@@ -12,15 +12,15 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/css/storefront.css',
-                'resources/js/storefront.js',
-                'resources/css/filament/admin/theme.css',
+                "resources/css/storefront.css",
+                "resources/js/storefront.js",
+                "resources/css/filament/admin/theme.css",
             ],
             refresh: true,
         }),
         tailwindcss(),
     ],
     server: {
-        watch: { ignored: ['**/storage/framework/views/**'] },
+        watch: { ignored: ["**/storage/framework/views/**"] },
     },
-})
+});

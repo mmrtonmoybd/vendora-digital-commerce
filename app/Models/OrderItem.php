@@ -11,7 +11,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property int $order_id
+ * @property ?int $product_id
+ * @property array $product_snapshot
+ * @property int $unit_price
+ * @property int $quantity
+ * @property int $line_total
+ * @property ?array $field_values
+ * @property ?string $delivery_email
+ * @property AccessStatus $access_status
+ * @property ?Carbon $granted_at
+ * @property ?int $granted_by
+ * @property ?Carbon $confirmed_at
+ * @property ?string $access_reference
+ * @property ?string $admin_delivery_note
+ * @property ?Carbon $warranty_until
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class OrderItem extends Model
 {
     /** @use HasFactory<OrderItemFactory> */
@@ -34,19 +59,19 @@ final class OrderItem extends Model
         ];
     }
 
-    /** @return BelongsTo<Order, self> */
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
-    /** @return BelongsTo<Product, self> */
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
-    /** @return BelongsTo<Admin, self> */
+    /** @return BelongsTo<Admin, $this> */
     public function grantedBy(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'granted_by');

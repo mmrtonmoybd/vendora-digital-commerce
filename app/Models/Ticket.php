@@ -12,7 +12,27 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property string $ticket_number
+ * @property int $user_id
+ * @property ?int $order_id
+ * @property string $subject
+ * @property TicketPriority $priority
+ * @property TicketStatus $status
+ * @property ?int $assigned_admin_id
+ * @property ?Carbon $first_responded_at
+ * @property ?Carbon $last_reply_at
+ * @property ?Carbon $closed_at
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class Ticket extends Model
 {
     /** @use HasFactory<TicketFactory> */
@@ -36,19 +56,19 @@ final class Ticket extends Model
         return 'ticket_number';
     }
 
-    /** @return BelongsTo<User, self> */
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /** @return BelongsTo<Order, self> */
+    /** @return BelongsTo<Order, $this> */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
     }
 
-    /** @return BelongsTo<Admin, self> */
+    /** @return BelongsTo<Admin, $this> */
     public function assignedAdmin(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'assigned_admin_id');
@@ -60,7 +80,11 @@ final class Ticket extends Model
         return $this->hasMany(TicketReply::class)->oldest();
     }
 
-    /** What the customer is allowed to see: everything except internal staff notes. */
+    /**
+     * What the customer is allowed to see: everything except internal staff notes.
+     *
+     * @return HasMany<TicketReply, $this>
+     */
     public function publicReplies(): HasMany
     {
         return $this->replies()->where('is_internal_note', false);
@@ -69,7 +93,21 @@ final class Ticket extends Model
     /** @param Builder<self> $query */
     public function scopeNeedsAttention(Builder $query): void
     {
-        $query->whereIn('status', [TicketStatus::Open->value, TicketStatus::CustomerReply->value]);
+        $query->whereIn('status', self::needsAttentionStatuses());
+    }
+
+    /**
+     * Statuses that mean a customer is waiting on us.
+     *
+     * A named list as well as a scope: the admin table's tab filter is handed an untyped
+     * query builder that cannot reach the scope, and duplicating the definition there is
+     * how the two drift apart.
+     *
+     * @return array<int, string>
+     */
+    public static function needsAttentionStatuses(): array
+    {
+        return [TicketStatus::Open->value, TicketStatus::CustomerReply->value];
     }
 
     public function isClosed(): bool

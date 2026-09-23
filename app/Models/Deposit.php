@@ -11,7 +11,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property string $deposit_number
+ * @property int $user_id
+ * @property int $payment_method_id
+ * @property int $amount
+ * @property int $fee
+ * @property int $payable
+ * @property ?string $sender_number
+ * @property ?string $transaction_id
+ * @property ?string $screenshot
+ * @property DepositStatus $status
+ * @property ?string $admin_note
+ * @property ?string $reject_reason
+ * @property ?int $processed_by
+ * @property ?Carbon $processed_at
+ * @property ?int $payment_id
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class Deposit extends Model
 {
     /** @use HasFactory<DepositFactory> */
@@ -30,25 +55,25 @@ final class Deposit extends Model
         ];
     }
 
-    /** @return BelongsTo<User, self> */
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /** @return BelongsTo<PaymentMethod, self> */
+    /** @return BelongsTo<PaymentMethod, $this> */
     public function paymentMethod(): BelongsTo
     {
         return $this->belongsTo(PaymentMethod::class);
     }
 
-    /** @return BelongsTo<Admin, self> */
+    /** @return BelongsTo<Admin, $this> */
     public function processedBy(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'processed_by');
     }
 
-    /** @return BelongsTo<Payment, self> */
+    /** @return BelongsTo<Payment, $this> */
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);

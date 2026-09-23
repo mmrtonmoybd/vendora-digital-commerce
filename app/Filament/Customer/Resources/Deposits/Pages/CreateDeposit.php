@@ -7,6 +7,7 @@ namespace App\Filament\Customer\Resources\Deposits\Pages;
 use App\Exceptions\DomainException;
 use App\Filament\Customer\Resources\Deposits\DepositResource;
 use App\Filament\Support\MoneyInput;
+use App\Models\Deposit;
 use App\Models\PaymentMethod;
 use App\Services\DepositService;
 use App\Support\Money;
@@ -28,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * A wizard because the three steps genuinely depend on each other: the fee and the
  * instructions both come from the method chosen in step one.
  */
+/** @property-read Deposit $record */
 final class CreateDeposit extends CreateRecord
 {
     protected static string $resource = DepositResource::class;

@@ -47,7 +47,7 @@ final class TrackingService
             'quantity' => $quantity,
             'price' => $this->units($product->price),
             'value' => $this->units($product->price * $quantity),
-            'currency' => $this->settings ? Money::currencyCode() : 'BDT',
+            'currency' => Money::currencyCode(),
         ];
     }
 

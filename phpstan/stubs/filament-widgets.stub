@@ -1,0 +1,23 @@
+<?php
+
+namespace Filament\Widgets;
+
+/**
+ * Filament's own PHPDoc types $columnSpan as array<string, int|null>, but the framework
+ * accepts a breakpoint value of 'full' — its own StatsOverviewWidget defaults to exactly
+ * that. Correcting a third-party docblock is what stub files are for; the alternative is
+ * every widget in this project carrying a suppression for a type the framework itself
+ * violates.
+ */
+class Widget
+{
+    /**
+     * @var int | string | array<string, int | string | null>
+     */
+    protected int | string | array $columnSpan = 1;
+
+    /**
+     * @var int | string | array<string, int | string | null>
+     */
+    protected int | string | array $columnStart = 1;
+}

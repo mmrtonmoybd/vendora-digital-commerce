@@ -86,6 +86,7 @@ its own permission.
 ## Feature map
 
 ### Storefront
+
 Home with hero slider, categories, featured products, testimonials and FAQs · category
 and product pages with per-product custom fields · search · blog · CMS pages · cart ·
 guest or account checkout · buy-now modal · order tracking with payment submission ·
@@ -95,10 +96,12 @@ Meta, TikTok and Google pixel events (`view_content`, `add_to_cart`, `initiate_c
 UTM parameters and referrer.
 
 ### Customer panel (`/customer`)
+
 Orders and access status · wallet with ledger · deposits · invoices · support tickets ·
 referral dashboard and withdrawals · profile with two-factor authentication and passkeys.
 
 ### Admin panel (`/admin`)
+
 32 resources and 25 pages, including: orders with a full state machine, manual payment
 approval, partial and full refunds · the access queue · customers, staff, roles and
 permissions (Filament Shield) · catalogue, categories, platforms, coupons · wallet
@@ -107,11 +110,13 @@ responses · CMS, blog, menus, hero slides, FAQs, team, testimonials · six repo
 · seventeen settings groups covering every credential, toggle and piece of copy.
 
 ### Money movement
+
 Wallet · manual mobile-banking transfers with proof submission and staff verification ·
 shurjoPay cards and net banking · coupons (percentage and fixed) · payment fees in basis
 points · referral commissions with approval and reversal · withdrawals.
 
 ### Internationalisation
+
 Bengali and English across the storefront, customer panel, validation messages and
 invoice. Browser detection, a per-visitor switcher, and admin control over which
 languages exist and which is default. Administrator-written content — product names, page
@@ -119,6 +124,7 @@ bodies, homepage copy, menu labels — gets its own translations through a side 
 enabling a language never blanks a shop that has not been translated yet.
 
 ### Currency
+
 Taka is the shop's money and cannot be turned off: everything is stored, charged and
 refunded in paisa, and the gateway settles in BDT. US dollars can be enabled as a
 **display** currency — a presentation of the same number, never a second set of prices.
@@ -265,15 +271,15 @@ every private path, asset expiry, `no-store` on PDFs, and a deny rule for dotfil
 
 `routes/console.php`. Run `php artisan schedule:list` to confirm.
 
-| Cadence | Command | Purpose |
-|---|---|---|
-| every 5 min | `shurjopay:reconcile` | Chase payments the gateway never confirmed |
-| every 5 min | `orders:cancel-unpaid` | Release stock held by abandoned orders |
-| every 5 min | `access:process` | Auto-confirm stale grants, flag SLA breaches |
-| daily 03:00 | `wallet:reconcile` | Recompute every balance from its ledger; non-zero exit on drift |
-| daily 04:00 | `sitemap:refresh` | Rebuild the sitemap cache |
-| daily | `backup:run`, `backup:clean` | Database and file backups |
-| weekly | `activitylog:clean`, `queue:prune-failed` | Housekeeping |
+| Cadence     | Command                                   | Purpose                                                         |
+| ----------- | ----------------------------------------- | --------------------------------------------------------------- |
+| every 5 min | `shurjopay:reconcile`                     | Chase payments the gateway never confirmed                      |
+| every 5 min | `orders:cancel-unpaid`                    | Release stock held by abandoned orders                          |
+| every 5 min | `access:process`                          | Auto-confirm stale grants, flag SLA breaches                    |
+| daily 03:00 | `wallet:reconcile`                        | Recompute every balance from its ledger; non-zero exit on drift |
+| daily 04:00 | `sitemap:refresh`                         | Rebuild the sitemap cache                                       |
+| daily       | `backup:run`, `backup:clean`              | Database and file backups                                       |
+| weekly      | `activitylog:clean`, `queue:prune-failed` | Housekeeping                                                    |
 
 ## Project layout
 
@@ -304,7 +310,7 @@ Stated plainly rather than discovered later:
 - **No visual-regression suite.** `check-classes.php` guards the class vocabulary; it does
   not compare rendered pixels. A Playwright pass against `design/vendora` is the next step.
 - **The admin panel stays in English.** The toggle exists
-  (Settings → Languages → *Also in the admin panel*) and is off by default; the staff-facing
+  (Settings → Languages → _Also in the admin panel_) and is off by default; the staff-facing
   strings are not extracted yet.
 - **Tags are managed but not rendered.** The Vendora template has no tag UI, and inventing
   one would break the parity rule, so they are an editorial tool only.

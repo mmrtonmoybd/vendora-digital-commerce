@@ -115,6 +115,15 @@ Route::middleware('auth:admin')->prefix('admin/order')->name('admin.order.')->gr
 });
 
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+/*
+ | A chunked child sitemap. The unnumbered form is chunk 1, so an existing submission of
+ | /sitemap-products.xml keeps working after the catalogue grows past one chunk.
+ */
+Route::get('/sitemap-{section}-{page}.xml', [SeoController::class, 'sitemapChunk'])
+    ->where('section', 'pages|products|categories|posts')
+    ->where('page', '[0-9]+')
+    ->name('sitemap.chunk');
+
 Route::get('/sitemap-{section}.xml', [SeoController::class, 'sitemapSection'])
     ->where('section', 'pages|products|categories|posts')
     ->name('sitemap.section');

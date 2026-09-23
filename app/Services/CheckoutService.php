@@ -51,7 +51,6 @@ final class CheckoutService
         private readonly StockService $stock,
         private readonly WalletService $wallet,
         private readonly CouponService $coupons,
-        private readonly CartService $carts,
         private readonly CommerceSettings $settings,
     ) {}
 

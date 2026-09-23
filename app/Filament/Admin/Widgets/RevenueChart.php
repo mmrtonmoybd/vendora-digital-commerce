@@ -22,7 +22,7 @@ final class RevenueChart extends ChartWidget
 
     public ?string $filter = '30';
 
-    protected function getFilters(): ?array
+    protected function getFilters(): array
     {
         return [
             '7' => 'Last 7 days',
@@ -53,9 +53,11 @@ final class RevenueChart extends ChartWidget
                     DB::raw('COUNT(*) as orders'),
                 ])
                 ->keyBy('bucket')
-                ->map(fn ($row): array => [
-                    'revenue' => (int) $row->revenue,
-                    'orders' => (int) $row->orders,
+                // The select is raw aggregates, so a row carries bucket/revenue/orders
+                // rather than an Order's own columns.
+                ->map(fn (Order $row): array => [
+                    'revenue' => (int) $row->getAttribute('revenue'),
+                    'orders' => (int) $row->getAttribute('orders'),
                 ])
                 ->all();
         });

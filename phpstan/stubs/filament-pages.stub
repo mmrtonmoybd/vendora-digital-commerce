@@ -1,0 +1,15 @@
+<?php
+
+namespace Filament\Pages;
+
+abstract class BasePage
+{
+    /**
+     * Filament types halt() as void, but its body always throws Halt. Without this the
+     * analyser believes execution continues past a halt and reports a missing return on
+     * every method that ends with one.
+     *
+     * @return never
+     */
+    protected function halt(bool $shouldRollbackDatabaseTransaction = false): void;
+}

@@ -137,19 +137,19 @@ Route::middleware(['can:edit articles'])->group(function () { ... });
 Prefer `@can` (permission-based) over `@role` (role-based):
 
 ```blade
-@can('edit articles')
+@can("edit articles")
     {{-- User can edit articles (supports Super Admin) --}}
 @endcan
 
-@canany(['edit articles', 'delete articles'])
+@canany(["edit articles", "delete articles"])
     {{-- User can do at least one --}}
 @endcanany
 
-@role('admin')
+@role("admin")
     {{-- Only use for super-admin type checks --}}
 @endrole
 
-@hasanyrole('writer|admin')
+@hasanyrole("writer|admin")
     {{-- Has writer or admin --}}
 @endhasanyrole
 ```

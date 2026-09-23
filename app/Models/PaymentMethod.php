@@ -11,7 +11,35 @@ use Database\Factories\PaymentMethodFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $key
+ * @property PaymentMethodType $type
+ * @property ?string $driver
+ * @property string $chip_color
+ * @property string $short
+ * @property ?string $logo
+ * @property ?string $account_number
+ * @property ?string $account_type
+ * @property ?string $instructions
+ * @property int $min_amount
+ * @property ?int $max_amount
+ * @property int $fee_bps
+ * @property int $fee_fixed
+ * @property bool $available_for_orders
+ * @property bool $available_for_deposits
+ * @property bool $is_active
+ * @property int $sort_order
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class PaymentMethod extends Model
 {
     use HasContentTranslations;
@@ -26,13 +54,16 @@ final class PaymentMethod extends Model
      *
      * Read through t(), never through the attribute directly — see the trait.
      *
-     * @var array<int, string>
+     * @return array<int, string>
      */
-    protected array $translatable = [
-        'name',
-        'short',
-        'instructions',
-    ];
+    public function translatableFields(): array
+    {
+        return [
+            'name',
+            'short',
+            'instructions',
+        ];
+    }
 
     protected function casts(): array
     {

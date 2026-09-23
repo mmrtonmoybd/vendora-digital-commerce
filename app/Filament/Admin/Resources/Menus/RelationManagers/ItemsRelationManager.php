@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Menus\RelationManagers;
 use App\Enums\MenuLinkType;
 use App\Filament\Support\TranslateAction;
 use App\Models\Category;
+use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\Post;
@@ -82,7 +83,7 @@ final class ItemsRelationManager extends RelationManager
                 ->label('Nested under')
                 ->native(false)
                 ->placeholder('Top level')
-                ->options(fn (): array => $this->getOwnerRecord()
+                ->options(fn (): array => $this->menu()
                     ->allItems()
                     ->whereNull('parent_id')
                     ->pluck('label', 'id')
@@ -121,6 +122,23 @@ final class ItemsRelationManager extends RelationManager
                 DeleteAction::make(),
             ])])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
+    }
+
+    /**
+     * The menu this relation manager belongs to.
+     *
+     * getOwnerRecord() is typed to Model because a relation manager is generic; here it is
+     * always a Menu, and saying so once is better than narrowing at every call site.
+     */
+    private function menu(): Menu
+    {
+        $record = $this->getOwnerRecord();
+
+        if (! $record instanceof Menu) {
+            throw new \LogicException('The menu links relation manager was opened on a '.$record::class.'.');
+        }
+
+        return $record;
     }
 
     private static function linkType(mixed $value): ?MenuLinkType

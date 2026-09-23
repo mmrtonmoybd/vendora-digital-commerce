@@ -23,7 +23,7 @@ final class Dashboard extends BaseDashboard
 
     protected static ?int $navigationSort = -2;
 
-    public function getColumns(): int|array
+    public function getColumns(): array
     {
         return ['md' => 2, 'xl' => 3];
     }

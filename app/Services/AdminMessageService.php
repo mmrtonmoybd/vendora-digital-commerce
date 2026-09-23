@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Notification;
  */
 final class AdminMessageService
 {
+    /** @return Builder<User> */
     public function recipientQuery(AdminMessage $message): Builder
     {
         $meta = $message->audience_meta ?? [];

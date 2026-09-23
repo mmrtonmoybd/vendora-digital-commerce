@@ -53,25 +53,26 @@ $reviewedExceptions = [
     'pb-1' => 'Language switcher label spacing in the mobile drawer.',
 ];
 
-/** @return array<int, string> */
+/**
+ * Every class named in a file.
+ *
+ * Two shapes have to be read differently:
+ *
+ *   class="a b c"                       — a literal list; every word is a class.
+ *   :class="cond ? 'a b' : 'c'"         — an Alpine binding; only the quoted string
+ *                                         literals are classes, the rest is JavaScript.
+ *
+ * Treating the second as a literal list is how "===", "?" and "'desc'" ended up being
+ * reported as invented classes.
+ *
+ * @return array<int, string>
+ */
 function classesIn(string $contents): array
 {
-    $found = [];
-
-    // class="..." and class='...'
-    if (preg_match_all('/\bclass\s*=\s*"([^"]*)"/i', $contents, $m)) {
-        $found = array_merge($found, $m[1]);
-    }
-
-    if (preg_match_all("/\bclass\s*=\s*'([^']*)'/i", $contents, $m)) {
-        $found = array_merge($found, $m[1]);
-    }
-
     $classes = [];
 
-    foreach ($found as $chunk) {
-        // Strip Blade expressions: {{ … }}, {!! … !!}, @if(…) … @endif and ternaries inside
-        // them. What is left is the literal vocabulary.
+    $add = static function (string $chunk) use (&$classes): void {
+        // Blade expressions are not class names. Strip them before splitting.
         $chunk = preg_replace('/\{\{.*?\}\}|\{!!.*?!!\}/s', ' ', $chunk) ?? '';
         $chunk = preg_replace('/@[a-z]+\s*\([^)]*\)/i', ' ', $chunk) ?? '';
 
@@ -83,6 +84,29 @@ function classesIn(string $contents): array
             }
 
             $classes[$class] = true;
+        }
+    };
+
+    // Literal class attributes. The lookbehind keeps ":class" and "x-bind:class" out —
+    // those are JavaScript and are handled below.
+    foreach (['"', "'"] as $quote) {
+        $pattern = '/(?<![-:\w])class\s*=\s*'.$quote.'([^'.$quote.']*)'.$quote.'/i';
+
+        if (preg_match_all($pattern, $contents, $m)) {
+            foreach ($m[1] as $chunk) {
+                $add($chunk);
+            }
+        }
+    }
+
+    // Alpine and Blade class bindings: harvest only the string literals inside them.
+    if (preg_match_all('/(?::|x-bind:)class\s*=\s*"([^"]*)"/i', $contents, $m)) {
+        foreach ($m[1] as $expression) {
+            if (preg_match_all("/'([^']*)'/", $expression, $literals)) {
+                foreach ($literals[1] as $chunk) {
+                    $add($chunk);
+                }
+            }
         }
     }
 

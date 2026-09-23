@@ -5,7 +5,7 @@
 Use the component attribute bag so callers can add attributes. `merge()` combines default attributes with caller-provided values; class values receive special merging behavior.
 
 ```blade
-<div {{ $attributes->merge(['class' => 'alert alert-'.$type]) }}>
+<div {{ $attributes->merge(["class" => "alert alert-" . $type]) }}>
     {{ $message }}
 </div>
 ```

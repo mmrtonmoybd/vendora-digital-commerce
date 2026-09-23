@@ -22,7 +22,14 @@ trait HasReportPeriod
     /** @var array<string, mixed> */
     public array $period = ['preset' => '30', 'from' => null, 'until' => null];
 
-    /** @return array<string, string> */
+    /**
+     * The period options.
+     *
+     * array-key, not string: PHP silently casts a numeric-string key like '7' to the
+     * integer 7, so this map genuinely has mixed key types.
+     *
+     * @return array<array-key, string>
+     */
     public static function presets(): array
     {
         return [

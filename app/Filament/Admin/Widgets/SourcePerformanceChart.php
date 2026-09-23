@@ -28,7 +28,7 @@ final class SourcePerformanceChart extends ChartWidget
 
     public ?string $filter = '30';
 
-    protected function getFilters(): ?array
+    protected function getFilters(): array
     {
         return ['7' => 'Last 7 days', '30' => 'Last 30 days', '90' => 'Last 90 days'];
     }

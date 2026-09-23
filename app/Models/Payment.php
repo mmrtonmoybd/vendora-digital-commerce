@@ -13,7 +13,38 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property string $payable_type
+ * @property int $payable_id
+ * @property ?int $user_id
+ * @property string $gateway
+ * @property string $merchant_order_id
+ * @property ?string $sp_order_id
+ * @property int $amount
+ * @property string $currency
+ * @property PaymentStatus $status
+ * @property ?string $sp_code
+ * @property ?string $sp_message
+ * @property ?string $method
+ * @property ?string $bank_trx_id
+ * @property ?string $invoice_no
+ * @property ?string $checkout_url
+ * @property ?array $request_payload
+ * @property ?array $verify_response
+ * @property ?Carbon $verified_at
+ * @property ?Carbon $last_checked_at
+ * @property int $attempts
+ * @property ?string $ip
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class Payment extends Model
 {
     /** @use HasFactory<PaymentFactory> */
@@ -34,13 +65,13 @@ final class Payment extends Model
         ];
     }
 
-    /** @return MorphTo<Model, self> */
+    /** @return MorphTo<Model, $this> */
     public function payable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    /** @return BelongsTo<User, self> */
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -52,10 +83,24 @@ final class Payment extends Model
         return $this->hasMany(PaymentEvent::class)->latest();
     }
 
+    /**
+     * Statuses that mean the gateway has not finished with this payment.
+     *
+     * A named list rather than an inline array: the filter in the admin table needs the
+     * same definition, and it is handed an untyped query builder that cannot reach the
+     * scope.
+     *
+     * @return array<int, string>
+     */
+    public static function openStatuses(): array
+    {
+        return [PaymentStatus::Initiated->value, PaymentStatus::Pending->value];
+    }
+
     /** @param Builder<self> $query */
     public function scopeOpen(Builder $query): void
     {
-        $query->whereIn('status', [PaymentStatus::Initiated->value, PaymentStatus::Pending->value]);
+        $query->whereIn('status', self::openStatuses());
     }
 
     public function isPaid(): bool

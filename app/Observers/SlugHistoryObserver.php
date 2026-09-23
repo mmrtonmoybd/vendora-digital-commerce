@@ -51,7 +51,7 @@ final class SlugHistoryObserver
         }
 
         $old = (string) $model->getOriginal('slug');
-        $new = (string) $model->slug;
+        $new = (string) $model->getAttribute('slug');
 
         if ($old === '' || $old === $new) {
             return;

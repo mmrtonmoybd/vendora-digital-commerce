@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirect;
 
 /**
  * Google sign-in.
@@ -30,11 +31,12 @@ final class SocialLoginController extends Controller
         private readonly AffiliateService $affiliate,
     ) {}
 
-    public function redirect(): RedirectResponse
+    public function redirect(): SymfonyRedirect
     {
         $this->assertEnabled();
         $this->configureDriver();
 
+        // Socialite returns Symfony's redirect, not Laravel's subclass of it.
         return Socialite::driver('google')->redirect();
     }
 

@@ -14,8 +14,6 @@ use App\Settings\ShurjopaySettings;
 use App\Settings\SmsSettings;
 use App\Settings\TelegramSettings;
 use App\Settings\ThemeSettings;
-use Spatie\LaravelData\Data;
-use Spatie\LaravelSettings\SettingsCasts\DataCast;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast;
 use Spatie\LaravelSettings\SettingsRepositories\DatabaseSettingsRepository;
@@ -115,7 +113,9 @@ return [
         DateTimeInterface::class => DateTimeInterfaceCast::class,
         DateTimeZone::class => DateTimeZoneCast::class,
         //        Spatie\DataTransferObject\DataTransferObject::class => Spatie\LaravelSettings\SettingsCasts\DtoCast::class,
-        Data::class => DataCast::class,
+        // spatie/laravel-data is an optional companion package this project does not
+        // install, so the cast it registers by default has nothing to reference.
+        //        Spatie\LaravelData\Data::class => DataCast::class,
     ],
 
     /*

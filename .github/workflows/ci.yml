@@ -2,29 +2,100 @@ name: CI
 
 on:
   push:
-    branches: [master, main]
+    branches: [main, master]
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: "8.4"
+  NODE_VERSION: "22"
 
 jobs:
-  quality:
-    name: Lint, analyse and test
+  # ---------------------------------------------------------------------------
+  # Code style and static analysis. No database, so it fails fast and cheaply on
+  # the mistakes that do not need one.
+  # ---------------------------------------------------------------------------
+  static:
+    name: Style and static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, intl, pdo_mysql, gd, zip, bcmath
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ env.PHP_VERSION }}-
+
+      - run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Validate composer.json
+        run: composer validate --no-check-publish --strict
+
+      - name: Code style (Pint)
+        run: vendor/bin/pint --test
+
+      - name: Static analysis (Larastan, level 6)
+        run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress --error-format=github
+
+      - name: Template parity
+        # The storefront is a slice of design/vendora. This fails if a Tailwind class was
+        # invented rather than taken from the template.
+        run: php scripts/check-classes.php
+
+  # ---------------------------------------------------------------------------
+  # Formatting of everything Pint does not own: Blade, CSS, JS, JSON, YAML.
+  # ---------------------------------------------------------------------------
+  format:
+    name: Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Prettier
+        run: npx prettier --check .
+
+  # ---------------------------------------------------------------------------
+  # The suite. MySQL rather than SQLite on purpose: the money guarantees rest on
+  # SELECT … FOR UPDATE, which SQLite ignores, so a concurrency test passing on
+  # SQLite would prove nothing about production.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Tests
     runs-on: ubuntu-latest
 
     services:
-      # The suite runs against MySQL rather than SQLite on purpose: the money guarantees
-      # rest on SELECT … FOR UPDATE, which SQLite ignores. A concurrency test passing on
-      # SQLite would prove nothing about production.
       mysql:
         image: mysql:8.4
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: vendora_test
-        ports: ['3306:3306']
+        ports: ["3306:3306"]
         options: >-
           --health-cmd="mysqladmin ping -proot"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=10
+          --health-retries=15
 
     steps:
       - uses: actions/checkout@v4
@@ -32,15 +103,17 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: mbstring, intl, pdo_mysql, gd, zip, bcmath
           coverage: none
+          tools: composer:v2
 
       - name: Cache Composer packages
         uses: actions/cache@v4
         with:
           path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
+          key: composer-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ env.PHP_VERSION }}-
 
       - run: composer install --prefer-dist --no-interaction --no-progress
 
@@ -48,41 +121,71 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
-          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=vendora_test/' .env
-          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
-          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=root/' .env
 
-      - name: Check code style
-        run: vendor/bin/pint --test
-
-      - name: Static analysis
-        run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress
-
-      - name: Template parity
-        run: php scripts/check-classes.php
+      - name: Wait for MySQL
+        run: |
+          for i in $(seq 1 30); do
+            if mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -proot --silent; then
+              echo "MySQL is up"; exit 0
+            fi
+            sleep 2
+          done
+          echo "MySQL never became ready"; exit 1
 
       - name: Migrate
         run: php artisan migrate --force
         env:
+          DB_HOST: 127.0.0.1
           DB_DATABASE: vendora_test
           DB_USERNAME: root
           DB_PASSWORD: root
 
-      - name: Tests
+      - name: Run the suite
         run: vendor/bin/pest --colors=always
         env:
+          DB_HOST: 127.0.0.1
           DB_DATABASE: vendora_test
           DB_USERNAME: root
           DB_PASSWORD: root
 
+  # ---------------------------------------------------------------------------
+  # The front-end build.
+  #
+  # This needs composer install as well as npm: the Filament admin theme imports
+  # CSS straight out of vendor/filament, so without PHP dependencies the Vite
+  # build cannot resolve its own entrypoint.
+  # ---------------------------------------------------------------------------
   assets:
     name: Build front-end
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ env.PHP_VERSION }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ env.PHP_VERSION }}-
+
+      - name: Install PHP dependencies
+        # The theme CSS imports from vendor/filament, so this is a build dependency
+        # of the front-end, not just of the application.
+        run: composer install --prefer-dist --no-interaction --no-progress --no-scripts
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
+
       - run: npm ci
-      - run: npm run build
+
+      - name: Build
+        run: npm run build

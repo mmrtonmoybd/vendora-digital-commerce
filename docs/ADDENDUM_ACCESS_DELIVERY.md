@@ -11,8 +11,8 @@ email the customer gives**.
 4. Admin goes to the platform (TikTok / Meta / Google) and **invites that email** to the
    Business Manager / account.
 5. Admin clicks **"Mark access granted"**. The order becomes **Completed**.
-6. Customer gets an email and a portal notification: *"Access has been granted to
-   you@example.com. Check your inbox for the invitation and accept it."*
+6. Customer gets an email and a portal notification: _"Access has been granted to
+   you@example.com. Check your inbox for the invitation and accept it."_
 7. Customer confirms receipt, or reports a problem, which asks the admin to re-invite.
 
 `delivery_email` is **the email that receives platform access**. It is the most important
@@ -26,16 +26,16 @@ admin types, and the storefront's "7 pcs" pill and "Out of Stock" button work un
 
 ## Access lifecycle
 
-| Step | Trigger | Order status | Item access_status |
-|---|---|---|---|
-| Paid | `OrderPaid` | `pending` | `awaiting` |
-| Admin starts | "Start" / assign to me | `processing` | `in_progress` |
-| Access given | "Mark access granted" | `completed` when **all** items granted | `granted` |
-| Customer confirms | "I received access" | `completed` | `confirmed` |
-| Problem | Customer reports | stays `completed`; admin alerted | `problem_reported` |
-| Re-invite | Admin "Re-invite done" | `completed` | `re_granted` |
-| Replacement (in warranty) | Admin "Replace" | `completed` | `replaced` |
-| Refund | Existing refund flow | `refunded` | `revoked` |
+| Step                      | Trigger                | Order status                           | Item access_status |
+| ------------------------- | ---------------------- | -------------------------------------- | ------------------ |
+| Paid                      | `OrderPaid`            | `pending`                              | `awaiting`         |
+| Admin starts              | "Start" / assign to me | `processing`                           | `in_progress`      |
+| Access given              | "Mark access granted"  | `completed` when **all** items granted | `granted`          |
+| Customer confirms         | "I received access"    | `completed`                            | `confirmed`        |
+| Problem                   | Customer reports       | stays `completed`; admin alerted       | `problem_reported` |
+| Re-invite                 | Admin "Re-invite done" | `completed`                            | `re_granted`       |
+| Replacement (in warranty) | Admin "Replace"        | `completed`                            | `replaced`         |
+| Refund                    | Existing refund flow   | `refunded`                             | `revoked`          |
 
 Rules:
 

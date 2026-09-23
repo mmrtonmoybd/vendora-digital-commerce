@@ -30,9 +30,17 @@ trait HasContentTranslations
         return app(ContentTranslator::class)->forModel($this, $field) ?? $this->getAttribute($field);
     }
 
-    /** @return array<int, string> */
+    /**
+     * The fields this model lets an administrator translate.
+     *
+     * A method rather than a property: a property declared in both a trait and the class
+     * using it must carry an identical default, which would defeat the point of each model
+     * naming its own fields. Override this to opt in.
+     *
+     * @return array<int, string>
+     */
     public function translatableFields(): array
     {
-        return $this->translatable ?? [];
+        return [];
     }
 }

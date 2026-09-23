@@ -105,7 +105,7 @@ final class ProductsTable
                         ->excludeAttributes(['slug', 'total_sold', 'views', 'created_at', 'updated_at'])
                         ->beforeReplicaSaved(function (Product $replica): void {
                             $replica->name = $replica->name.' (copy)';
-                            $replica->slug = null;
+                            $replica->slug = '';
                             $replica->is_active = false;
                         }),
                     Action::make('view')

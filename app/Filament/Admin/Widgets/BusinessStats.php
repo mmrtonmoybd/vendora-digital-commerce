@@ -35,7 +35,7 @@ final class BusinessStats extends StatsOverviewWidget
 
     protected ?string $pollingInterval = '60s';
 
-    public function getColumns(): int|array
+    public function getColumns(): array
     {
         return ['default' => 1, 'sm' => 2, 'xl' => 4];
     }

@@ -19,6 +19,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Utilities\Set;
 
+/** @property-read Ticket $record */
 final class ViewTicket extends ViewRecord
 {
     protected static string $resource = TicketResource::class;

@@ -9,8 +9,27 @@ use App\Models\Concerns\HasContentTranslations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * @generated Property annotations, refreshed by scripts/model-properties.php.
+ * Larastan cannot read casts declared in a casts() method on a $guarded model, so the
+ * enum and date types have to be written down for it — and the IDE benefits too.
+ *
+ * @property int $id
+ * @property int $menu_id
+ * @property ?int $parent_id
+ * @property string $label
+ * @property MenuLinkType $link_type
+ * @property ?int $link_target_id
+ * @property ?string $url
+ * @property bool $open_in_new_tab
+ * @property int $sort_order
+ * @property bool $is_active
+ * @property ?Carbon $created_at
+ * @property ?Carbon $updated_at
+ */
 final class MenuItem extends Model
 {
     use HasContentTranslations;
@@ -22,11 +41,14 @@ final class MenuItem extends Model
      *
      * Read through t(), never through the attribute directly — see the trait.
      *
-     * @var array<int, string>
+     * @return array<int, string>
      */
-    protected array $translatable = [
-        'label',
-    ];
+    public function translatableFields(): array
+    {
+        return [
+            'label',
+        ];
+    }
 
     protected function casts(): array
     {
@@ -38,13 +60,13 @@ final class MenuItem extends Model
         ];
     }
 
-    /** @return BelongsTo<Menu, self> */
+    /** @return BelongsTo<Menu, $this> */
     public function menu(): BelongsTo
     {
         return $this->belongsTo(Menu::class);
     }
 
-    /** @return BelongsTo<self, self> */
+    /** @return BelongsTo<self, $this> */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');

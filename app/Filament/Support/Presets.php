@@ -15,13 +15,13 @@ final class Presets
     /** @return array<string, string> */
     public static function gradients(): array
     {
-        return config('storefront.gradients');
+        return (array) config('storefront.gradients');
     }
 
     /** @return array<string, string> */
     public static function heroGradients(): array
     {
-        return collect(config('storefront.hero_gradients'))
+        return collect((array) config('storefront.hero_gradients'))
             ->map(fn (array $preset): string => $preset['label'])
             ->all();
     }
@@ -29,7 +29,7 @@ final class Presets
     /** @return array<string, string> */
     public static function icons(): array
     {
-        return collect(config('storefront.icons'))
+        return collect((array) config('storefront.icons'))
             ->map(fn (array $icon): string => $icon['label'])
             ->all();
     }
@@ -37,7 +37,7 @@ final class Presets
     /** @return array<string, string> */
     public static function badgeStyles(): array
     {
-        return collect(config('storefront.badge_styles'))
+        return collect((array) config('storefront.badge_styles'))
             ->map(fn (array $style): string => $style['label'])
             ->all();
     }

@@ -3,8 +3,12 @@
 declare(strict_types=1);
 
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\SlugRedirect;
+use App\Models\User;
+use Illuminate\Support\Facades\URL;
 
 it('keeps the old address working when a product is renamed', function (): void {
     $product = Product::factory()->create(['slug' => 'stream-premium']);
@@ -69,4 +73,28 @@ it('ignores an edit that does not touch the slug', function (): void {
     $product->update(['name' => 'One renamed']);
 
     expect(SlugRedirect::count())->toBe(0);
+});
+
+/**
+ * The "I didn't get the invite" page.
+ *
+ * Reached from a signed link in the delivery email, so it must render for a guest with no
+ * session. Its view did not exist at all — the link in every access email threw.
+ */
+it('renders the access problem form from a signed link', function (): void {
+    $user = User::factory()->create();
+    $order = Order::factory()->create(['user_id' => $user->id]);
+    $item = OrderItem::factory()->create(['order_id' => $order->id]);
+
+    $this->get(URL::signedRoute('access.problem', ['item' => $item->id]))
+        ->assertOk()
+        ->assertSee(__('access.what_happened'))
+        ->assertSee($order->order_number);
+});
+
+it('refuses the access problem form without a signature', function (): void {
+    $order = Order::factory()->create();
+    $item = OrderItem::factory()->create(['order_id' => $order->id]);
+
+    $this->get(route('access.problem', ['item' => $item->id]))->assertForbidden();
 });

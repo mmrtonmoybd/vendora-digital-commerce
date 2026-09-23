@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Product;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -47,7 +48,7 @@ final class GenerateDemoImages extends Command
         return self::SUCCESS;
     }
 
-    private function write($disk, Model $record, string $directory, string $gradient, string $iconKey, string $title, ?string $subtitle, string $column = 'image'): bool
+    private function write(Filesystem $disk, Model $record, string $directory, string $gradient, string $iconKey, string $title, ?string $subtitle, string $column = 'image'): bool
     {
         $path = "{$directory}/{$record->getKey()}.svg";
 

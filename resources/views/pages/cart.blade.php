@@ -1,8 +1,8 @@
 <x-layouts.storefront seo-:title="__('store.my_cart')" seo-robots="noindex,follow" main-class="-mt-4 relative z-10">
-<x-slot:hero>
+  <x-slot:hero>
     <x-store.page-hero :title="__('store.my_cart')" :crumbs="['Cart' => null]" />
-</x-slot:hero>
+  </x-slot:hero>
 
-<livewire:cart-page />
-<div class="h-20"></div>
+  <livewire:cart-page />
+  <div class="h-20"></div>
 </x-layouts.storefront>

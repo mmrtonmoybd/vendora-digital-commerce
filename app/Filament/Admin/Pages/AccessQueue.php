@@ -63,7 +63,7 @@ final class AccessQueue extends Page implements HasTable
         return $count > 0 ? (string) $count : null;
     }
 
-    public static function getNavigationBadgeColor(): ?string
+    public static function getNavigationBadgeColor(): string
     {
         return 'danger';
     }
@@ -284,7 +284,11 @@ final class AccessQueue extends Page implements HasTable
         ];
     }
 
-    /** Only paid orders can be fulfilled, so unpaid ones never clutter the queue. */
+    /**
+     * Only paid orders can be fulfilled, so unpaid ones never clutter the queue.
+     *
+     * @return Builder<OrderItem>
+     */
     private function baseQuery(): Builder
     {
         return OrderItem::query()

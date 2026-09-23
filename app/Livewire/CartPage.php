@@ -8,6 +8,7 @@ use App\Models\CartItem;
 use App\Services\CartService;
 use App\Services\CouponService;
 use App\Support\Money;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 /** The cart page: quantities, removal, the coupon and the running total. */
@@ -83,7 +84,7 @@ final class CartPage extends Component
         return Money::format($paisa);
     }
 
-    public function render(CartService $carts)
+    public function render(CartService $carts): View
     {
         $cart = $carts->current()->load(['items.product.category']);
         $subtotal = $cart->subtotal();

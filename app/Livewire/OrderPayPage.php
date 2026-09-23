@@ -9,6 +9,7 @@ use App\Exceptions\DomainException;
 use App\Models\Order;
 use App\Services\OrderService;
 use App\Support\Money;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -28,7 +29,8 @@ final class OrderPayPage extends Component
 
     public string $trx = '';
 
-    public $screenshot = null;
+    /** The uploaded proof. A TemporaryUploadedFile once Livewire has taken it, null before. */
+    public mixed $screenshot = null;
 
     public string $error = '';
 
@@ -89,7 +91,7 @@ final class OrderPayPage extends Component
         ], true);
     }
 
-    public function render()
+    public function render(): View
     {
         $this->order->loadMissing(['items.product.platform', 'paymentMethod', 'payments']);
 

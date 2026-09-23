@@ -61,7 +61,7 @@ final class Locales
             array_unshift($enabled, $default);
         }
 
-        return $enabled === [] ? [self::FALLBACK] : $enabled;
+        return $enabled;
     }
 
     public static function default(): string

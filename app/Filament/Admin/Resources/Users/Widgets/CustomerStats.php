@@ -17,7 +17,7 @@ final class CustomerStats extends StatsOverviewWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    public function getColumns(): int|array
+    public function getColumns(): array
     {
         return ['default' => 1, 'sm' => 2, 'xl' => 4];
     }

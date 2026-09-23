@@ -24,7 +24,7 @@ final class Dashboard extends BaseDashboard
         return 'Welcome back, '.auth()->user()->name;
     }
 
-    public function getColumns(): int|array
+    public function getColumns(): array
     {
         return ['md' => 2, 'xl' => 4];
     }

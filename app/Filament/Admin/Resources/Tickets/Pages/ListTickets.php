@@ -21,7 +21,7 @@ final class ListTickets extends ListRecords
         return [
             'all' => Tab::make('All')->badge(Ticket::count()),
             'needs_reply' => Tab::make('Needs reply')
-                ->modifyQueryUsing(fn (Builder $q) => $q->needsAttention())
+                ->modifyQueryUsing(fn (Builder $q) => $q->whereIn('status', Ticket::needsAttentionStatuses()))
                 ->badge(Ticket::query()->needsAttention()->count())
                 ->badgeColor('danger'),
             'mine' => Tab::make('Assigned to me')

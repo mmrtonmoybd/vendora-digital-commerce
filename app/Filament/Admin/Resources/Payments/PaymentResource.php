@@ -48,7 +48,7 @@ final class PaymentResource extends Resource
                     ->label('For')
                     ->badge()
                     ->color('gray')
-                    ->formatStateUsing(fn (Payment $record): string => str($record->payableKind())->headline()),
+                    ->formatStateUsing(fn (Payment $record): string => str($record->payableKind())->headline()->toString()),
                 MoneyColumn::make('amount'),
                 TextColumn::make('status')->badge(),
                 TextColumn::make('method')->label('Paid via')->placeholder('—')->toggleable(),
@@ -61,7 +61,7 @@ final class PaymentResource extends Resource
                 SelectFilter::make('status')->options(PaymentStatus::class)->multiple(),
                 Filter::make('unresolved')
                     ->label('Still open')
-                    ->query(fn (Builder $query): Builder => $query->open()),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('status', Payment::openStatuses())),
                 Filter::make('created_at')
                     ->schema([
                         DatePicker::make('from')->label('Started from')->native(false),

@@ -19,6 +19,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
+/** @property-read Ticket $record */
 final class ViewTicket extends ViewRecord
 {
     protected static string $resource = TicketResource::class;
