@@ -8,6 +8,7 @@ use App\Enums\FaqGroup;
 use App\Filament\Admin\Resources\Faqs\Pages\CreateFaq;
 use App\Filament\Admin\Resources\Faqs\Pages\EditFaq;
 use App\Filament\Admin\Resources\Faqs\Pages\ListFaqs;
+use App\Filament\Support\TranslateAction;
 use App\Models\Faq;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
@@ -91,7 +92,7 @@ final class FaqResource extends Resource
                         ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
                     ]))),
             ])
-            ->recordActions([ActionGroup::make([EditAction::make()])])
+            ->recordActions([ActionGroup::make([EditAction::make(), TranslateAction::make()])])
             ->toolbarActions([DeleteBulkAction::make()]);
     }
 

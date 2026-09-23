@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Support\Locales;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -84,6 +85,23 @@ final class CachePublicStorefront
         $varyCookie = (string) $request->cookie(config('storefront-cache.lscache.vary_cookie'));
 
         if (str_starts_with($varyCookie, 'bypass-')) {
+            return false;
+        }
+
+        /*
+         | On a multilingual site the language lives in the vary cookie, and LiteSpeed keeps
+         | one cached copy per cookie value.
+         |
+         | A request with no cookie yet is the awkward case. With browser detection on it
+         | was answered from Accept-Language, so storing it under the no-cookie variant
+         | would serve a Bengali page to the next English visitor — it must not be cached.
+         | The response sets the cookie, and every request after that caches normally.
+         |
+         | With detection off there is nothing to poison: a cookie-less request is always
+         | answered in the default language, so the no-cookie variant is safe to cache and
+         | crawlers — which never send cookies — get cache hits too.
+         */
+        if (Locales::isMultilingual() && $varyCookie === '' && Locales::autoDetects()) {
             return false;
         }
 

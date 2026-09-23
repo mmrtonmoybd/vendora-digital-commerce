@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasContentTranslations;
 use App\Support\Money;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,10 +18,31 @@ use Illuminate\Support\Str;
 
 final class Product extends Model
 {
+    use HasContentTranslations;
+
     /** @use HasFactory<ProductFactory> */
     use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
+
+    /**
+     * Text an administrator typed that a second language needs its own version of.
+     *
+     * Read through t(), never through the attribute directly — see the trait.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatable = [
+        'name',
+        'short',
+        'features',
+        'description',
+        'delivery_info',
+        'customer_instructions',
+        'badge_text',
+        'seo_title',
+        'seo_description',
+    ];
 
     protected function casts(): array
     {

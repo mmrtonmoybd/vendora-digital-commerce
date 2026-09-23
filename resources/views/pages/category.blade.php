@@ -1,22 +1,22 @@
 @php
     $schema = [
         '@type' => 'CollectionPage',
-        'name' => $category->name,
-        'description' => $category->short_description,
+        'name' => $category->t('name'),
+        'description' => $category->t('short_description'),
         'url' => route('category.show', $category),
     ];
 @endphp
 
 <x-layouts.storefront
-    :seo-title="$category->seo_title ?: $category->name"
-    :seo-description="$category->seo_description ?: $category->short_description"
+    :seo-title="$category->t('seo_title') ?: $category->t('name')"
+    :seo-description="$category->t('seo_description') ?: $category->t('short_description')"
     :seo-schema="$schema"
     main-class="-mt-6 relative z-10"
 >
 <x-slot:hero>
     <x-store.page-hero
-        :title="$category->name"
-        :lead="$category->short_description"
+        :title="$category->t('name')"
+        :lead="$category->t('short_description')"
         :crumbs="['Categories' => route('search'), $category->name => null]"
     />
 </x-slot:hero>
@@ -26,7 +26,7 @@
     <form method="GET" class="mt-6 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
       <p class="text-stone-600"><b class="text-ink">{{ $products->total() }}</b> products</p>
       <div class="flex gap-2">
-        <label class="inline-flex items-center gap-2 h-10 px-3 rounded-xl bg-white ring-1 ring-stone-200 text-sm"><input type="checkbox" name="in_stock" value="1" @checked($inStockOnly) onchange="this.form.submit()" class="rounded text-brand-600 focus:ring-brand-500"> In stock only</label>
+        <label class="inline-flex items-center gap-2 h-10 px-3 rounded-xl bg-white ring-1 ring-stone-200 text-sm"><input type="checkbox" name="in_stock" value="1" @checked($inStockOnly) onchange="this.form.submit()" class="rounded text-brand-600 focus:ring-brand-500"> {{ __('shop.in_stock_only') }}</label>
         <select name="sort" onchange="this.form.submit()" class="h-10 rounded-xl border-stone-200 text-sm focus:border-brand-500 focus:ring-brand-500">@foreach (config('storefront.sorts') as $value => $label)<option value="{{ $value }}" @selected($sort === $value)>Sort: {{ $label }}</option>@endforeach</select>
       </div>
     </form>
@@ -36,8 +36,8 @@
 @empty
     <div class="col-span-full py-16 text-center px-6">
       <span class="inline-grid place-items-center w-16 h-16 rounded-2xl bg-brand-50 text-brand-600"><x-store.icon :name="$category->icon_key" class="w-7 h-7" /></span>
-      <h3 class="mt-4 font-display text-xl font-bold">Nothing here yet</h3><p class="text-stone-600">We are restocking this category. Try another one in the meantime.</p>
-      <a href="{{ route('home') }}#categories" class="mt-5 inline-flex h-11 px-5 items-center rounded-full bg-brand-600 text-white font-semibold">Browse categories</a>
+      <h3 class="mt-4 font-display text-xl font-bold">{{ __('shop.nothing_here_yet') }}</h3><p class="text-stone-600">{{ __('shop.restocking_category') }}</p>
+      <a href="{{ route('home') }}#categories" class="mt-5 inline-flex h-11 px-5 items-center rounded-full bg-brand-600 text-white font-semibold">{{ __('store.browse_categories') }}</a>
     </div>
 @endforelse</div></div>
     {{ $products->links('vendor.pagination.storefront') }}

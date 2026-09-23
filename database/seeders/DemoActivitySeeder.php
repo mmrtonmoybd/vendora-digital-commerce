@@ -10,6 +10,7 @@ use App\Enums\OrderPaymentStatus;
 use App\Enums\OrderStatus;
 use App\Enums\UserStatus;
 use App\Enums\WalletTxType;
+use App\Models\Admin;
 use App\Models\Coupon;
 use App\Models\Deposit;
 use App\Models\Order;
@@ -21,6 +22,7 @@ use App\Models\User;
 use App\Services\TicketService;
 use App\Services\WalletService;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -66,8 +68,8 @@ final class DemoActivitySeeder extends Seeder
         $this->command?->info('Demo activity seeded.');
     }
 
-    /** @return \Illuminate\Support\Collection<int, User> */
-    private function customers(): \Illuminate\Support\Collection
+    /** @return Collection<int, User> */
+    private function customers(): Collection
     {
         $names = [
             'Moshiur Rahman' => 'moshiur@example.com',
@@ -140,7 +142,7 @@ final class DemoActivitySeeder extends Seeder
                 'first_touch_source_id' => $sources->isEmpty() ? null : $sources->random()->getKey(),
                 'paid_at' => $isPaid ? $placedAt->copy()->addMinutes(random_int(2, 40)) : null,
                 'completed_at' => $status === OrderStatus::Completed ? $placedAt->copy()->addHours(1) : null,
-                'assigned_admin_id' => $isPaid ? \App\Models\Admin::value('id') : null,
+                'assigned_admin_id' => $isPaid ? Admin::value('id') : null,
                 'assigned_at' => $isPaid ? $placedAt->copy()->addMinutes(3) : null,
                 'created_at' => $placedAt,
                 'updated_at' => $placedAt,
@@ -158,7 +160,7 @@ final class DemoActivitySeeder extends Seeder
                 'field_values' => $product->fields->mapWithKeys(fn ($field): array => [$field->key => 'demo'])->all(),
                 'access_status' => $accessStatus,
                 'granted_at' => $grantedAt,
-                'granted_by' => $grantedAt ? \App\Models\Admin::value('id') : null,
+                'granted_by' => $grantedAt ? Admin::value('id') : null,
                 'confirmed_at' => $accessStatus === AccessStatus::Confirmed ? $grantedAt?->copy()->addHours(2) : null,
                 'warranty_until' => $grantedAt?->copy()->addDays((int) ($product->warranty_days ?? 7)),
                 'created_at' => $placedAt,
@@ -233,7 +235,7 @@ final class DemoActivitySeeder extends Seeder
             );
 
             if ($index === 0) {
-                $tickets->reply($ticket, \App\Models\Admin::first(), 'Checking this now — I can see the payment, re-sending the invitation.');
+                $tickets->reply($ticket, Admin::first(), 'Checking this now — I can see the payment, re-sending the invitation.');
             }
         }
 

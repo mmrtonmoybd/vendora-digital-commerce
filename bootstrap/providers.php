@@ -1,9 +1,15 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\Filament\AdminPanelProvider;
+use App\Providers\Filament\CustomerPanelProvider;
+use App\Providers\FortifyServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\EventServiceProvider::class,
-    App\Providers\FortifyServiceProvider::class,
-    App\Providers\Filament\AdminPanelProvider::class,
-    App\Providers\Filament\CustomerPanelProvider::class,
+    AppServiceProvider::class,
+    EventServiceProvider::class,
+    FortifyServiceProvider::class,
+    AdminPanelProvider::class,
+    CustomerPanelProvider::class,
 ];

@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Platforms\Pages\CreatePlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\EditPlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\ListPlatforms;
 use App\Filament\Support\Presets;
+use App\Filament\Support\TranslateAction;
 use App\Models\Platform;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
@@ -84,7 +85,7 @@ final class PlatformResource extends Resource
                         ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
                     ]))),
             ])
-            ->recordActions([ActionGroup::make([EditAction::make()])])
+            ->recordActions([ActionGroup::make([EditAction::make(), TranslateAction::make()])])
             ->toolbarActions([DeleteBulkAction::make()]);
     }
 

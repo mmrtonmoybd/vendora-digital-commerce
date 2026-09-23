@@ -10,6 +10,7 @@ use App\Http\Controllers\Storefront\CategoryController;
 use App\Http\Controllers\Storefront\CheckoutController;
 use App\Http\Controllers\Storefront\ContactController;
 use App\Http\Controllers\Storefront\HomeController;
+use App\Http\Controllers\Storefront\LocaleController;
 use App\Http\Controllers\Storefront\OrderAccessController;
 use App\Http\Controllers\Storefront\OrderPayController;
 use App\Http\Controllers\Storefront\PageController;
@@ -95,6 +96,10 @@ Route::get('/files/{path}', PrivateFileController::class)
  | cached HTML deliberately contains none of this.
  */
 Route::get('/storefront/state', StorefrontStateController::class)->name('storefront.state');
+
+Route::get('/language/{locale}', LocaleController::class)
+    ->where('locale', '[a-z]{2}')
+    ->name('locale.switch');
 
 /*
  | Staff invoice copies. Separate from the customer routes because the authorisation

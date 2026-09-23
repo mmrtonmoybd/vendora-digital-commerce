@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasContentTranslations;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,10 +16,27 @@ use Illuminate\Support\Str;
 
 final class Category extends Model
 {
+    use HasContentTranslations;
+
     /** @use HasFactory<CategoryFactory> */
     use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
+
+    /**
+     * Text an administrator typed that a second language needs its own version of.
+     *
+     * Read through t(), never through the attribute directly — see the trait.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatable = [
+        'name',
+        'short_description',
+        'section_title',
+        'seo_title',
+        'seo_description',
+    ];
 
     protected function casts(): array
     {

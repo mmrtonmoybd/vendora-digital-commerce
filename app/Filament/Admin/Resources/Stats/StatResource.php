@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Stats;
 use App\Filament\Admin\Resources\Stats\Pages\CreateStat;
 use App\Filament\Admin\Resources\Stats\Pages\EditStat;
 use App\Filament\Admin\Resources\Stats\Pages\ListStats;
+use App\Filament\Support\TranslateAction;
 use App\Models\Stat;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
@@ -77,7 +78,7 @@ final class StatResource extends Resource
                         ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
                     ]))),
             ])
-            ->recordActions([ActionGroup::make([EditAction::make()])])
+            ->recordActions([ActionGroup::make([EditAction::make(), TranslateAction::make()])])
             ->toolbarActions([DeleteBulkAction::make()]);
     }
 

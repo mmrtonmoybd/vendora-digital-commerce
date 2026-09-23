@@ -4,12 +4,29 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasContentTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 final class HeroSlide extends Model
 {
+    use HasContentTranslations;
+
     protected $guarded = ['id'];
+
+    /**
+     * Text an administrator typed that a second language needs its own version of.
+     *
+     * Read through t(), never through the attribute directly — see the trait.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatable = [
+        'eyebrow',
+        'title',
+        'subtitle',
+        'button_text',
+    ];
 
     protected function casts(): array
     {

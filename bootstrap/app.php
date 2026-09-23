@@ -5,6 +5,7 @@ use App\Http\Middleware\CaptureReferral;
 use App\Http\Middleware\CaptureSource;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLiteSpeedVaryCookie;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             SecurityHeaders::class,
+            SetLocale::class,
             CaptureSource::class,
             CaptureReferral::class,
             SetLiteSpeedVaryCookie::class,
@@ -32,6 +34,20 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->trustProxies(at: '*');
+
+        /*
+         | The LiteSpeed vary cookie must not be encrypted.
+         |
+         | Laravel encrypts with a random IV, so the same plaintext produces a different
+         | ciphertext for every visitor. LiteSpeed varies its page cache on the cookie's
+         | literal value, so an encrypted vary cookie would give every anonymous visitor a
+         | private cache entry and the edge cache would never serve a hit. The cookie holds
+         | nothing secret — "guest:bn", or the name of the guard — and it is never trusted
+         | for authorisation.
+         */
+        $middleware->encryptCookies(except: [
+            SetLiteSpeedVaryCookie::COOKIE,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

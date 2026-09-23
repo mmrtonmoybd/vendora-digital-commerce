@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\FieldType;
+use App\Models\Concerns\HasContentTranslations;
 use Database\Factories\ProductFieldFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,10 +13,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class ProductField extends Model
 {
+    use HasContentTranslations;
+
     /** @use HasFactory<ProductFieldFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    /**
+     * Text an administrator typed that a second language needs its own version of.
+     *
+     * Read through t(), never through the attribute directly — see the trait.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatable = [
+        'label',
+        'placeholder',
+    ];
 
     protected function casts(): array
     {

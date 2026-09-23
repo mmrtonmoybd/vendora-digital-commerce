@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use App\Http\Middleware\SetLiteSpeedVaryCookie;
 
 return [
     'enabled' => env('STOREFRONT_CACHE_ENABLED', true),
@@ -14,6 +15,6 @@ return [
         'enabled' => env('STOREFRONT_LSCACHE_ENABLED', true),
         'ttl' => env('STOREFRONT_LSCACHE_TTL', 300),
         'tag' => 'storefront',
-        'vary_cookie' => '_lscache_vary_vendora',
+        'vary_cookie' => SetLiteSpeedVaryCookie::COOKIE,
     ],
 ];

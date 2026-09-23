@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\MenuLinkType;
+use App\Models\Concerns\HasContentTranslations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +13,20 @@ use Illuminate\Support\Facades\Route;
 
 final class MenuItem extends Model
 {
+    use HasContentTranslations;
+
     protected $guarded = ['id'];
+
+    /**
+     * Text an administrator typed that a second language needs its own version of.
+     *
+     * Read through t(), never through the attribute directly — see the trait.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatable = [
+        'label',
+    ];
 
     protected function casts(): array
     {

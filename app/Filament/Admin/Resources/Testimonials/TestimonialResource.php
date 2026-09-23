@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Testimonials\Pages\CreateTestimonial;
 use App\Filament\Admin\Resources\Testimonials\Pages\EditTestimonial;
 use App\Filament\Admin\Resources\Testimonials\Pages\ListTestimonials;
 use App\Filament\Support\Presets;
+use App\Filament\Support\TranslateAction;
 use App\Models\Testimonial;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
@@ -85,7 +86,7 @@ final class TestimonialResource extends Resource
                         ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
                     ]))),
             ])
-            ->recordActions([ActionGroup::make([EditAction::make()])])
+            ->recordActions([ActionGroup::make([EditAction::make(), TranslateAction::make()])])
             ->toolbarActions([DeleteBulkAction::make()]);
     }
 

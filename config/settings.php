@@ -1,5 +1,26 @@
 <?php
 
+use App\Settings\AffiliateSettings;
+use App\Settings\AuthSettings;
+use App\Settings\CommerceSettings;
+use App\Settings\ContactSettings;
+use App\Settings\FulfillmentSettings;
+use App\Settings\GeneralSettings;
+use App\Settings\HomepageSettings;
+use App\Settings\MailSettings;
+use App\Settings\SecuritySettings;
+use App\Settings\SeoSettings;
+use App\Settings\ShurjopaySettings;
+use App\Settings\SmsSettings;
+use App\Settings\TelegramSettings;
+use App\Settings\ThemeSettings;
+use Spatie\LaravelData\Data;
+use Spatie\LaravelSettings\SettingsCasts\DataCast;
+use Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast;
+use Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast;
+use Spatie\LaravelSettings\SettingsRepositories\DatabaseSettingsRepository;
+use Spatie\LaravelSettings\SettingsRepositories\RedisSettingsRepository;
+
 return [
 
     /*
@@ -7,20 +28,20 @@ return [
      * put them (manually) here.
      */
     'settings' => [
-        App\Settings\GeneralSettings::class,
-        App\Settings\ThemeSettings::class,
-        App\Settings\ContactSettings::class,
-        App\Settings\CommerceSettings::class,
-        App\Settings\ShurjopaySettings::class,
-        App\Settings\AffiliateSettings::class,
-        App\Settings\AuthSettings::class,
-        App\Settings\MailSettings::class,
-        App\Settings\SmsSettings::class,
-        App\Settings\TelegramSettings::class,
-        App\Settings\SeoSettings::class,
-        App\Settings\FulfillmentSettings::class,
-        App\Settings\HomepageSettings::class,
-        App\Settings\SecuritySettings::class,
+        GeneralSettings::class,
+        ThemeSettings::class,
+        ContactSettings::class,
+        CommerceSettings::class,
+        ShurjopaySettings::class,
+        AffiliateSettings::class,
+        AuthSettings::class,
+        MailSettings::class,
+        SmsSettings::class,
+        TelegramSettings::class,
+        SeoSettings::class,
+        FulfillmentSettings::class,
+        HomepageSettings::class,
+        SecuritySettings::class,
     ],
 
     /*
@@ -48,13 +69,13 @@ return [
      */
     'repositories' => [
         'database' => [
-            'type' => Spatie\LaravelSettings\SettingsRepositories\DatabaseSettingsRepository::class,
+            'type' => DatabaseSettingsRepository::class,
             'model' => null,
             'table' => null,
             'connection' => null,
         ],
         'redis' => [
-            'type' => Spatie\LaravelSettings\SettingsRepositories\RedisSettingsRepository::class,
+            'type' => RedisSettingsRepository::class,
             'connection' => null,
             'prefix' => null,
         ],
@@ -74,7 +95,7 @@ return [
      * additional prefix.
      */
     'cache' => [
-        'enabled' => (bool)env('SETTINGS_CACHE_ENABLED', false),
+        'enabled' => (bool) env('SETTINGS_CACHE_ENABLED', false),
         'store' => null,
         'prefix' => null,
         'ttl' => null,
@@ -91,10 +112,10 @@ return [
      * your settings class isn't a default PHP type.
      */
     'global_casts' => [
-        DateTimeInterface::class => Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast::class,
-        DateTimeZone::class => Spatie\LaravelSettings\SettingsCasts\DateTimeZoneCast::class,
-//        Spatie\DataTransferObject\DataTransferObject::class => Spatie\LaravelSettings\SettingsCasts\DtoCast::class,
-        Spatie\LaravelData\Data::class => Spatie\LaravelSettings\SettingsCasts\DataCast::class,
+        DateTimeInterface::class => DateTimeInterfaceCast::class,
+        DateTimeZone::class => DateTimeZoneCast::class,
+        //        Spatie\DataTransferObject\DataTransferObject::class => Spatie\LaravelSettings\SettingsCasts\DtoCast::class,
+        Data::class => DataCast::class,
     ],
 
     /*

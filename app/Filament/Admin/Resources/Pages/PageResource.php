@@ -8,6 +8,7 @@ use App\Enums\PageTemplate;
 use App\Filament\Admin\Resources\Pages\Pages\CreatePage;
 use App\Filament\Admin\Resources\Pages\Pages\EditPage;
 use App\Filament\Admin\Resources\Pages\Pages\ListPages;
+use App\Filament\Support\TranslateAction;
 use App\Models\Page;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -104,6 +105,7 @@ final class PageResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     EditAction::make(),
+                    TranslateAction::make(),
                     Action::make('view')
                         ->label('View on site')
                         ->icon('heroicon-o-arrow-top-right-on-square')

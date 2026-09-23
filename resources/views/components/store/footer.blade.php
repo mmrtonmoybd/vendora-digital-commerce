@@ -27,7 +27,7 @@
   <div class="max-w-7xl mx-auto px-4 grid gap-10 lg:grid-cols-[1.3fr_repeat(4,1fr)]">
     <div>
       <a href="{{ route('home') }}" class="font-script text-4xl text-white leading-none tracking-wide select-none" aria-label="{{ $general->site_name }} home">{{ $general->site_name }}<span class="text-amber-300">.</span></a>
-      <p class="mt-4 text-sm leading-relaxed max-w-xs">{{ $general->tagline }}</p>
+      <p class="mt-4 text-sm leading-relaxed max-w-xs">{{ $store->st($general, 'tagline') }}</p>
       <div class="mt-5 space-y-2 text-sm">
         @if (filled($contact->phone))
         <a href="tel:{{ preg_replace('/\s+/', '', $contact->phone) }}" class="flex items-center gap-2 hover:text-white"><svg class="w-4 h-4 text-brand-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> {{ $contact->phone }}</a>
@@ -39,14 +39,14 @@
       <div class="mt-5 flex flex-wrap gap-2">@foreach ($socials as $label => $url)<a href="{{ $url }}" target="_blank" rel="noopener" aria-label="{{ $label }}" title="{{ $label }}" class="grid place-items-center w-10 h-10 rounded-full bg-white/5 ring-1 ring-white/10 hover:bg-brand-600 hover:ring-brand-600 transition"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $socialIcons[$label] !!}</svg></a>@endforeach</div>
     </div>
     @foreach ($footerMenus as $menu)
-<div><h4 class="font-display font-semibold text-white mb-4">{{ $menu->column_title ?: $menu->name }}</h4><ul class="space-y-2.5 text-sm">@foreach ($menu->items as $item)<li><a href="{{ $item->resolvedUrl() }}"@if ($item->open_in_new_tab) target="_blank" rel="noopener"@endif class="hover:text-white hover:translate-x-0.5 inline-block transition">{{ $item->label }}</a></li>@endforeach</ul></div>
+<div><h4 class="font-display font-semibold text-white mb-4">{{ $menu->t('column_title') ?: $menu->t('name') }}</h4><ul class="space-y-2.5 text-sm">@foreach ($menu->items as $item)<li><a href="{{ $item->resolvedUrl() }}"@if ($item->open_in_new_tab) target="_blank" rel="noopener"@endif class="hover:text-white hover:translate-x-0.5 inline-block transition">{{ $item->t('label') }}</a></li>@endforeach</ul></div>
 @endforeach
   </div>
   <div class="mt-14 border-t border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row gap-3 items-center justify-between text-sm">
-      <p>{{ $general->copyright_text }}</p>
-      <div class="flex items-center gap-2 text-xs"><span class="text-stone-500">We accept</span>
-        @foreach ($methods as $method)<span class="px-2 py-1 rounded {{ $method->chip_color }} text-white font-bold">{{ $method->name }}</span>@endforeach</div>
+      <p>{{ $store->st($general, 'copyright_text') }}</p>
+      <div class="flex items-center gap-2 text-xs"><span class="text-stone-500">{{ __('store.we_accept') }}</span>
+        @foreach ($methods as $method)<span class="px-2 py-1 rounded {{ $method->chip_color }} text-white font-bold">{{ $method->t('name') }}</span>@endforeach</div>
     </div>
   </div>
 </footer>

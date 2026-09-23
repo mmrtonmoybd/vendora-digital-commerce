@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Categories\Tables;
 
+use App\Filament\Support\TranslateAction;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -51,7 +52,7 @@ final class CategoriesTable
                     ]))),
                 TrashedFilter::make(),
             ])
-            ->recordActions([ActionGroup::make([EditAction::make()])])
+            ->recordActions([ActionGroup::make([EditAction::make(), TranslateAction::make()])])
             ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 }

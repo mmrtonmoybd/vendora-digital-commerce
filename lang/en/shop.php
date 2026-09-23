@@ -1,0 +1,93 @@
+<?php
+
+declare(strict_types=1);
+
+/* Catalogue, cart and checkout. */
+
+return [
+    // Product card / listing
+    'buy_now' => 'Buy Now',
+    'add_to_cart' => 'Add to cart',
+    'out_of_stock' => 'Out of Stock',
+    'pcs' => ':count pcs',
+    'in_stock_only' => 'In stock only',
+    'all_products' => 'All products',
+    'products' => 'products',
+    'nothing_here_yet' => 'Nothing here yet',
+    'restocking_category' => 'We are restocking this category. Try another one in the meantime.',
+    'no_products_found' => 'No products found',
+    'try_another_keyword' => 'Try a different keyword or browse categories.',
+    'search_results_for' => 'results for “:term”',
+    'search_heading' => 'Search: :term',
+
+    // Product page
+    'description' => 'Description',
+    'delivery_instructions' => 'Delivery instructions',
+    'faqs' => 'FAQs',
+    'warranty' => 'Warranty',
+    'you_may_also_like' => 'You may also like',
+    'choose_payment_hint' => 'Choose a payment method at checkout and enter the email that should receive access.',
+    'step_pay' => 'Pay',
+    'step_invite' => 'We invite you',
+    'step_accept' => 'Accept & enjoy',
+    'step_fast' => 'Fast',
+
+    // Buy-now modal and cart
+    'quantity' => 'Quantity',
+    'delivery_email' => 'Delivery email',
+    'send_to' => 'Send to:',
+    'phone_number' => 'Phone number',
+    'payment_method' => 'Payment method',
+    'coupon_code' => 'Coupon code',
+    'enter_a_code' => 'Enter a code',
+    'subtotal' => 'Subtotal',
+    'subtotal_items' => 'Subtotal (:count)',
+    'discount' => 'Discount',
+    'processing_fee' => 'Processing fee',
+    'delivery' => 'Delivery',
+    'free_digital' => 'Free · Digital',
+    'total' => 'Total',
+    'checkout_with_total' => 'Checkout · :total',
+    'min' => 'Min',
+    'max' => 'Max',
+    'access_tracked_note' => 'Access is granted to your delivery email and tracked on your order page.',
+
+    // Cart page
+    'your_cart_is_empty' => 'Your cart is empty',
+    'cart_empty_hint' => 'Add a few products and they\'ll show up here.',
+    'start_shopping' => 'Start shopping',
+    'clear_cart' => 'Clear cart',
+    'items_count' => 'Items (:count)',
+    'order_summary' => 'Order summary',
+    'proceed_to_checkout' => 'Proceed to checkout',
+
+    // Checkout
+    'your_order' => 'Your order',
+    'delivery_details' => 'Delivery details',
+    'cart_is_empty_add' => 'Cart is empty —',
+    'add_products' => 'add products',
+    'and_fill_fields' => 'and fill the fields below.',
+    'have_an_account' => 'Have an account?',
+    'sign_in_to_pay_with_wallet' => 'to pay with wallet and track orders.',
+    'insufficient' => '· insufficient',
+    'card_methods' => 'Visa, Mastercard, net banking',
+    'send_money_manual' => 'Send money · manual verify',
+    'pay_exactly' => 'Pay exactly',
+    'copy_number' => 'Copy number',
+    'sender_number' => 'Sender number',
+    'transaction_id' => 'Transaction ID',
+    'screenshot_hint' => 'PNG or JPG, up to 4 MB (optional)',
+    'place_order_with_total' => 'Place order · :total',
+    'agree_prefix' => 'By placing an order you agree to our',
+    'terms' => 'Terms',
+    'refund_policy' => 'Refund policy',
+    'and' => 'and',
+    'search_seo_description' => 'Search digital products and find what you need in seconds.',
+    'reviews' => 'reviews',
+    'save_percent' => 'SAVE :percent%',
+    'checkout' => 'Checkout',
+    'place_order' => 'Place order',
+    'each' => 'each',
+    'balance' => 'Balance:',
+    'sign_in_to_use_wallet' => 'Sign in to use wallet',
+];

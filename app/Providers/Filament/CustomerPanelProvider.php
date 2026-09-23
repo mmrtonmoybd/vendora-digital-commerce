@@ -6,6 +6,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Customer\Pages\Dashboard;
 use App\Http\Middleware\RedirectGuestsToStorefrontLogin;
+use App\Http\Middleware\SetPanelLocale;
 use App\Support\SafeSettings;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -107,6 +108,7 @@ final class CustomerPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetPanelLocale::class.':customer',
             ])
             ->authMiddleware([
                 RedirectGuestsToStorefrontLogin::class,

@@ -5,12 +5,25 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\MenuLocation;
+use App\Models\Concerns\HasContentTranslations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Menu extends Model
 {
+    use HasContentTranslations;
+
     protected $guarded = ['id'];
+
+    /**
+     * Text an administrator typed that a second language needs its own version of.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatable = [
+        'name',
+        'column_title',
+    ];
 
     protected function casts(): array
     {

@@ -15,6 +15,7 @@ use App\Settings\GeneralSettings;
 use App\Settings\SeoSettings;
 use App\Settings\ThemeSettings;
 use Illuminate\Support\Collection;
+use Spatie\LaravelSettings\Settings;
 
 /**
  * Everything the storefront chrome needs, resolved once and cached.
@@ -85,6 +86,38 @@ final class StorefrontData
             ->where('type', '!=', 'wallet')
             ->orderBy('sort_order')
             ->get());
+    }
+
+    /**
+     * A settings value in the language this request is being answered in.
+     *
+     * Almost all the storefront's copy is editable in the panel, so translating only the
+     * developer-written strings would leave a Bengali visitor reading an English hero and
+     * English category headings. Falls back to what the administrator typed when a
+     * translation has not been written yet.
+     *
+     *     {{ $store->st($home, 'hero_badge') }}
+     */
+    public function st(Settings $settings, string $field): mixed
+    {
+        $translated = app(ContentTranslator::class)->forSetting($settings::group(), $field);
+
+        return $translated ?? $settings->{$field};
+    }
+
+    /**
+     * A multi-line settings value, translated and split into trimmed lines.
+     *
+     * The hero feature list and similar fields are edited as one textarea, so the split has
+     * to happen after translation rather than before it.
+     *
+     * @return array<int, string>
+     */
+    public function stLines(Settings $settings, string $field): array
+    {
+        $value = (string) $this->st($settings, $field);
+
+        return array_values(array_filter(array_map('trim', preg_split('/\r?\n/', $value) ?: [])));
     }
 
     public function general(): GeneralSettings

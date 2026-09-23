@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\HeroSlides\Pages\CreateHeroSlide;
 use App\Filament\Admin\Resources\HeroSlides\Pages\EditHeroSlide;
 use App\Filament\Admin\Resources\HeroSlides\Pages\ListHeroSlides;
 use App\Filament\Support\Presets;
+use App\Filament\Support\TranslateAction;
 use App\Models\HeroSlide;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
@@ -92,7 +93,7 @@ final class HeroSlideResource extends Resource
                         ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
                     ]))),
             ])
-            ->recordActions([ActionGroup::make([EditAction::make()])])
+            ->recordActions([ActionGroup::make([EditAction::make(), TranslateAction::make()])])
             ->toolbarActions([DeleteBulkAction::make()]);
     }
 

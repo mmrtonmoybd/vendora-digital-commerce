@@ -11,6 +11,7 @@ use App\Filament\Admin\Resources\PaymentMethods\Pages\ListPaymentMethods;
 use App\Filament\Support\MoneyColumn;
 use App\Filament\Support\MoneyInput;
 use App\Filament\Support\Presets;
+use App\Filament\Support\TranslateAction;
 use App\Models\PaymentMethod;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
@@ -127,7 +128,7 @@ final class PaymentMethodResource extends Resource
                         ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
                     ]))),
             ])
-            ->recordActions([ActionGroup::make([EditAction::make()])]);
+            ->recordActions([ActionGroup::make([EditAction::make(), TranslateAction::make()])]);
     }
 
     public static function getPages(): array

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\PaymentMethodType;
+use App\Models\Concerns\HasContentTranslations;
 use App\Support\Money;
 use Database\Factories\PaymentMethodFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,10 +14,25 @@ use Illuminate\Database\Eloquent\Model;
 
 final class PaymentMethod extends Model
 {
+    use HasContentTranslations;
+
     /** @use HasFactory<PaymentMethodFactory> */
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    /**
+     * Text an administrator typed that a second language needs its own version of.
+     *
+     * Read through t(), never through the attribute directly — see the trait.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatable = [
+        'name',
+        'short',
+        'instructions',
+    ];
 
     protected function casts(): array
     {

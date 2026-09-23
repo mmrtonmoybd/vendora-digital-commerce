@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Support\Locales;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,19 +14,35 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Tells LiteSpeed which cookie decides who gets which cached copy of a page.
  *
- * Anonymous visitors are deliberately left cookie-free so they all share one cached
- * variant — otherwise every first-time visitor and every crawler would miss the cache.
- * A signed-in customer gets their guard name, and a request carrying a flash message gets
- * a one-off value so the flash is never baked into a shared page.
+ * On a single-language site anonymous visitors are deliberately left cookie-free so they
+ * all share one cached variant — otherwise every first-time visitor and every crawler would
+ * miss the cache. A signed-in customer gets their guard name, and a request carrying a flash
+ * message gets a one-off value so the flash is never baked into a shared page.
+ *
+ * Once a second language is enabled that stops being safe: the same URL now renders
+ * differently for a Bengali reader and an English one, so the locale joins the cookie and
+ * anonymous visitors split into one cached variant per language.
  */
 final class SetLiteSpeedVaryCookie
 {
+    /**
+     * The cookie's name.
+     *
+     * A constant as well as a config value because middleware registration happens in
+     * bootstrap/app.php, before the config repository exists.
+     */
+    public const COOKIE = '_lscache_vary_vendora';
+
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
 
         $cookieName = (string) config('storefront-cache.lscache.vary_cookie');
         $cookieValue = $this->authenticatedGuard();
+
+        if (Locales::isMultilingual()) {
+            $cookieValue = ($cookieValue ?? 'guest').':'.app()->getLocale();
+        }
 
         if ($request->hasSession() && (array) $request->session()->get('_flash.new', []) !== []) {
             $cookieValue = 'bypass-'.mb_substr(hash('sha256', $request->session()->getId()), 0, 20);

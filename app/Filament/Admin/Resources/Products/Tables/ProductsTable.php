@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Products\Tables;
 
 use App\Filament\Support\MoneyColumn;
+use App\Filament\Support\TranslateAction;
 use App\Models\Product;
 use App\Services\StockService;
 use App\Settings\CommerceSettings;
@@ -82,6 +83,7 @@ final class ProductsTable
             ->recordActions([
                 ActionGroup::make([
                     EditAction::make(),
+                    TranslateAction::make(),
                     Action::make('adjustStock')
                         ->label('Adjust stock')
                         ->icon('heroicon-o-adjustments-horizontal')

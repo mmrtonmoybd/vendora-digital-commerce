@@ -1,5 +1,29 @@
 <?php
 
+use App\Enums\FaqGroup;
+use App\Enums\FieldType;
+use App\Enums\MenuLinkType;
+use App\Enums\MenuLocation;
+use App\Enums\PageTemplate;
+use App\Enums\PaymentMethodType;
+use App\Models\BlogCategory;
+use App\Models\Category;
+use App\Models\EmailTemplate;
+use App\Models\Faq;
+use App\Models\HeroSlide;
+use App\Models\Menu;
+use App\Models\MenuItem;
+use App\Models\OrderSource;
+use App\Models\PaymentMethod;
+use App\Models\Platform;
+use App\Models\Post;
+use App\Models\Product;
+use App\Models\ProductField;
+use App\Models\Stat;
+use App\Models\TeamMember;
+use App\Models\Testimonial;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 return [
@@ -138,33 +162,33 @@ return [
      | listed explicitly rather than turning the protection off.
      */
     'serializable_classes' => [
-        Illuminate\Support\Collection::class,
+        Collection::class,
         Illuminate\Database\Eloquent\Collection::class,
         Illuminate\Support\Carbon::class,
         Carbon\Carbon::class,
-        Carbon\CarbonImmutable::class,
-        App\Models\Category::class,
-        App\Models\Product::class,
-        App\Models\ProductField::class,
-        App\Models\Menu::class,
-        App\Models\MenuItem::class,
-        App\Models\HeroSlide::class,
-        App\Models\Testimonial::class,
-        App\Models\Faq::class,
-        App\Models\TeamMember::class,
-        App\Models\Stat::class,
-        App\Models\PaymentMethod::class,
-        App\Models\Platform::class,
-        App\Models\BlogCategory::class,
-        App\Models\Post::class,
-        App\Models\OrderSource::class,
-        App\Models\EmailTemplate::class,
-        App\Enums\FieldType::class,
-        App\Enums\MenuLocation::class,
-        App\Enums\MenuLinkType::class,
-        App\Enums\FaqGroup::class,
-        App\Enums\PageTemplate::class,
-        App\Enums\PaymentMethodType::class,
+        CarbonImmutable::class,
+        Category::class,
+        Product::class,
+        ProductField::class,
+        Menu::class,
+        MenuItem::class,
+        HeroSlide::class,
+        Testimonial::class,
+        Faq::class,
+        TeamMember::class,
+        Stat::class,
+        PaymentMethod::class,
+        Platform::class,
+        BlogCategory::class,
+        Post::class,
+        OrderSource::class,
+        EmailTemplate::class,
+        FieldType::class,
+        MenuLocation::class,
+        MenuLinkType::class,
+        FaqGroup::class,
+        PageTemplate::class,
+        PaymentMethodType::class,
     ],
 
 ];

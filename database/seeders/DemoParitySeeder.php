@@ -16,7 +16,6 @@ use App\Models\Coupon;
 use App\Models\Faq;
 use App\Models\HeroSlide;
 use App\Models\Menu;
-use App\Models\MenuItem;
 use App\Models\Page;
 use App\Models\PaymentMethod;
 use App\Models\Platform;
@@ -25,8 +24,8 @@ use App\Models\Product;
 use App\Models\Stat;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
-use App\Support\Money;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -216,7 +215,7 @@ final class DemoParitySeeder extends Seeder
         }
     }
 
-    /** @param \Illuminate\Support\Collection<string, int> $platforms */
+    /** @param Collection<string, int> $platforms */
     private function platformFor(string $categorySlug, $platforms): ?int
     {
         return match ($categorySlug) {
@@ -349,7 +348,7 @@ final class DemoParitySeeder extends Seeder
                 [
                     'title' => $title,
                     'template' => $template,
-                    'body' => "<p>Replace this text in the admin panel under Content → Pages.</p>",
+                    'body' => '<p>Replace this text in the admin panel under Content → Pages.</p>',
                     'is_active' => true,
                     'show_in_footer' => true,
                 ],

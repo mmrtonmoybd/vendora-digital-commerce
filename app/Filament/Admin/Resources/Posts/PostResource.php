@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Posts\Pages\CreatePost;
 use App\Filament\Admin\Resources\Posts\Pages\EditPost;
 use App\Filament\Admin\Resources\Posts\Pages\ListPosts;
 use App\Filament\Support\Presets;
+use App\Filament\Support\TranslateAction;
 use App\Models\Post;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -111,6 +112,7 @@ final class PostResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     EditAction::make(),
+                    TranslateAction::make(),
                     Action::make('view')
                         ->label('View on site')
                         ->icon('heroicon-o-arrow-top-right-on-square')

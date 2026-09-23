@@ -29,8 +29,8 @@
 
 <title>{{ $fullTitle }}</title>
 <meta name="description" content="{{ $pageDescription }}">
-@if (filled($seo->default_keywords))
-    <meta name="keywords" content="{{ $seo->default_keywords }}">
+@if (filled($store->st($seo, 'default_keywords')))
+    <meta name="keywords" content="{{ $store->st($seo, 'default_keywords') }}">
 @endif
 <meta name="robots" content="{{ $robots ?: $seo->robots_default }}">
 <link rel="canonical" href="{{ $canonicalUrl }}">
@@ -88,7 +88,7 @@
             '@id' => url('/').'#organization',
             'name' => $general->site_name,
             'url' => url('/'),
-            'description' => $general->tagline,
+            'description' => $store->st($general, 'tagline'),
             'logo' => $general->logo ? \Illuminate\Support\Facades\Storage::disk('public')->url($general->logo) : null,
             'sameAs' => $seo->socialProfileUrls() ?: null,
             'contactPoint' => [

@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\BlogCategories\Pages\CreateBlogCategory;
 use App\Filament\Admin\Resources\BlogCategories\Pages\EditBlogCategory;
 use App\Filament\Admin\Resources\BlogCategories\Pages\ListBlogCategories;
 use App\Filament\Support\Presets;
+use App\Filament\Support\TranslateAction;
 use App\Models\BlogCategory;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
@@ -85,7 +86,7 @@ final class BlogCategoryResource extends Resource
                         ($data['until'] ?? null) ? 'Created until '.$data['until'] : null,
                     ]))),
             ])
-            ->recordActions([ActionGroup::make([EditAction::make()])])
+            ->recordActions([ActionGroup::make([EditAction::make(), TranslateAction::make()])])
             ->toolbarActions([DeleteBulkAction::make()]);
     }
 

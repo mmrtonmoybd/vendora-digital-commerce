@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasContentTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +13,21 @@ use Illuminate\Support\Str;
 /** Where access is granted: TikTok Business Center, Meta Business Manager, Google Ads… */
 final class Platform extends Model
 {
+    use HasContentTranslations;
+
     protected $guarded = ['id'];
+
+    /**
+     * Text an administrator typed that a second language needs its own version of.
+     *
+     * Read through t(), never through the attribute directly — see the trait.
+     *
+     * @var array<int, string>
+     */
+    protected array $translatable = [
+        'name',
+        'invite_instructions',
+    ];
 
     protected function casts(): array
     {

@@ -7,6 +7,7 @@ namespace App\Providers\Filament;
 use App\Filament\Admin\Pages\Dashboard;
 use App\Http\Middleware\EnforceAdminIpAllowlist;
 use App\Http\Middleware\EnforceAdminTwoFactor;
+use App\Http\Middleware\SetPanelLocale;
 use App\Models\Admin;
 use App\Support\SafeSettings;
 use Awcodes\Overlook\OverlookPlugin;
@@ -152,6 +153,7 @@ final class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetPanelLocale::class.':admin',
                 EnforceAdminIpAllowlist::class,
             ])
             ->authMiddleware([
