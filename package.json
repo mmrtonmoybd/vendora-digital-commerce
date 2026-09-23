@@ -1,5 +1,10 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
+    "name": "vendora-digital-commerce",
+    "version": "1.0.0",
+    "description": "Front-end build for the Vendora digital-commerce storefront.",
+    "author": "Moshiur Rahman <rmedha037@gmail.com>",
+    "license": "UNLICENSED",
     "private": true,
     "type": "module",
     "scripts": {

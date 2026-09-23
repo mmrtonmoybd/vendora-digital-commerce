@@ -1,13 +1,31 @@
 {
-    "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
-    "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "name": "mmrtonmoybd/vendora-digital-commerce",
+    "description": "A manually-fulfilled digital-products storefront and back office: wallet, coupons, affiliates, tickets and access-grant delivery, priced in integer paisa and served bilingually in Bengali and English.",
     "keywords": [
         "laravel",
-        "framework"
+        "filament",
+        "ecommerce",
+        "digital-products",
+        "bangladesh",
+        "shurjopay",
+        "bengali",
+        "litespeed"
     ],
-    "license": "MIT",
+    "license": "proprietary",
+    "homepage": "https://github.com/mmrtonmoybd/vendora-digital-commerce",
+    "authors": [
+        {
+            "name": "Moshiur Rahman",
+            "email": "rmedha037@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "rmedha037@gmail.com",
+        "issues": "https://github.com/mmrtonmoybd/vendora-digital-commerce/issues"
+    },
+    "type": "project",
+    "$schema": "https://getcomposer.org/schema.json",
     "require": {
         "php": "^8.3",
         "awcodes/overlook": "^4.0",

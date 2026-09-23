@@ -1,0 +1,21 @@
+Copyright (c) 2026 Moshiur Rahman <rmedha037@gmail.com>
+
+All rights reserved.
+
+This software and its source code are proprietary and confidential. No part of
+this repository may be copied, modified, distributed, published, sublicensed or
+used to create a derivative work without the prior written permission of the
+copyright holder.
+
+The third-party packages this project depends on remain under their own
+licences, which are reproduced in the vendor/ and node_modules/ directories
+when dependencies are installed. Two are worth naming here because they ship
+inside the application rather than merely alongside it:
+
+  * mPDF — GNU General Public License v2.0 only. Used server-side to render
+    invoices. Running it as part of a hosted service is not distribution and
+    does not place this application under the GPL; shipping this codebase to a
+    third party would need that question answered first.
+
+  * Hind Siliguri (resources/fonts) — SIL Open Font License 1.1, © Indian Type
+    Foundry. See resources/fonts/README.md.
