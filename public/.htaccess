@@ -5,6 +5,13 @@
 
     RewriteEngine On
 
+    # =====================================================================
+    # LiteSpeed full-page cache
+    #
+    # LiteSpeed only stores a response the application has marked cacheable with
+    # X-LiteSpeed-Cache-Control, so the allowlist lives in CachePublicStorefront.
+    # What this block does is tell the server *how* to key what it stores.
+    # =====================================================================
     <IfModule LiteSpeed>
         CacheLookup on
 
@@ -20,7 +27,21 @@
         CacheKeyModify -qs:ref
         CacheKeyModify -qs:source_id
 
+        # The cookie that decides which cached copy a visitor gets. It carries the guard
+        # name and the language ("guest:bn"), so an English reader and a Bengali reader are
+        # served different entries for the same URL.
+        #
+        # This cookie is deliberately excluded from Laravel's cookie encryption — see
+        # bootstrap/app.php. Encrypting it would give it a different value for every
+        # visitor and the cache would never serve a hit.
         RewriteRule .* - [E=Cache-Vary:_lscache_vary_vendora]
+
+        # Never serve a cached copy of anything private, whatever headers get lost in
+        # front of us. The application already marks these no-cache; this is the belt to
+        # that pair of braces, and it costs one rewrite condition.
+        RewriteCond %{REQUEST_URI} ^/(admin|customer|checkout|cart|order|access|payments|livewire|storefront/state|language|files|login|register|password|email) [NC,OR]
+        RewriteCond %{REQUEST_METHOD} !^(GET|HEAD)$
+        RewriteRule .* - [E=Cache-Control:no-cache]
     </IfModule>
 
     # Handle Authorization Header
@@ -41,3 +62,58 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# =====================================================================
+# Static assets
+#
+# Vite fingerprints everything under /build, so those files can be cached for a year and
+# never revalidated. Everything else gets a week, which is long enough to help and short
+# enough that replacing a logo does not need a support ticket.
+# =====================================================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 week"
+
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/avif "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+
+    # Never cache the documents themselves here; that is LiteSpeed's job and it respects
+    # the application's own TTL.
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|woff2|jpg|jpeg|png|webp|avif|svg|ico)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+
+    # Fingerprinted build output can be immutable: the filename changes when the bytes do.
+    <FilesMatch "^.+\-[A-Za-z0-9_-]{8,}\.(css|js)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # An invoice is one customer's document. Nothing in front of the app may hold on to it.
+    <FilesMatch "\.pdf$">
+        Header set Cache-Control "no-store, private"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+    AddOutputFilterByType DEFLATE application/javascript application/json application/xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# =====================================================================
+# Files that must never be served, whatever the document root ends up being
+# =====================================================================
+<FilesMatch "^(\.env.*|\.git.*|composer\.(json|lock)|package(-lock)?\.json|artisan|phpunit\.xml|pint\.json|.*\.sql|.*\.log)$">
+    Require all denied
+</FilesMatch>

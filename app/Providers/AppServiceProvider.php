@@ -24,6 +24,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Models\WithdrawalRequest;
 use App\Observers\CacheBustingObserver;
+use App\Observers\SlugHistoryObserver;
 use App\Settings\MailSettings;
 use App\View\Composers\StorefrontComposer;
 use Illuminate\Database\Eloquent\Model;
@@ -92,6 +93,13 @@ final class AppServiceProvider extends ServiceProvider
             Menu::class, MenuItem::class, HeroSlide::class, Testimonial::class, Post::class,
         ] as $model) {
             $model::observe(CacheBustingObserver::class);
+        }
+
+        // Renaming a slug in the panel silently breaks every link already shared or
+        // indexed. These four have public addresses built from their slug, so a rename is
+        // recorded and answered with a 301 rather than a 404.
+        foreach ([Product::class, Category::class, Post::class, Page::class] as $model) {
+            $model::observe(SlugHistoryObserver::class);
         }
     }
 

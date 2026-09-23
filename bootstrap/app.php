@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Storefront\SlugRedirectController;
 use App\Http\Middleware\CachePublicStorefront;
 use App\Http\Middleware\CaptureReferral;
 use App\Http\Middleware\CaptureSource;
@@ -10,6 +11,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -53,4 +55,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        /*
+         | Before showing a 404, check whether this address used to belong to something that
+         | has since been renamed.
+         |
+         | Handled here rather than as a fallback route because the common case is not "no
+         | route matched" — /product/{product:slug} matches perfectly well, it is the model
+         | binding that finds nothing. A fallback route would never see it.
+         */
+        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+            if (! $request->isMethodCacheable()) {
+                return null;
+            }
+
+            return app(SlugRedirectController::class)->resolve($request);
+        });
     })->create();
