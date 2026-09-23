@@ -8,6 +8,7 @@ use App\Filament\Support\MoneyColumn;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 final class DepositsRelationManager extends RelationManager
 {
@@ -19,6 +20,8 @@ final class DepositsRelationManager extends RelationManager
     {
         return $table
             ->defaultSort('created_at', 'desc')
+            // Read by a column callback below; without this the table is a query per row.
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['paymentMethod']))
             ->columns([
                 TextColumn::make('deposit_number')->label('Deposit')->searchable()->copyable(),
                 TextColumn::make('paymentMethod.name')->label('Method')->badge()->color('gray'),

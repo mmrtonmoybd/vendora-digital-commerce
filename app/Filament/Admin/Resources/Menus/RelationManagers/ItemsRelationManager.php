@@ -108,7 +108,16 @@ final class ItemsRelationManager extends RelationManager
                 TextColumn::make('label')->searchable()->weight('semibold'),
                 TextColumn::make('parent.label')->label('Nested under')->placeholder('Top level')->toggleable(),
                 TextColumn::make('link_type')->label('Points to')->badge(),
-                TextColumn::make('resolvedUrl')->label('Address')->limit(40)->toggleable(),
+                /*
+                 | state(), not make('resolvedUrl'): resolvedUrl() is a method, and naming
+                 | it as a column makes Filament ask Eloquent for an attribute of that name,
+                 | which falls through to a relation lookup and throws.
+                 */
+                TextColumn::make('address')
+                    ->label('Address')
+                    ->state(fn (MenuItem $record): string => $record->resolvedUrl())
+                    ->limit(40)
+                    ->toggleable(),
                 IconColumn::make('open_in_new_tab')->label('New tab')->boolean()->toggleable(),
                 IconColumn::make('is_active')->label('Active')->boolean(),
             ])

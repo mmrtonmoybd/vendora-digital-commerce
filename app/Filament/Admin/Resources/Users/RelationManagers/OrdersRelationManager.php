@@ -9,6 +9,7 @@ use App\Filament\Support\MoneyColumn;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 final class OrdersRelationManager extends RelationManager
 {
@@ -20,6 +21,8 @@ final class OrdersRelationManager extends RelationManager
     {
         return $table
             ->defaultSort('created_at', 'desc')
+            // Read by a column callback below; without this the table is a query per row.
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['items']))
             ->columns([
                 TextColumn::make('order_number')->label('Order')->searchable()->copyable(),
                 TextColumn::make('items_summary')->label('Items')->state(fn ($record): string => $record->itemsSummary())->wrap()->limit(50),

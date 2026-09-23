@@ -14,6 +14,7 @@ use Database\Seeders\DemoParitySeeder;
 use Database\Seeders\OrderSourceSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Filament\Facades\Filament;
+use Livewire\Livewire;
 
 /**
  * Every admin screen, rendered with a shop's worth of real rows behind it.
@@ -176,4 +177,48 @@ it('shows which kind of payment an order used', function (): void {
     $this->get(OrderResource::getUrl('view', ['record' => $order]))
         ->assertOk()
         ->assertSee($order->paymentMethod->type->label());
+});
+
+/**
+ * Relation managers, which a plain page load never exercises.
+ *
+ * Filament mounts them as their own lazy Livewire components, so requesting the edit page
+ * over HTTP renders the tab and not the table. A column naming a method rather than a
+ * database column sat there unnoticed because of it — Filament asked Eloquent for an
+ * attribute called "resolvedUrl", which fell through to a relation lookup and threw on
+ * every menu edit.
+ */
+it('renders every relation manager against a real parent record', function (): void {
+    $failures = [];
+
+    foreach (Filament::getPanel('admin')->getResources() as $resource) {
+        $relations = $resource::getRelations();
+
+        if ($relations === []) {
+            continue;
+        }
+
+        $owner = $resource::getModel()::query()->first();
+
+        if ($owner === null) {
+            continue;
+        }
+
+        $pageClass = $resource::hasPage('edit')
+            ? $resource::getPages()['edit']->getPage()
+            : $resource::getPages()['view']->getPage();
+
+        foreach ($relations as $manager) {
+            try {
+                Livewire::test($manager, [
+                    'ownerRecord' => $owner,
+                    'pageClass' => $pageClass,
+                ])->assertOk();
+            } catch (Throwable $e) {
+                $failures[] = class_basename($manager).': '.$e->getMessage();
+            }
+        }
+    }
+
+    expect($failures)->toBe([]);
 });
