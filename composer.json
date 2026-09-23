@@ -27,7 +27,7 @@
     "type": "project",
     "$schema": "https://getcomposer.org/schema.json",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "awcodes/overlook": "^4.0",
         "bezhansalleh/filament-shield": "^4.1",
         "caresome/filament-auth-designer": "^3.0",

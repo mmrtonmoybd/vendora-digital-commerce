@@ -1,21 +1,93 @@
-Copyright (c) 2026 Moshiur Rahman <rmedha037@gmail.com>
+PROPRIETARY SOFTWARE LICENCE
 
+Copyright (c) 2026 Moshiur Rahman <rmedha037@gmail.com>
 All rights reserved.
 
-This software and its source code are proprietary and confidential. No part of
-this repository may be copied, modified, distributed, published, sublicensed or
-used to create a derivative work without the prior written permission of the
-copyright holder.
+1. OWNERSHIP
 
-The third-party packages this project depends on remain under their own
-licences, which are reproduced in the vendor/ and node_modules/ directories
-when dependencies are installed. Two are worth naming here because they ship
-inside the application rather than merely alongside it:
+   This software, its source code, database schema, design assets, documentation
+   and every derivative of them are the exclusive property of Moshiur Rahman
+   ("the Author"). They are confidential and are protected by copyright law and
+   by international copyright treaties.
 
-  * mPDF — GNU General Public License v2.0 only. Used server-side to render
-    invoices. Running it as part of a hosted service is not distribution and
-    does not place this application under the GPL; shipping this codebase to a
-    third party would need that question answered first.
+2. NO LICENCE IS GRANTED BY POSSESSION
 
-  * Hind Siliguri (resources/fonts) — SIL Open Font License 1.1, © Indian Type
-    Foundry. See resources/fonts/README.md.
+   Having a copy of this repository grants you no rights whatsoever. No licence,
+   express or implied, arises from access to the code, from a fork, from a clone,
+   from employment, from a contract of work, or from any other circumstance.
+
+3. PRIOR WRITTEN PERMISSION IS REQUIRED
+
+   You may not use, run, host, deploy, copy, reproduce, modify, adapt, translate,
+   merge, publish, distribute, sublicense, sell, rent, lease, lend, disclose or
+   create derivative works from this software, in whole or in part, without the
+   prior written permission of the Author.
+
+   Permission must be obtained in writing, in advance, and for each intended use.
+   Permission granted for one purpose, deployment, client or installation does
+   not extend to any other. Permission may be withdrawn.
+
+   Requests: rmedha037@gmail.com
+
+4. PROHIBITED WITHOUT SUCH PERMISSION
+
+   Without prior written permission it is, in particular, prohibited to:
+
+   (a) install, run or host this software on any server, for any purpose,
+       including internal, evaluation, demonstration or non-commercial use;
+   (b) offer it, or any part of it, as a product or service to any third party;
+   (c) resell, redistribute or re-licence it under any name;
+   (d) remove, obscure or alter any copyright notice, author attribution or this
+       licence;
+   (e) reverse engineer, decompile or disassemble any compiled or obfuscated
+       portion of it;
+   (f) use it, or any part of it, to train a machine-learning model;
+   (g) disclose its source code to any person not expressly authorised in writing
+       by the Author.
+
+5. ENFORCEMENT
+
+   Unauthorised use, copying or distribution of this software is unlawful and may
+   give rise to civil liability and to criminal penalties under applicable
+   copyright and computer-misuse law. The Author reserves every remedy available,
+   including injunctive relief, damages and the recovery of legal costs.
+
+   Any breach terminates any permission previously granted, immediately and
+   without notice. On termination you must cease all use and destroy every copy
+   in your possession or control.
+
+6. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+7. THIRD-PARTY COMPONENTS
+
+   The third-party packages this project depends on remain under their own
+   licences, which are reproduced in the vendor/ and node_modules/ directories
+   once dependencies are installed. Nothing in this licence restricts the rights
+   you hold in those components under their own terms, and nothing in their terms
+   grants you any right in this software.
+
+   Two ship inside the application rather than merely alongside it:
+
+     * mPDF — GNU General Public License v2.0 only. Used server-side to render
+       invoices. Running it as part of a hosted service is not distribution and
+       does not place this application under the GPL; distributing this codebase
+       to a third party would need that question answered first.
+
+     * Hind Siliguri (resources/fonts) — SIL Open Font License 1.1,
+       (c) Indian Type Foundry. See resources/fonts/README.md.
+
+8. GOVERNING LAW
+
+   This licence is governed by the laws of the People's Republic of Bangladesh,
+   without regard to its conflict-of-law provisions. The courts of Dhaka,
+   Bangladesh shall have exclusive jurisdiction.
+
+For permission to use this software, contact the Author:
+Moshiur Rahman <rmedha037@gmail.com>
