@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  quality:
+    name: Lint, analyse and test
+    runs-on: ubuntu-latest
+
+    services:
+      # The suite runs against MySQL rather than SQLite on purpose: the money guarantees
+      # rest on SELECT … FOR UPDATE, which SQLite ignores. A concurrency test passing on
+      # SQLite would prove nothing about production.
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: vendora_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, pdo_mysql, gd, zip, bcmath
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Prepare the environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=vendora_test/' .env
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+
+      - name: Check code style
+        run: vendor/bin/pint --test
+
+      - name: Static analysis
+        run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress
+
+      - name: Template parity
+        run: php scripts/check-classes.php
+
+      - name: Migrate
+        run: php artisan migrate --force
+        env:
+          DB_DATABASE: vendora_test
+          DB_USERNAME: root
+          DB_PASSWORD: root
+
+      - name: Tests
+        run: vendor/bin/pest --colors=always
+        env:
+          DB_DATABASE: vendora_test
+          DB_USERNAME: root
+          DB_PASSWORD: root
+
+  assets:
+    name: Build front-end
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
