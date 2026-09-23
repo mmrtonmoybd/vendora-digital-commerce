@@ -21,6 +21,16 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
+        /*
+         * Bind to IPv4 explicitly.
+         *
+         * Node resolves "localhost" to ::1 on this platform, so the hot file ends up
+         * holding http://[::1]:5173 — and a Content-Security-Policy source list cannot
+         * express an IPv6 literal at all. The browser discards that entry as invalid and
+         * blocks the dev server's stylesheet and entry script, which renders the storefront
+         * unstyled with no Alpine stores registered.
+         */
+        host: "127.0.0.1",
         watch: { ignored: ["**/storage/framework/views/**"] },
     },
 });
