@@ -245,8 +245,12 @@ final class DemoActivitySeeder extends Seeder
                 ['normal', 'high', 'urgent'][$index],
             );
 
-            if ($index === 0) {
-                $tickets->reply($ticket, Admin::first(), 'Checking this now — I can see the payment, re-sending the invitation.');
+            // Only if there is a staff member to reply as. The demo data can be seeded
+            // before any administrator exists, and a reply with no author is not a reply.
+            $staff = Admin::query()->first();
+
+            if ($index === 0 && $staff !== null) {
+                $tickets->reply($ticket, $staff, 'Checking this now — I can see the payment, re-sending the invitation.');
             }
         }
 

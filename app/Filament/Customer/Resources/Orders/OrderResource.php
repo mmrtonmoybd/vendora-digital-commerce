@@ -97,6 +97,19 @@ final class OrderResource extends Resource
             ]);
     }
 
+    /**
+     * Eager-load what the table actually renders.
+     *
+     * Declared as eagerLoad() rather than by overriding getEloquentQuery(), because that
+     * method carries the per-customer scoping and replacing it would expose every order.
+     *
+     * @return array<int, string>
+     */
+    public static function eagerLoad(): array
+    {
+        return ['items', 'paymentMethod'];
+    }
+
     public static function getPages(): array
     {
         return [

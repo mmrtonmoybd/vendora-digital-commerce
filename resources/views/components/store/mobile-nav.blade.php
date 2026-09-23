@@ -21,13 +21,13 @@
         </svg></button>
     </div>
     <div class="p-4 border-b border-stone-100">
-      <a href="{{ route('login') }}" data-guest-only x-cloak
+      <a href="{{ route('login') }}" data-guest-only
         class="flex items-center justify-center gap-2 h-11 rounded-xl bg-brand-600 text-white font-semibold"><svg class="w-4 h-4" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="8" r="5" />
           <path d="M20 21a8 8 0 0 0-16 0" />
         </svg> {{ __('store.sign_in_register') }}</a>
-      <div data-auth-only x-cloak class="flex items-center gap-3 p-3 rounded-xl bg-brand-50">
+      <div data-auth-only class="flex items-center gap-3 p-3 rounded-xl bg-brand-50">
         <span class="grid place-items-center w-10 h-10 rounded-full bg-brand-600 text-white"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="8" r="5" />
@@ -63,7 +63,7 @@
     <div class="p-4 border-t border-stone-100 grid grid-cols-2 gap-2">
       <a href="{{ route('cart') }}" class="h-11 flex items-center justify-center gap-1 rounded-xl bg-amber-300 font-semibold">{{ __('store.my_cart') }} (<span
           data-cart-count>0</span>)</a>
-      <form method="POST" action="{{ route('logout') }}" data-auth-only x-cloak>@csrf<button type="submit"
+      <form method="POST" action="{{ route('logout') }}" data-auth-only>@csrf<button type="submit"
           class="w-full h-11 rounded-xl border border-stone-200 font-semibold">{{ __('store.log_out') }}</button></form>
     </div>
   </aside>

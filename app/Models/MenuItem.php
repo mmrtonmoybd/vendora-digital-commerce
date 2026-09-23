@@ -102,9 +102,78 @@ final class MenuItem extends Model
     }
 
     /** @param class-string<Model> $model */
+    /**
+     * Targets already looked up during this request, keyed by "Model:id".
+     *
+     * Every page of the site renders the header, mobile and four footer menus, and each
+     * item pointing at a page, category, product or post used to resolve its own target
+     * with its own find(). That was eleven queries per request on the demo data alone,
+     * repeated on every page.
+     *
+     * @var array<string, Model|null>
+     */
+    private static array $targets = [];
+
+    /**
+     * Look up every target in these menus at once.
+     *
+     * One query per link type rather than one per item. Call it after loading a menu;
+     * resolvedUrl() then answers from memory.
+     *
+     * @param  iterable<int, self>  $items
+     */
+    public static function preloadTargets(iterable $items): void
+    {
+        $wanted = [];
+
+        foreach ($items as $item) {
+            foreach ([$item, ...($item->relationLoaded('children') ? $item->children : [])] as $node) {
+                $model = self::MODELS[$node->link_type->value] ?? null;
+
+                if ($model !== null && $node->link_target_id) {
+                    $wanted[$model][] = (int) $node->link_target_id;
+                }
+            }
+        }
+
+        foreach ($wanted as $model => $ids) {
+            $ids = array_values(array_unique($ids));
+            $missing = array_filter($ids, fn (int $id): bool => ! array_key_exists($model.':'.$id, self::$targets));
+
+            if ($missing === []) {
+                continue;
+            }
+
+            $found = $model::query()->whereKey($missing)->get()->keyBy('id');
+
+            foreach ($missing as $id) {
+                self::$targets[$model.':'.$id] = $found->get($id);
+            }
+        }
+    }
+
+    /** Which model each record-backed link type points at. */
+    private const MODELS = [
+        'page' => Page::class,
+        'category' => Category::class,
+        'product' => Product::class,
+        'post' => Post::class,
+    ];
+
+    /** @param class-string<Model> $model */
     private function modelUrl(string $model, string $routeName): string
     {
-        $record = $this->link_target_id ? $model::find($this->link_target_id) : null;
+        if (! $this->link_target_id) {
+            return url('/');
+        }
+
+        $key = $model.':'.$this->link_target_id;
+
+        if (! array_key_exists($key, self::$targets)) {
+            self::$targets[$key] = $model::find($this->link_target_id);
+        }
+
+        $record = self::$targets[$key];
 
         return $record ? route($routeName, $record) : url('/');
     }

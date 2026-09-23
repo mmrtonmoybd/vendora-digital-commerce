@@ -26,7 +26,10 @@ use App\Models\WithdrawalRequest;
 use App\Observers\CacheBustingObserver;
 use App\Observers\SlugHistoryObserver;
 use App\Settings\MailSettings;
+use App\Support\Dates;
 use App\View\Composers\StorefrontComposer;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Config;
@@ -46,6 +49,7 @@ final class AppServiceProvider extends ServiceProvider
     {
         $this->configureAuthorization();
         $this->configureModels();
+        $this->configureDateFormats();
         $this->configureMorphMap();
         $this->configureMailer();
         $this->configureViews();
@@ -82,6 +86,29 @@ final class AppServiceProvider extends ServiceProvider
      * Lazy loading is the single easiest way to turn one page into two hundred queries, and
      * it is far cheaper to find in development than in an APM chart.
      */
+    /**
+     * One date format across both panels.
+     *
+     * Every ->dateTime() and ->date() in the resources is written without an explicit
+     * format, so this is the single place the shop's date style is decided. Table and
+     * Schema each carry their own copy of the setting — tables render columns, schemas
+     * render infolist entries — so both are configured.
+     */
+    private function configureDateFormats(): void
+    {
+        Table::configureUsing(function (Table $table): void {
+            $table->defaultDateTimeDisplayFormat(Dates::DATETIME)
+                ->defaultDateDisplayFormat(Dates::DATE)
+                ->defaultTimeDisplayFormat(Dates::TIME);
+        });
+
+        Schema::configureUsing(function (Schema $schema): void {
+            $schema->defaultDateTimeDisplayFormat(Dates::DATETIME)
+                ->defaultDateDisplayFormat(Dates::DATE)
+                ->defaultTimeDisplayFormat(Dates::TIME);
+        });
+    }
+
     private function configureModels(): void
     {
         Model::preventLazyLoading(! $this->app->isProduction());

@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Enums\AccessStatus;
 use App\Exceptions\DomainException;
+use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\AccessFulfillmentService;
 use BackedEnum;
@@ -72,7 +73,7 @@ final class AccessQueue extends Page implements HasTable
     {
         return $table
             ->query($this->baseQuery())
-            ->defaultSort('orders.paid_at')
+            ->defaultSort('order_paid_at')
             ->recordActionsPosition(RecordActionsPosition::BeforeCells)
             ->paginationPageOptions([10, 25, 50, 100])
             ->columns([
@@ -292,6 +293,22 @@ final class AccessQueue extends Page implements HasTable
     private function baseQuery(): Builder
     {
         return OrderItem::query()
+            ->select('order_items.*')
+            /*
+             | The queue is worked oldest-payment-first, but ORDER BY orders.paid_at needs
+             | the orders table in the query and whereHas only produces a subquery — so the
+             | sort referenced a table that was never joined and the page 500'd.
+             |
+             | A correlated subselect sorts on the same value without a join, which keeps
+             | the Eloquent hydration of order_items intact and reads through the orders
+             | primary key.
+             */
+            ->addSelect([
+                'order_paid_at' => Order::query()
+                    ->select('paid_at')
+                    ->whereColumn('orders.id', 'order_items.order_id')
+                    ->limit(1),
+            ])
             ->with(['order.assignedAdmin', 'order.user', 'product.platform'])
             ->whereHas('order', fn (Builder $q) => $q->paid());
     }

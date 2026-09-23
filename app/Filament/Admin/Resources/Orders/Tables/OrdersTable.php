@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Orders\Tables;
 
 use App\Enums\OrderPaymentStatus;
 use App\Enums\OrderStatus;
+use App\Enums\PaymentMethodType;
 use App\Filament\Admin\Resources\Orders\Support\OrderActions;
 use App\Filament\Support\MoneyColumn;
 use App\Models\Order;
@@ -43,7 +44,21 @@ final class OrdersTable
                     ->wrap()
                     ->limit(60),
                 MoneyColumn::make('total'),
-                TextColumn::make('paymentMethod.name')->label('Method')->badge()->color('gray')->toggleable(),
+                /*
+                 | The method's own name is not enough to work an order: "bKash" does not
+                 | say whether the money arrived through the gateway or is a transfer
+                 | somebody still has to check against a statement. The badge carries the
+                 | kind, the description carries the name and the reference.
+                 */
+                TextColumn::make('paymentMethod.type')
+                    ->label('Paid via')
+                    ->badge()
+                    ->formatStateUsing(fn (?PaymentMethodType $state): string => $state?->label() ?? 'Not chosen')
+                    ->color(fn (?PaymentMethodType $state): string => $state?->color() ?? 'gray')
+                    ->icon(fn (?PaymentMethodType $state): ?string => $state?->icon())
+                    ->description(fn (Order $record): string => $record->paymentMethod?->name
+                        .($record->manual_transaction_id ? ' · '.$record->manual_transaction_id : ''))
+                    ->toggleable(),
                 TextColumn::make('payment_status')->label('Payment')->badge(),
                 TextColumn::make('status')->label('Status')->badge(),
                 TextColumn::make('orderSource.name')

@@ -100,7 +100,7 @@ final class SlugRedirectResource extends Resource
                     ->color(fn (int $state): string => $state === 301 ? 'success' : 'warning'),
                 TextColumn::make('hits')->label('Times followed')->sortable()->badge()
                     ->color(fn (int $state): string => $state > 0 ? 'info' : 'gray'),
-                TextColumn::make('created_at')->label('Recorded')->dateTime('d M Y')->sortable()->toggleable(),
+                TextColumn::make('created_at')->label('Recorded')->dateTime()->sortable()->toggleable(),
             ])
             ->filters([
                 SelectFilter::make('status_code')->label('Type')->options([301 => '301', 302 => '302']),

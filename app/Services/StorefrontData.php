@@ -37,7 +37,12 @@ final class StorefrontData
                 ->where('is_active', true)
                 ->first();
 
-            return $menu?->items ?? collect();
+            $items = $menu?->items ?? collect();
+
+            // One lookup for every link target in the menu, instead of one per item.
+            MenuItem::preloadTargets($items);
+
+            return $items;
         });
     }
 
@@ -54,7 +59,8 @@ final class StorefrontData
                 ])
                 ->where('is_active', true)
                 ->orderBy('location')
-                ->get();
+                ->get()
+                ->each(fn (Menu $menu) => MenuItem::preloadTargets($menu->items));
         });
     }
 

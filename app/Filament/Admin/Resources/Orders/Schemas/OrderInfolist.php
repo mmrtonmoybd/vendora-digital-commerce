@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Orders\Schemas;
 
+use App\Enums\PaymentMethodType;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Support\Money;
@@ -41,6 +42,14 @@ final class OrderInfolist
                     TextEntry::make('user.name')->label('Customer')->placeholder('Guest checkout'),
                     TextEntry::make('customer_phone')->label('Phone')->copyable()->placeholder('—'),
                     TextEntry::make('paymentMethod.name')->label('Paid with')->badge()->color('gray'),
+                    // The name alone does not say whether this was a gateway capture or a
+                    // transfer a human verified, which changes what staff do about it.
+                    TextEntry::make('paymentMethod.type')
+                        ->label('Kind')
+                        ->badge()
+                        ->formatStateUsing(fn (?PaymentMethodType $state): string => $state?->label() ?? 'Not chosen')
+                        ->color(fn (?PaymentMethodType $state): string => $state?->color() ?? 'gray')
+                        ->icon(fn (?PaymentMethodType $state): ?string => $state?->icon()),
                     TextEntry::make('created_at')->label('Placed')->dateTime(),
                     TextEntry::make('paid_at')->label('Paid')->dateTime()->placeholder('Not yet'),
                     TextEntry::make('completed_at')->label('Completed')->dateTime()->placeholder('Not yet'),

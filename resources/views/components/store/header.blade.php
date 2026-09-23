@@ -57,14 +57,14 @@
             <path d="m21 21-4.3-4.3" />
           </svg></a>
 
-        <a href="{{ route('login') }}" data-guest-only x-cloak
+        <a href="{{ route('login') }}" data-guest-only
           class="hidden sm:inline-flex items-center gap-2 h-10 px-4 rounded-full bg-white text-brand-700 font-semibold text-sm hover:bg-brand-50"><svg
             class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             aria-hidden="true">
             <circle cx="12" cy="8" r="5" />
             <path d="M20 21a8 8 0 0 0-16 0" />
           </svg> {{ __('store.sign_in') }}</a>
-        <div data-auth-only x-cloak class="relative hidden sm:block" x-data="{ open: false }" @click.outside="open=false">
+        <div data-auth-only class="relative hidden sm:block" x-data="{ open: false }" @click.outside="open=false">
           <button @click="open=!open"
             class="inline-flex items-center gap-2 h-10 pl-1.5 pr-3 rounded-full bg-white text-ink text-sm font-semibold hover:bg-brand-50">
             <span class="grid place-items-center w-7 h-7 rounded-full bg-brand-600 text-white"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none"
@@ -120,7 +120,7 @@
             <circle cx="19" cy="21" r="1" />
             <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
           </svg><span class="hidden sm:inline">{{ __('store.my_cart') }}</span>
-          <span data-cart-badge data-cart-count x-cloak
+          <span data-cart-badge data-cart-count data-cart-empty
             class="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 grid place-items-center rounded-full bg-ink text-white text-[11px] font-bold"></span>
         </a>
         <button @click="nav=true" class="lg:hidden grid place-items-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20"

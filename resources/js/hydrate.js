@@ -35,17 +35,25 @@ function applyCartCount(count) {
 
     // The header badge only exists when there is something in the cart, matching the
     // template, which renders it under x-show="$store.cart.count".
+    //
+    // A data attribute rather than x-cloak: Alpine strips x-cloak from anything it
+    // initialises, so it cannot be used to express state that outlives that moment.
     document.querySelectorAll("[data-cart-badge]").forEach((node) => {
-        node.toggleAttribute("x-cloak", count < 1);
+        node.toggleAttribute("data-cart-empty", count < 1);
     });
 }
 
 function applyIdentity(state) {
-    const selector = state.authenticated ? "[data-auth-only]" : "[data-guest-only]";
-
-    document.querySelectorAll(selector).forEach((node) => {
-        node.removeAttribute("x-cloak");
-    });
+    /*
+     * One flag on <html> decides which branch of the account chrome is shown; the CSS
+     * does the rest. This is idempotent, so re-running hydration after a cart update or a
+     * logout always lands on the right answer rather than only ever revealing more.
+     *
+     * Not x-cloak: Alpine removes that attribute as soon as it initialises an element, and
+     * the account block owns the dropdown, so Alpine was un-hiding it for signed-out
+     * visitors.
+     */
+    document.documentElement.dataset.auth = state.authenticated ? "in" : "out";
 
     if (!state.user) return;
 

@@ -69,7 +69,7 @@ final class TagResource extends Resource
                 TextColumn::make('name')->searchable()->sortable()->weight('semibold'),
                 TextColumn::make('slug')->searchable()->toggleable(),
                 TextColumn::make('posts_count')->counts('posts')->label('Posts')->badge()->sortable(),
-                TextColumn::make('created_at')->dateTime('d M Y')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([CreateAction::make()])
             ->recordActions([ActionGroup::make([EditAction::make(), DeleteAction::make()])])

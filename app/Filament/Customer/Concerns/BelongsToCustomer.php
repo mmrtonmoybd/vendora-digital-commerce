@@ -23,9 +23,29 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait BelongsToCustomer
 {
+    /**
+     * Scope every query to the signed-in customer.
+     *
+     * Resources add eager loading through eagerLoad() rather than by overriding this.
+     * A resource that defines its own getEloquentQuery() silently replaces this one — the
+     * orders screen did exactly that while adding a with(), and every customer could see
+     * every order until the isolation test caught it.
+     */
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', auth()->id());
+        return parent::getEloquentQuery()
+            ->where('user_id', auth()->id())
+            ->with(static::eagerLoad());
+    }
+
+    /**
+     * Relations the table and its columns read.
+     *
+     * @return array<int, string>
+     */
+    public static function eagerLoad(): array
+    {
+        return [];
     }
 
     public static function canViewAny(): bool

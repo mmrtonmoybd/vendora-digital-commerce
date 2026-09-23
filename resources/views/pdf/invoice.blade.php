@@ -289,7 +289,7 @@
         <td width="44%" class="right">
           <div class="doc-title">{{ __('invoice.title') }}</div>
           <div class="doc-meta" style="margin-top:4pt"><strong>{{ $order->order_number }}</strong></div>
-          <div class="doc-meta">{{ __('invoice.issued') }}: {{ ($order->paid_at ?? $order->created_at)->format('d M Y, g:i a') }}</div>
+          <div class="doc-meta">{{ __('invoice.issued') }}: {{ ($order->paid_at ?? $order->created_at)->format(\App\Support\Dates::DATETIME) }}</div>
         </td>
       </tr>
     </table>
@@ -336,11 +336,20 @@
           <td width="49%">
             <div class="label">{{ __('invoice.payment') }}</div>
             <strong>{{ $order->paymentMethod?->t('name') ?? __('invoice.not_recorded') }}</strong><br>
+            {{-- Which kind of payment this was. "bKash" alone does not say whether the money
+                 came through the gateway or arrived as a transfer somebody verified by hand,
+                 and that is the first thing anyone asks when an invoice is queried. --}}
+            @if ($order->paymentMethod?->type)
+              <span class="muted">{{ $order->paymentMethod->type->label() }}</span><br>
+            @endif
             @if ($order->manual_transaction_id)
               <span class="muted">{{ __('invoice.transaction_id') }}: {{ $order->manual_transaction_id }}</span><br>
             @endif
+            @if ($order->manual_sender_number)
+              <span class="muted">{{ __('shop.sender_number') }}: {{ $order->manual_sender_number }}</span><br>
+            @endif
             @if ($order->paid_at)
-              <span class="muted">{{ __('invoice.paid_on') }}: {{ $order->paid_at->format('d M Y, g:i a') }}</span><br>
+              <span class="muted">{{ __('invoice.paid_on') }}: {{ $order->paid_at->format(\App\Support\Dates::DATETIME) }}</span><br>
             @endif
             <span class="muted">{{ __('invoice.currency') }}: {{ $commerce->currency_code }}</span>
           </td>

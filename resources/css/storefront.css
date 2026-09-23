@@ -94,6 +94,36 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* --------------------------------------------------------------------------
+   Signed-in vs signed-out chrome on an edge-cached page.
+
+   The cached HTML contains both versions of the account area and says which is
+   which; hydrate.js then stamps html[data-auth] once it knows who the visitor
+   is. Until that answer arrives neither is shown, so a cached page never
+   flashes somebody else's state.
+
+   This deliberately does NOT use x-cloak. Alpine ships an x-cloak directive
+   that strips the attribute the moment it initialises an element, and the
+   account block is an Alpine root (it owns the dropdown) — so Alpine removed
+   the cloak regardless of who was signed in, and both "Sign in" and "My
+   account" rendered at once.
+
+   Hiding is done with !important on the wrong branch only. The element's own
+   responsive display classes still govern when it is the right branch, which
+   is why "hidden sm:block" keeps working.
+   -------------------------------------------------------------------------- */
+html:not([data-auth]) [data-auth-only],
+html:not([data-auth]) [data-guest-only],
+html[data-auth="in"] [data-guest-only],
+html[data-auth="out"] [data-auth-only] {
+    display: none !important;
+}
+
+/* The cart badge is a count, so it hides itself when there is nothing to count. */
+[data-cart-badge][data-cart-empty] {
+    display: none !important;
+}
 html {
     scroll-behavior: smooth;
 }

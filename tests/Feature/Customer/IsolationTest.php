@@ -7,6 +7,7 @@ use App\Enums\InvoiceStatus;
 use App\Enums\UserStatus;
 use App\Enums\WalletTxType;
 use App\Exceptions\DomainException;
+use App\Filament\Customer\Concerns\BelongsToCustomer;
 use App\Filament\Customer\Resources\Deposits\DepositResource;
 use App\Filament\Customer\Resources\Invoices\InvoiceResource;
 use App\Filament\Customer\Resources\Orders\OrderResource;
@@ -146,4 +147,33 @@ it('keeps the panel closed to an unverified customer', function (): void {
     $unverified = User::factory()->unverified()->create();
 
     expect($unverified->canAccessPanel(Filament::getPanel('customer')))->toBeFalse();
+});
+
+/**
+ * Adding eager loading to a customer resource must not drop the ownership scope.
+ *
+ * A resource that defines its own getEloquentQuery() replaces the one in
+ * BelongsToCustomer, scoping and all. That happened once while adding a with() for
+ * performance, and every customer could read every order. Eager loading now goes through
+ * eagerLoad(); this fails if anyone reaches for the other method again.
+ */
+it('never lets a customer resource replace the ownership scope', function (): void {
+    $offenders = [];
+
+    foreach (Filament::getPanel('customer')->getResources() as $resource) {
+        if (! in_array(BelongsToCustomer::class, class_uses_recursive($resource), true)) {
+            continue;
+        }
+
+        // Reflection is no help here: PHP flattens a trait's methods into the using class,
+        // so getDeclaringClass() names the resource either way. The question is whether the
+        // resource's own file defines it.
+        $source = (string) file_get_contents((new ReflectionClass($resource))->getFileName());
+
+        if (str_contains($source, 'function getEloquentQuery')) {
+            $offenders[] = class_basename($resource);
+        }
+    }
+
+    expect($offenders)->toBe([]);
 });

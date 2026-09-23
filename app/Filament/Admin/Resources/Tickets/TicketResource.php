@@ -102,6 +102,18 @@ final class TicketResource extends Resource
             ->recordActions([ActionGroup::make([ViewAction::make()])]);
     }
 
+    /**
+     * Eager-load what the table actually renders.
+     *
+     * Every one of these is read by a column callback. Without them the page is a query
+     * per row in production — and a LazyLoadingViolationException in development, which is
+     * how these were found.
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['user', 'order', 'assignedAdmin']);
+    }
+
     public static function getPages(): array
     {
         return [
