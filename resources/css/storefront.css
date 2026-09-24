@@ -1,29 +1,31 @@
 /* ==========================================================================
-   Storefront — "Access, on the record."
+   Storefront — "The Pass."
 
-   What this shop sells is permission: an agency ad account, a Business Manager seat, a
-   subscription — each granted by a person, to an email address, inside a published window.
-   So the buyer's real question is never "is this pretty", it is "will access actually
-   arrive, and what happens if it doesn't".
+   THE SUBJECT. This shop does not ship anything. It issues permission: a seat on an agency
+   ad account, a Business Manager role, a subscription — granted by a person, to one email
+   address, inside a published window, covered for a stated number of days. What the
+   customer buys is closer to a permit than to a parcel.
 
-   The design answers that question with the operational record the system already keeps:
-   seats left, SLA minutes, warranty days, the platform the access is granted through, the
-   payment route an order took. Those figures are the visual language — set in tabular
-   figures, given their own rows, never buried under marketing copy.
+   THE IDEA. So the site is built out of passes. Every product is an issued pass: an
+   artwork panel, a perforated tear line punched through the card's own outline, and a stub
+   below carrying the terms — price, seats left, how long the grant takes, how long it is
+   covered. A card looks like something that was issued and can be torn, not like a rounded
+   rectangle with a shadow under it.
 
-   Ground is cool navy rather than a tinted black, and deliberately not the shop's red: a
-   wall of brand colour reads as a clearance sale, and the accent works harder when it is
-   the only saturated thing on a page. Brand colour is reserved for one thing per screen —
-   the action the buyer came to take.
+   That decision cascades. Corners are 4px, because permits are not rounded. Badges are
+   stamps, pressed at the angle a hand leaves them at, not pill ribbons. Facts are ruled
+   with dotted leaders the way a docket is. Dark bands carry a guilloché — the engine-turned
+   line work on a banknote or a share certificate — instead of a dot grid. Buttons sit on a
+   hard 2px offset that collapses under the press, so using one feels like stamping it.
+
+   Brand colour is admin-driven and is spent on exactly one thing per screen: the action the
+   visitor came to take. Everything else is ink on stone.
 
    Structure:
-     1. Tailwind + sources
-     2. Theme tokens
-     3. Runtime brand variables
-     4. Base
-     5. Components (the vocabulary every page is built from)
-     6. Cached-page chrome (signed-in vs signed-out)
-     7. Motion
+     1. Tailwind + sources        5. Components — the pass vocabulary
+     2. Theme tokens              6. Cached-page chrome
+     3. Runtime brand             7. Motion and graphics
+     4. Base                      8. Reduced motion
    ========================================================================== */
 @import "tailwindcss";
 
@@ -38,12 +40,14 @@
 @source '../../app/Http/Controllers/Storefront';
 @source '../../config/storefront.php';
 
-/* Presentation values that reach the markup from the database — payment-method chips and
-   badge styles an administrator picks in the panel. Tailwind cannot see these in source. */
-@source inline("{bg-stone-900,bg-pink-600,bg-orange-600,bg-violet-700,bg-brand-700,bg-emerald-600,bg-sky-600,bg-amber-300,bg-rose-300,bg-emerald-300,bg-sky-300,bg-stone-300}");
+/* Presentation values that reach the markup from the database — the payment-method chips
+   an administrator picks in the panel. Tailwind cannot see these in source. */
+@source inline(
+    "{bg-stone-900,bg-pink-600,bg-orange-600,bg-violet-700,bg-brand-700,bg-emerald-600,bg-sky-600,bg-amber-300,bg-rose-300,bg-emerald-300,bg-sky-300,bg-stone-300}"
+);
 
 @theme {
-    /* The brand scale is driven by CSS variables so the admin can re-skin the shop from
+    /* The brand scale is driven by CSS variables so the admin can re-ink the shop from
        settings without a rebuild. See the :root block below for the defaults. */
     --color-brand-50: rgb(var(--brand-50));
     --color-brand-100: rgb(var(--brand-100));
@@ -60,49 +64,50 @@
     --color-surface: rgb(var(--surface));
     --color-ink: rgb(var(--ink));
 
-    /* Two families, clearly distinct. Hind Siliguri carries the body because it is what
-       renders Bengali correctly; Sora carries headings and every figure — a geometric
-       technical face above a humanist one reads as an operations console. */
+    /* Bricolage Grotesque carries every heading and every figure: a contemporary grotesque
+       with real width variation and odd, confident curves — it reads as issued rather than
+       as one more interface font. Hind Siliguri carries the body, because it is what renders
+       Bengali correctly and this shop is bilingual. */
     --font-sans: "Hind Siliguri", system-ui, sans-serif;
-    --font-display: "Sora", system-ui, sans-serif;
+    --font-display: "Bricolage Grotesque", "Hind Siliguri", system-ui, sans-serif;
 
-    /* The neutral scale. Cool navy, not a tinted black: the shop sells access to business
-       platforms and the palette should read as infrastructure. */
-    --color-navy-50: #f7f8fa;
-    --color-navy-100: #eef1f6;
-    --color-navy-200: #dbe1ea;
-    --color-navy-300: #c8d0de;
-    --color-navy-400: #94a1b8;
-    --color-navy-500: #63728d;
-    --color-navy-600: #445068;
-    --color-navy-700: #2c3650;
-    --color-navy-800: #1b2439;
-    --color-navy-900: #101a2e;
-    --color-navy-950: #0a1120;
+    /* Ink and stone. Charcoal with a green cast rather than navy or a tinted black, on
+       warm-neutral stone rather than cream: the palette of a printed permit. */
+    --color-ink-50: #f4f5f3;
+    --color-ink-100: #e7e8e4;
+    --color-ink-200: #d3d5cf;
+    --color-ink-300: #b4b8b1;
+    --color-ink-400: #878d85;
+    --color-ink-500: #5f665e;
+    --color-ink-600: #434a43;
+    --color-ink-700: #2d332d;
+    --color-ink-800: #1b201c;
+    --color-ink-900: #111513;
+    --color-ink-950: #0a0d0b;
 
-    /* Availability and settled states. Muted teal, never an acid green. */
-    --color-seat-50: #e9f6f2;
-    --color-seat-100: #d2ece5;
-    --color-seat-600: #0e7c66;
-    --color-seat-700: #0a6353;
-    --color-seat-900: #063f35;
+    /* Granted. The bottle green a stamp is inked in, never an acid green. */
+    --color-grant-50: #e8f2ed;
+    --color-grant-100: #cfe4da;
+    --color-grant-600: #0e6e5b;
+    --color-grant-700: #0a5647;
+    --color-grant-900: #06382f;
 
-    /* Waiting on a person: manual transfers, pending grants. Clay, not a warning yellow. */
-    --color-hold-50: #fdf4e9;
-    --color-hold-100: #f8e6cd;
-    --color-hold-600: #a35f13;
-    --color-hold-700: #834c0f;
-    --color-hold-900: #52300a;
+    /* Waiting on a person: a manual transfer to check, a grant in progress. */
+    --color-hold-50: #faf1e3;
+    --color-hold-100: #f2e0c3;
+    --color-hold-600: #9a5b12;
+    --color-hold-700: #7c480e;
+    --color-hold-900: #4b2c09;
 
-    /* One radius family. Panels take the larger, controls the smaller; nothing else. */
-    --radius-panel: 0.875rem;
-    --radius-control: 0.5rem;
+    /* Permits are not rounded. Two radii, both small, and nothing else. */
+    --radius-panel: 0.375rem;
+    --radius-control: 0.25rem;
 }
 
 /* --- Runtime brand ---------------------------------------------------------------------
-   The --brand-* RGB triplets are overwritten at runtime from ThemeSettings; the default is
-   the crimson #dc2626 scale. Surface and ink are fixed — the shop may re-skin its accent,
-   but the navy structure is the design. */
+   The --brand-* triplets are overwritten at runtime from ThemeSettings; the default is the
+   crimson #dc2626 scale. Surface and ink are fixed: the shop may re-ink its accent, but
+   stone and charcoal are the design. */
 :root {
     --brand-50: 254 242 242;
     --brand-100: 254 226 226;
@@ -114,24 +119,27 @@
     --brand-700: 185 28 28;
     --brand-800: 153 27 27;
     --brand-900: 127 29 29;
-    --surface: 247 248 250; /* page ground #f7f8fa — cool paper */
-    --ink: 16 26 46; /* text #101a2e — navy, not black */
+    --surface: 239 239 234; /* stone #efefea */
+    --ink: 17 21 19; /* charcoal #111513 */
+
+    --line: var(--color-ink-200);
+    --line-soft: var(--color-ink-100);
 }
 
 /* --- Base ---------------------------------------------------------------------------- */
 @layer base {
-    /* v4 made the default border colour currentColor; the storefront draws hairlines. */
+    /* v4 made the default border colour currentColor; this site draws hairlines. */
     *,
     ::after,
     ::before,
     ::backdrop,
     ::file-selector-button {
-        border-color: var(--color-navy-200);
+        border-color: var(--line);
     }
 
     input::placeholder,
     textarea::placeholder {
-        color: var(--color-navy-400);
+        color: var(--color-ink-400);
     }
 
     html {
@@ -141,6 +149,13 @@
 
     body {
         font-family: var(--font-sans);
+    }
+
+    /* Headings are set tight and a little condensed — issued, not advertised. */
+    .font-display {
+        font-family: var(--font-display);
+        font-variation-settings: "wdth" 96;
+        letter-spacing: -0.02em;
     }
 
     /* Keyboard focus is visible everywhere, in the brand colour, at one offset. */
@@ -166,22 +181,20 @@
 }
 
 /* ==========================================================================
-   Components — the vocabulary every page is built from.
+   Components — the pass vocabulary.
 
-   These exist so the same idea is spelled the same way on eleven pages. A button is a
-   button whether it sits in a modal, a checkout summary or an empty state.
+   One idea, spelled the same way on every page: a button is a button whether it sits in a
+   drawer, a checkout summary or an empty state.
    ========================================================================== */
 @layer components {
     /* --- Layout ---------------------------------------------------------------------- */
 
-    /* One content measure, one gutter, everywhere. */
     .wrap {
         @apply max-w-7xl mx-auto px-4;
     }
     .wrap-narrow {
         @apply max-w-3xl mx-auto px-4;
     }
-
     .section {
         @apply py-12 md:py-16;
     }
@@ -191,19 +204,40 @@
 
     /* --- Dark ground ------------------------------------------------------------------ */
 
-    /* The masthead and any full-bleed dark band. Defined once as a variable so the dark
-       card below can carry exactly the same ground without repeating the gradient. */
+    /* The masthead and any full-bleed dark band. Declared once as a variable so the dark
+       panels elsewhere carry exactly the same ink. */
     .hero-ground,
     .slab {
         --ground:
-            radial-gradient(820px 420px at 82% -30%, rgb(var(--brand-500) / 0.22), transparent 62%),
-            linear-gradient(165deg, var(--color-navy-900) 0%, var(--color-navy-950) 100%);
+            radial-gradient(900px 460px at 84% -30%, rgb(var(--brand-600) / 0.3), transparent 60%),
+            linear-gradient(168deg, var(--color-ink-900) 0%, var(--color-ink-950) 100%);
 
         background: var(--ground);
     }
 
-    /* A measured grid, visible only where light falls on it: a console surface, not
-       decoration. */
+    /*
+     * Guilloché.
+     *
+     * The engine-turned line work printed on a banknote, a share certificate, a permit:
+     * two sets of hairlines crossing at a shallow angle, close enough together to shimmer.
+     * This is the site's texture, and it appears only on ink — it is what says the dark
+     * bands are documents rather than hero images.
+     */
+    .guilloche {
+        position: relative;
+    }
+    .guilloche::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            repeating-linear-gradient(58deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 9px),
+            repeating-linear-gradient(-58deg, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 9px);
+        mask-image: radial-gradient(900px 520px at 72% 0%, #000 0%, transparent 80%);
+    }
+
+    /* Kept so older markup that asks for the dot grid gets the guilloché instead. */
     .grid-field {
         position: relative;
     }
@@ -213,63 +247,112 @@
         inset: 0;
         pointer-events: none;
         background-image:
-            linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
-            linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
-        background-size: 64px 64px;
-        mask-image: radial-gradient(760px 420px at 70% 0%, #000 0%, transparent 78%);
+            repeating-linear-gradient(58deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 9px),
+            repeating-linear-gradient(-58deg, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 9px);
+        mask-image: radial-gradient(900px 520px at 72% 0%, #000 0%, transparent 80%);
     }
 
-    /* A dark card inside a light page — the one place a promotion is allowed to shout. */
+    /* A dark panel inside a stone page — the one place a promotion may raise its voice. */
     .slab {
-        @apply relative overflow-hidden rounded-[1.25rem] text-white;
+        @apply relative overflow-hidden rounded-[var(--radius-panel)] text-white;
     }
 
-    /* --- Panels ----------------------------------------------------------------------- */
+    /* --- The pass --------------------------------------------------------------------- */
 
-    /* Hairline card. One radius, one border, no shadow at rest — depth is reserved for the
-       thing the cursor is on. */
+    /*
+     * A pass.
+     *
+     * The notches are punched through the card's own outline with a mask, so the outline
+     * stops at the tear the way a real ticket's printed border does. --tear says where the
+     * perforation sits; .pass-flat turns the punch off for a pass with no stub.
+     */
+    .pass {
+        --tear: 62%;
+        --notch: 11px;
+
+        position: relative;
+        background: #fff;
+        border-radius: var(--radius-panel);
+        box-shadow: 0 0 0 1px var(--line);
+        mask:
+            radial-gradient(var(--notch) at 0 var(--tear), #0000 98%, #000) left / 51% 100% no-repeat,
+            radial-gradient(var(--notch) at 100% var(--tear), #0000 98%, #000) right / 51% 100% no-repeat;
+        transition:
+            box-shadow 0.18s ease,
+            transform 0.18s ease;
+    }
+    .pass-flat {
+        mask: none;
+    }
+    .pass-lift:hover {
+        transform: translateY(-3px);
+        box-shadow:
+            0 0 0 1px var(--color-ink-300),
+            0 14px 30px -18px rgb(17 21 19 / 0.5);
+    }
+
+    /* The perforation itself, drawn on whatever element sits at the tear. */
+    .tear {
+        border-top: 1px dashed var(--color-ink-300);
+    }
+
+    /* Panels that are not passes: forms, summaries, drawers. Same ink, no perforation. */
     .panel {
-        @apply bg-white border border-navy-200 rounded-[var(--radius-panel)];
+        @apply bg-white rounded-[var(--radius-panel)];
+        box-shadow: 0 0 0 1px var(--line);
     }
     .panel-p {
         @apply p-5 md:p-6;
     }
     .panel-head {
-        @apply px-5 md:px-6 py-4 border-b border-navy-100 flex items-center justify-between gap-4;
+        @apply px-5 md:px-6 py-4 flex items-center justify-between gap-4;
+        border-bottom: 1px solid var(--line-soft);
     }
     .panel-hover {
-        @apply transition duration-200;
+        transition:
+            box-shadow 0.18s ease,
+            transform 0.18s ease;
     }
     .panel-hover:hover {
-        @apply border-navy-300;
-        box-shadow: 0 10px 28px -14px rgb(16 26 46 / 0.35);
         transform: translateY(-2px);
+        box-shadow:
+            0 0 0 1px var(--color-ink-300),
+            0 12px 26px -18px rgb(17 21 19 / 0.45);
     }
 
     /* --- Type ------------------------------------------------------------------------- */
 
     .h-page {
-        @apply font-display text-[2rem] md:text-[2.75rem] font-bold leading-[1.08] tracking-[-0.02em];
+        @apply font-display text-[2.1rem] md:text-[3rem] font-extrabold leading-[1.02];
+        font-variation-settings: "wdth" 92;
+        letter-spacing: -0.035em;
     }
     .h-section {
-        @apply font-display text-2xl md:text-[1.75rem] font-semibold leading-tight tracking-[-0.015em] text-navy-900;
+        @apply font-display text-[1.6rem] md:text-[2rem] font-bold leading-[1.06] text-ink-900;
+        font-variation-settings: "wdth" 94;
+        letter-spacing: -0.03em;
     }
     .h-panel {
-        @apply font-display text-[17px] font-semibold text-navy-900;
+        @apply font-display text-[17px] font-bold text-ink-900;
     }
 
-    /* The small label above a section. Sentence case and brand-coloured — a quiet pointer,
-       not a tracked-out all-caps eyebrow. */
+    /* The line above a section: sentence case, brand-inked, with a rule running out of it —
+       a permit's subject line, not a tracked-out eyebrow. */
     .label-line {
-        @apply text-[13px] font-medium text-brand-700;
+        @apply flex items-center gap-2.5 text-[13px] font-medium text-brand-700;
+    }
+    .label-line::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--line);
     }
 
     .lede {
-        @apply text-navy-500 leading-relaxed max-w-[62ch];
+        @apply text-ink-500 leading-relaxed max-w-[62ch];
     }
 
-    /* Anything countable — prices, seats, minutes, order numbers — lines up column to
-       column. That alignment is the whole point of a data-led layout. */
+    /* Anything countable — prices, seats, minutes, order numbers. */
     .tnum {
         font-variant-numeric: tabular-nums;
         font-feature-settings: "tnum" 1;
@@ -277,9 +360,20 @@
 
     /* --- Buttons ---------------------------------------------------------------------- */
 
+    /*
+     * Buttons are stamped.
+     *
+     * A hard 2px offset with no blur, collapsing under the press: the motion of a rubber
+     * stamp meeting paper rather than a card floating on a drop shadow.
+     */
     .btn {
         @apply inline-flex items-center justify-center gap-2 h-11 px-5 rounded-[var(--radius-control)]
-           font-semibold text-sm whitespace-nowrap transition duration-150 select-none;
+           font-display text-sm font-bold whitespace-nowrap select-none;
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease,
+            box-shadow 0.12s ease,
+            transform 0.12s ease;
     }
     .btn-lg {
         @apply h-12 px-6 text-[15px];
@@ -291,59 +385,68 @@
         @apply w-full;
     }
 
-    /* The action the visitor came to take. One per screen. */
     .btn-primary {
         @apply bg-brand-600 text-white;
+        box-shadow: 2px 2px 0 0 var(--color-ink-900);
     }
     .btn-primary:hover {
         @apply bg-brand-700;
     }
     .btn-primary:active {
-        transform: scale(0.99);
+        transform: translate(2px, 2px);
+        box-shadow: 0 0 0 0 var(--color-ink-900);
     }
 
-    /* Structural actions: apply a coupon, go to the account, confirm a receipt. */
     .btn-dark {
-        @apply bg-navy-900 text-white;
+        @apply bg-ink-900 text-white;
+        box-shadow: 2px 2px 0 0 rgb(var(--brand-600));
     }
     .btn-dark:hover {
-        @apply bg-navy-800;
+        @apply bg-ink-800;
+    }
+    .btn-dark:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0 0 0 0 rgb(var(--brand-600));
     }
 
-    /* The alternative that is still a real choice. */
     .btn-quiet {
-        @apply border border-navy-200 text-navy-700 bg-white;
+        @apply bg-white text-ink-700;
+        box-shadow: 0 0 0 1px var(--color-ink-300);
     }
     .btn-quiet:hover {
-        @apply border-navy-400 text-navy-900;
+        @apply text-ink-900;
+        box-shadow: 0 0 0 1px var(--color-ink-900);
+    }
+    .btn-quiet:active {
+        transform: translateY(1px);
     }
 
-    /* Same, on a dark ground. */
     .btn-onDark {
-        @apply border border-white/25 text-white;
+        @apply text-white;
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
     }
     .btn-onDark:hover {
-        @apply bg-white/10;
+        background: rgb(255 255 255 / 0.1);
     }
 
     .btn-ghost {
-        @apply text-navy-600;
+        @apply text-ink-600;
     }
     .btn-ghost:hover {
-        @apply text-navy-900 bg-navy-100;
+        @apply text-ink-900 bg-ink-100;
     }
 
     .btn:disabled,
     .btn[disabled] {
-        @apply bg-navy-100 text-navy-400 border-navy-100 cursor-not-allowed;
+        @apply bg-ink-100 text-ink-400 cursor-not-allowed;
+        box-shadow: 0 0 0 1px var(--line);
     }
     .btn:disabled:hover,
     .btn[disabled]:hover {
-        @apply bg-navy-100 text-navy-400;
+        @apply bg-ink-100 text-ink-400;
         transform: none;
     }
 
-    /* A link that behaves like a link and still reads as an action. */
     .link {
         @apply font-semibold text-brand-700;
     }
@@ -353,12 +456,14 @@
 
     /* --- Forms ------------------------------------------------------------------------ */
 
+    /* Fields are ruled boxes on a page, not pills. */
     .field {
-        @apply w-full h-11 px-3.5 rounded-[var(--radius-control)] border border-navy-200 bg-white
-           text-[15px] text-navy-900 transition;
+        @apply w-full h-11 px-3.5 rounded-[var(--radius-control)] border border-ink-300 bg-white
+           text-[15px] text-ink-900 transition;
     }
     .field:focus {
-        @apply border-brand-500 ring-2 ring-brand-500/25 outline-none;
+        @apply border-brand-600 outline-none;
+        box-shadow: 0 0 0 1px rgb(var(--brand-600));
     }
     textarea.field {
         @apply h-auto py-2.5 leading-relaxed;
@@ -378,42 +483,42 @@
     }
 
     .field-label {
-        @apply block text-[13px] font-semibold text-navy-700 mb-1.5;
+        @apply block font-display text-[13px] font-bold text-ink-700 mb-1.5;
     }
     .field-req {
         @apply text-brand-600;
     }
     .field-hint {
-        @apply mt-1.5 block text-xs text-navy-500;
+        @apply mt-1.5 block text-xs text-ink-500;
     }
     .field-error {
         @apply mt-1.5 block text-xs font-semibold text-brand-700;
     }
     .field-affix {
-        @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-navy-400 pointer-events-none;
+        @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400 pointer-events-none;
     }
 
     .check {
-        @apply w-4 h-4 rounded border-navy-300 text-brand-600;
+        @apply w-4 h-4 rounded-[2px] border-ink-300 text-brand-600;
     }
     .check:focus {
-        @apply ring-brand-500;
+        @apply ring-brand-600;
     }
 
     /* --- Status ----------------------------------------------------------------------- */
 
-    /* A fact about state, not a label: seats available, access granted, payment held. */
+    /* A fact about state: seats available, access granted, payment held. */
     .flag {
-        @apply inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md text-[11.5px] font-semibold;
+        @apply inline-flex items-center gap-1.5 h-6 px-2 rounded-[2px] font-display text-[11.5px] font-bold;
     }
     .flag-live {
-        @apply bg-seat-50 text-seat-700;
+        @apply bg-grant-50 text-grant-700;
     }
     .flag-hold {
         @apply bg-hold-50 text-hold-700;
     }
     .flag-off {
-        @apply bg-navy-100 text-navy-500;
+        @apply bg-ink-100 text-ink-500;
     }
     .flag-brand {
         @apply bg-brand-50 text-brand-700;
@@ -422,12 +527,38 @@
         @apply w-1.5 h-1.5 rounded-full bg-current;
     }
 
-    /* Messages the page says back to a person. */
+    /*
+     * A stamp.
+     *
+     * What an issuer presses onto a document, at the angle a hand leaves it. This is where
+     * a template puts a diagonal sale ribbon; a ribbon announces a markdown, and what this
+     * shop is claiming is that a thing is genuine.
+     */
+    .ribbon {
+        @apply absolute top-3 left-3 z-[5] pointer-events-none;
+    }
+    .ribbon span {
+        @apply inline-flex items-center h-[22px] px-2 font-display text-[10.5px] font-extrabold uppercase text-brand-700;
+        letter-spacing: 0.08em;
+        background: rgb(255 255 255 / 0.94);
+        border: 1.5px solid currentColor;
+        border-radius: 2px;
+        transform: rotate(-3.5deg);
+    }
+    .ribbon.ribbon-amber span {
+        @apply text-hold-700;
+    }
+    .ribbon.ribbon-dark span {
+        @apply text-ink-800;
+    }
+
+    /* Messages the page says back to a person, ruled in the state's own ink. */
     .note {
         @apply rounded-[var(--radius-control)] px-4 py-3 text-sm;
+        border-left: 3px solid currentColor;
     }
     .note-ok {
-        @apply bg-seat-50 text-seat-900;
+        @apply bg-grant-50 text-grant-900;
     }
     .note-bad {
         @apply bg-brand-50 text-brand-800;
@@ -436,61 +567,58 @@
         @apply bg-hold-50 text-hold-900;
     }
 
-    /* Status marker on artwork. Flat, where the old template used a diagonal ribbon: a
-       ribbon announces a markdown, and this shop's advantage is reliability. */
-    .ribbon {
-        @apply absolute top-3 left-3 z-[5] pointer-events-none;
-    }
-    .ribbon span {
-        @apply inline-flex items-center h-6 px-2.5 rounded-md font-display text-[11px] font-semibold text-white bg-brand-600;
-        letter-spacing: 0.01em;
-        box-shadow: 0 1px 2px rgb(16 26 46 / 0.25);
-    }
-    .ribbon.ribbon-amber span {
-        @apply bg-hold-600;
-    }
-    .ribbon.ribbon-dark span {
-        @apply bg-navy-800;
-    }
-
     /* --- Small parts ------------------------------------------------------------------ */
 
-    /* Filter and category chips. */
     .chip {
         @apply shrink-0 inline-flex items-center gap-2 h-10 px-4 rounded-[var(--radius-control)]
-           text-sm font-medium bg-white border border-navy-200 text-navy-700 transition;
+           font-display text-sm font-semibold bg-white text-ink-600 transition;
+        box-shadow: 0 0 0 1px var(--color-ink-300);
     }
     .chip:hover {
-        @apply border-navy-400 text-navy-900;
+        @apply text-ink-900;
+        box-shadow: 0 0 0 1px var(--color-ink-900);
     }
     .chip-on {
-        @apply bg-navy-900 text-white border-navy-900;
+        @apply bg-ink-900 text-white;
+        box-shadow: 0 0 0 1px var(--color-ink-900);
     }
     .chip-on:hover {
-        @apply bg-navy-800 text-white border-navy-800;
+        @apply bg-ink-800 text-white;
     }
 
-    /* A labelled figure: the shape almost every fact on this site takes. */
+    /*
+     * A ruled line of terms, with a dotted leader running between the label and the value —
+     * how a docket, an invoice or a ticket stub sets a fact. Seats, SLA, warranty,
+     * subtotals and totals all use it, so they read as one register.
+     */
     .kv {
-        @apply flex items-baseline justify-between gap-4 py-2 text-sm;
+        @apply flex items-baseline gap-2 py-2 text-sm;
     }
     .kv dt {
-        @apply text-navy-500;
+        @apply flex items-baseline gap-2 text-ink-500;
+        flex: 1;
+    }
+    .kv dt::after {
+        content: "";
+        flex: 1;
+        min-width: 1.5rem;
+        border-bottom: 1px dotted var(--color-ink-300);
+        transform: translateY(-0.25em);
     }
     .kv dd {
-        @apply font-semibold text-navy-900;
+        @apply font-display font-bold text-ink-900 shrink-0;
     }
 
-    /* The image well on a card or a summary line: brand artwork sits on near-white. */
+    /* The artwork well on a pass: brand logos sit on near-white, never on a gradient. */
     .well {
-        @apply relative bg-navy-50 overflow-hidden grid place-items-center;
+        @apply relative bg-ink-50 overflow-hidden grid place-items-center;
     }
 
     .rule {
-        @apply border-t border-navy-100;
+        border-top: 1px solid var(--line-soft);
     }
     .rule-dashed {
-        @apply border-t border-dashed border-navy-300;
+        border-top: 1px dashed var(--color-ink-300);
     }
 
     .no-scrollbar::-webkit-scrollbar {
@@ -502,10 +630,10 @@
 
     /* Editor output — CMS pages, blog bodies, product descriptions. */
     .prose-store {
-        @apply prose prose-slate max-w-none
-           prose-headings:font-display prose-headings:tracking-[-0.015em] prose-headings:text-navy-900
-           prose-p:text-navy-600 prose-li:text-navy-600
-           prose-strong:text-navy-900
+        @apply prose max-w-none
+           prose-headings:font-display prose-headings:tracking-[-0.03em] prose-headings:text-ink-900
+           prose-p:text-ink-600 prose-li:text-ink-600
+           prose-strong:text-ink-900
            prose-a:text-brand-700 prose-a:font-medium;
     }
 }
@@ -568,12 +696,6 @@ html[data-auth="out"] [data-auth-only] {
     .rise-in-2,
     .rise-in-3 {
         animation: none;
-    }
-    .panel-hover:hover {
-        transform: none;
-    }
-    html {
-        scroll-behavior: auto;
     }
 }
 
@@ -658,8 +780,8 @@ html[data-auth="out"] [data-auth-only] {
     width: 46rem;
     height: 32rem;
     border-radius: 999px;
-    filter: blur(70px);
-    opacity: 0.55;
+    filter: blur(80px);
+    opacity: 0.5;
 }
 .aurora::before {
     top: -18rem;
@@ -670,8 +792,8 @@ html[data-auth="out"] [data-auth-only] {
 .aurora::after {
     bottom: -22rem;
     left: -12rem;
-    background: radial-gradient(circle, #1d4ed866, transparent 68%);
-    animation: aurora-b 22s ease-in-out infinite;
+    background: radial-gradient(circle, #0e6e5b66, transparent 68%);
+    animation: aurora-b 26s ease-in-out infinite;
 }
 
 /* --- Sheen ----------------------------------------------------------------------------
@@ -757,7 +879,7 @@ html[data-auth="out"] [data-auth-only] {
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 999px;
-    background: var(--color-seat-600);
+    background: var(--color-grant-600);
 }
 .live-dot::after {
     content: "";
@@ -950,7 +1072,9 @@ html[data-auth="out"] [data-auth-only] {
     .group:hover .zoom-in-hover,
     .group:hover .icon-nudge,
     .group:hover .icon-rise,
-    .group:hover .icon-spin {
+    .group:hover .icon-spin,
+    .pass-lift:hover,
+    .panel-hover:hover {
         transform: none;
     }
 }

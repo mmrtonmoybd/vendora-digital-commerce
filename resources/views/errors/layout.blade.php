@@ -36,12 +36,14 @@
   <title>{{ $code }} — {{ $title }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Hind+Siliguri:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --brand: {{ $brand }};
-      --navy-900: #101a2e;
-      --navy-950: #0a1120;
+      --ink-900: #101a2e;
+      --ink-950: #0a1120;
     }
 
     *,
@@ -61,7 +63,7 @@
       padding: 24px;
       background:
         radial-gradient(760px 420px at 78% -20%, color-mix(in srgb, var(--brand) 26%, transparent), transparent 62%),
-        linear-gradient(165deg, var(--navy-900), var(--navy-950));
+        linear-gradient(165deg, var(--ink-900), var(--ink-950));
       color: #fff;
       font-family: 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
       font-size: 16px;
@@ -91,7 +93,7 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+      font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
       font-size: 19px;
       font-weight: 700;
       letter-spacing: -.02em;
@@ -109,7 +111,7 @@
     }
 
     .code {
-      font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+      font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
       font-size: clamp(72px, 20vw, 128px);
       font-weight: 700;
       line-height: .95;
@@ -119,7 +121,7 @@
     }
 
     h1 {
-      font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+      font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
       font-size: 24px;
       font-weight: 600;
       letter-spacing: -.02em;

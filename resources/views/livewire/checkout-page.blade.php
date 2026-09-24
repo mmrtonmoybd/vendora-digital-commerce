@@ -4,6 +4,18 @@
     $step = 1;
   @endphp
 
+  {{--
+    The checkout, as the same docket being totalled.
+
+    The left column is the form an issuer needs filled in before anybody can grant
+    anything — where the access goes, what each product needs, how it is paid for — set as
+    numbered steps stamped in squares rather than circles, because this is a permit being
+    completed and not an onboarding wizard.
+
+    Scroll-arrival is deliberately absent: choosing a payment method re-renders the whole
+    component, and a .reveal element loses its .is-in class in the morph, so the form would
+    fade itself back in every time somebody picked a card. Motion here only answers a press.
+  --}}
   <form class="wrap grid lg:grid-cols-[1fr_400px] gap-6 items-start" wire:submit="place" novalidate>
     <div class="space-y-6" data-track="initiate_checkout" data-track-payload='@json($trackPayload)'>
 
@@ -11,7 +23,8 @@
            address, so this is the one field an order cannot be fulfilled without. --}}
       <section class="panel panel-p">
         <h2 class="h-panel flex items-center gap-3">
-          <span class="tnum grid place-items-center w-7 h-7 rounded-full bg-navy-900 text-white text-[13px] font-semibold">{{ $step++ }}</span>
+          <span
+            class="tnum grid place-items-center w-7 h-7 rounded-[var(--radius-control)] bg-ink-900 font-display text-[13px] font-bold text-white">{{ $step++ }}</span>
           {{ __('shop.delivery_details') }}
         </h2>
 
@@ -33,20 +46,21 @@
              answers are part of the order and the customer may still edit the cart. --}}
         <section class="panel panel-p">
           <h2 class="h-panel flex items-center gap-3">
-            <span class="tnum grid place-items-center w-7 h-7 rounded-full bg-navy-900 text-white text-[13px] font-semibold">{{ $step++ }}</span>
+            <span
+              class="tnum grid place-items-center w-7 h-7 rounded-[var(--radius-control)] bg-ink-900 font-display text-[13px] font-bold text-white">{{ $step++ }}</span>
             {{ __('shop.what_we_need') }}
           </h2>
 
-          <div class="mt-5 space-y-5">
+          <div class="mt-5 space-y-6">
             @foreach ($needsFields as $item)
               <div wire:key="fields-{{ $item->id }}">
-                <p class="flex items-center gap-2.5 text-sm font-semibold text-navy-900">
-                  <span class="well w-8 h-8 rounded-md border border-navy-100 shrink-0">
+                <p class="flex items-center gap-2.5 font-display text-sm font-bold text-ink-900">
+                  <span class="well w-8 h-8 rounded-[var(--radius-control)] border border-ink-100 shrink-0">
                     @if ($item->product->image)
                       <img src="{{ Storage::disk('public')->url($item->product->image) }}" alt="" loading="lazy"
                         class="absolute inset-0 w-full h-full object-fill">
                     @else
-                      <x-store.icon :name="$item->product->icon_key" class="w-4 h-4 text-navy-400" />
+                      <x-store.icon :name="$item->product->icon_key" class="w-4 h-4 text-ink-400" />
                     @endif
                   </span>{{ $item->product->t('name') }}
                 </p>
@@ -85,7 +99,8 @@
            named here in the same words it will carry afterwards. --}}
       <section class="panel panel-p">
         <h2 class="h-panel flex items-center gap-3">
-          <span class="tnum grid place-items-center w-7 h-7 rounded-full bg-navy-900 text-white text-[13px] font-semibold">{{ $step++ }}</span>
+          <span
+            class="tnum grid place-items-center w-7 h-7 rounded-[var(--radius-control)] bg-ink-900 font-display text-[13px] font-bold text-white">{{ $step++ }}</span>
           {{ __('shop.payment_method') }}
         </h2>
 
@@ -94,17 +109,17 @@
             @php $walletBlocked = $option->isWallet() && $this->walletDisabled(); @endphp
             <label
               class="relative flex items-center gap-3 p-4 rounded-[var(--radius-panel)] border cursor-pointer transition
-                {{ $paymentKey === $option->key ? 'border-brand-600 bg-brand-50/60 ring-1 ring-brand-600' : 'border-navy-200 hover:border-navy-400' }}
+                {{ $paymentKey === $option->key ? 'border-brand-600 bg-brand-50/60 ring-1 ring-brand-600' : 'border-ink-200 hover:border-ink-400' }}
                 {{ $walletBlocked ? 'opacity-55 cursor-not-allowed' : '' }}">
               <input type="radio" name="payment" class="sr-only" value="{{ $option->key }}" wire:model.live="paymentKey" @disabled($walletBlocked)>
               <span
-                class="grid place-items-center w-11 h-11 rounded-[var(--radius-control)] text-white text-xs font-bold shrink-0 {{ $option->chip_color }}">{{ $option->short }}</span>
+                class="grid place-items-center w-11 h-11 rounded-[var(--radius-control)] font-display text-white text-xs font-bold shrink-0 {{ $option->chip_color }}">{{ $option->short }}</span>
               <span class="flex-1 min-w-0">
-                <b class="block text-sm text-navy-900">{{ $option->name }}</b>
+                <b class="block font-display text-sm text-ink-900">{{ $option->name }}</b>
                 @if ($option->isWallet())
-                  <span class="text-xs text-navy-500">
+                  <span class="text-xs text-ink-500">
                     @auth
-                      {{ __('shop.balance') }} <b class="tnum text-navy-900">{{ $this->money((int) auth()->user()->balance) }}</b>
+                      {{ __('shop.balance') }} <b class="tnum text-ink-900">{{ $this->money((int) auth()->user()->balance) }}</b>
                       @if ($this->walletDisabled())
                         <b class="text-brand-700">· {{ __('shop.insufficient') }}</b>
                       @endif
@@ -112,13 +127,13 @@
                     @guest {{ __('shop.sign_in_to_use_wallet') }} @endguest
                   </span>
                 @elseif ($option->isManual())
-                  <span class="text-xs text-navy-500">{{ __('shop.send_money_manual') }}</span>
+                  <span class="text-xs text-ink-500">{{ __('shop.send_money_manual') }}</span>
                 @elseif ($option->isGateway())
-                  <span class="text-xs text-navy-500">{{ __('shop.card_methods') }}</span>
+                  <span class="text-xs text-ink-500">{{ __('shop.card_methods') }}</span>
                 @endif
               </span>
               <span
-                class="grid place-items-center w-5 h-5 rounded-full border-2 shrink-0 transition {{ $paymentKey === $option->key ? 'border-brand-600 bg-brand-600' : 'border-navy-300' }}">
+                class="grid place-items-center w-5 h-5 rounded-full border-2 shrink-0 transition {{ $paymentKey === $option->key ? 'border-brand-600 bg-brand-600' : 'border-ink-300' }}">
                 @if ($paymentKey === $option->key)
                   <x-store.ui name="check" class="w-3 h-3 text-white" stroke-width="3" />
                 @endif
@@ -135,10 +150,10 @@
           <div class="mt-5 rounded-[var(--radius-panel)] border border-hold-100 bg-hold-50/70 p-5">
             <div class="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
               <div>
-                <p class="flex items-center gap-2 text-[13px] font-semibold text-hold-700">
+                <p class="flex items-center gap-2 font-display text-[13px] font-bold text-hold-700">
                   <x-store.ui name="wallet" class="w-4 h-4" />{{ $method->t('name') }} · {{ $method->account_type }}
                 </p>
-                <p class="tnum mt-1.5 font-display text-2xl font-bold tracking-wide text-navy-900">{{ $method->account_number }}</p>
+                <p class="tnum mt-1.5 font-display text-2xl font-bold tracking-wide text-ink-900">{{ $method->account_number }}</p>
               </div>
               <button type="button" @click="window.copyText(@js($method->account_number))" class="btn btn-quiet">
                 <x-store.ui name="copy" class="w-4 h-4" />{{ __('shop.copy_number') }}</button>
@@ -156,12 +171,12 @@
                 <input wire:model="trx" placeholder="9FJ3K2LQ1A" class="field field-code"></label>
               <label
                 class="sm:col-span-2 flex items-center gap-4 p-4 rounded-[var(--radius-panel)] border-2 border-dashed border-hold-100 bg-white cursor-pointer hover:border-brand-400 transition">
-                <span class="grid place-items-center w-10 h-10 rounded-[var(--radius-control)] bg-navy-50 text-navy-500 shrink-0">
+                <span class="grid place-items-center w-10 h-10 rounded-[var(--radius-control)] bg-ink-50 text-ink-500 shrink-0">
                   <x-store.ui name="upload" class="w-5 h-5" /></span>
                 <span class="flex-1 text-sm min-w-0">
-                  <b class="block text-navy-900 truncate">{{ $screenshot?->getClientOriginalName() ?: __('shop.upload_screenshot') }}</b>
-                  <span class="text-navy-500">{{ __('shop.screenshot_hint') }}</span></span>
-                <span wire:loading wire:target="screenshot" class="text-xs text-navy-500">{{ __('store.uploading') }}</span>
+                  <b class="block font-display text-ink-900 truncate">{{ $screenshot?->getClientOriginalName() ?: __('shop.upload_screenshot') }}</b>
+                  <span class="text-ink-500">{{ __('shop.screenshot_hint') }}</span></span>
+                <span wire:loading wire:target="screenshot" class="text-xs text-ink-500">{{ __('store.uploading') }}</span>
                 <input type="file" accept="image/*" class="sr-only" wire:model="screenshot"></label>
             </div>
           </div>
@@ -177,55 +192,57 @@
       </section>
     </div>
 
-    {{-- The order, priced once, on the server. --}}
-    <aside class="panel panel-p lg:sticky lg:top-6">
+    {{-- The order, priced once, on the server. It stays in view beside the form, offset far
+         enough down to clear the masthead that is now sticky at every width. --}}
+    <aside class="panel panel-p lg:sticky lg:top-24">
       <h2 class="h-panel">{{ __('shop.your_order') }}</h2>
 
-      <ul class="mt-4 divide-y divide-navy-100">
+      <ul class="mt-4 divide-y divide-ink-100">
         @forelse ($items as $item)
           @continue(!$item->product)
           <li class="py-3 flex gap-3 text-sm" wire:key="sum-{{ $item->id }}">
-            <span class="well w-11 h-11 rounded-[var(--radius-control)] border border-navy-100 shrink-0">
+            <span class="well w-11 h-11 rounded-[var(--radius-control)] border border-ink-100 shrink-0">
               @if ($item->product->image)
                 <img src="{{ Storage::disk('public')->url($item->product->image) }}" alt="" loading="lazy"
                   class="absolute inset-0 w-full h-full object-fill">
               @else
-                <x-store.icon :name="$item->product->icon_key" class="w-5 h-5 text-navy-400" />
+                <x-store.icon :name="$item->product->icon_key" class="w-5 h-5 text-ink-400" />
               @endif
             </span>
-            <span class="flex-1 min-w-0"><b class="block truncate text-navy-900">{{ $item->product->name }}</b>
-              <span class="tnum text-navy-500">{{ __('shop.quantity') }} {{ $item->quantity }}</span></span>
-            <b class="tnum text-navy-900">{{ $this->money($item->lineTotal()) }}</b>
+            <span class="flex-1 min-w-0"><b class="block font-display truncate text-ink-900">{{ $item->product->name }}</b>
+              <span class="tnum text-ink-500">{{ __('shop.quantity') }} {{ $item->quantity }}</span></span>
+            <b class="tnum font-display text-ink-900">{{ $this->money($item->lineTotal()) }}</b>
           </li>
         @empty
-          <li class="py-6 text-center text-sm text-navy-500">{{ __('shop.cart_is_empty_add') }}
+          <li class="py-6 text-center text-sm text-ink-500">{{ __('shop.cart_is_empty_add') }}
             <a href="{{ route('home') }}" class="link">{{ __('shop.add_products') }}</a>
           </li>
         @endforelse
       </ul>
 
-      <div class="mt-4 flex gap-2">
+      <p class="label-line mt-5">{{ __('shop.coupon_code') }}</p>
+      <div class="mt-3 flex gap-2">
         <label class="relative flex-1">
           <x-store.ui name="tag" class="field-affix w-4 h-4" />
-          <input wire:model="coupon" placeholder="{{ __('shop.coupon_code') }}" class="field field-icon field-code">
+          <input wire:model="coupon" placeholder="{{ __('shop.enter_a_code') }}" class="field field-icon field-code">
         </label>
         <button type="button" wire:click="applyCoupon" class="btn btn-dark">{{ __('store.apply') }}</button>
       </div>
       @if ($couponMsg)
-        <p class="mt-1.5 flex items-center gap-1.5 text-xs font-semibold {{ $couponOk ? 'text-seat-700' : 'text-brand-700' }}">
+        <p class="mt-1.5 flex items-center gap-1.5 text-xs font-semibold {{ $couponOk ? 'text-grant-700' : 'text-brand-700' }}">
           <x-store.ui :name="$couponOk ? 'check-circle' : 'alert'" class="w-3.5 h-3.5" />{{ $couponMsg }}
         </p>
       @endif
 
-      <dl class="mt-5 divide-y divide-navy-100">
+      <dl class="mt-5">
         <div class="kv">
           <dt>{{ __('shop.subtotal') }}</dt>
           <dd class="tnum">{{ $this->money($this->subtotal()) }}</dd>
         </div>
         @if ($couponOk)
           <div class="kv">
-            <dt class="text-seat-700">{{ __('shop.discount') }}</dt>
-            <dd class="tnum text-seat-700">− {{ $this->money($discount) }}</dd>
+            <dt class="text-grant-700">{{ __('shop.discount') }}</dt>
+            <dd class="tnum text-grant-700">− {{ $this->money($discount) }}</dd>
           </div>
         @endif
         @if ($this->fee())
@@ -234,11 +251,15 @@
             <dd class="tnum">{{ $this->money($this->fee()) }}</dd>
           </div>
         @endif
+        <div class="kv">
+          <dt>{{ __('shop.delivery') }}</dt>
+          <dd class="text-grant-700">{{ __('shop.free_digital') }}</dd>
+        </div>
       </dl>
 
-      <div class="mt-3 pt-4 rule-dashed flex items-end justify-between">
-        <span class="font-semibold text-navy-900">{{ __('shop.total') }}</span>
-        <span class="tnum font-display text-2xl font-bold text-navy-900">{{ $this->money($this->total()) }}</span>
+      <div class="mt-3 pt-4 rule-dashed flex items-end justify-between gap-4">
+        <span class="font-display font-bold text-ink-900">{{ __('shop.total') }}</span>
+        <span class="tnum font-display text-2xl font-extrabold text-ink-900">{{ $this->money($this->total()) }}</span>
       </div>
 
       @if ($error)
@@ -258,13 +279,13 @@
       @if ($showSettlement)
         {{-- The customer is quoted in one currency and charged in another. Saying so before
              they commit is the difference between a conversion and a chargeback. --}}
-        <p class="mt-3 text-xs text-center text-navy-500">
+        <p class="mt-3 text-xs text-center text-ink-500">
           {{ __('shop.settlement_note', ['display' => \App\Support\Currencies::current(), 'base' => \App\Support\Money::formatBase($this->total())]) }}</p>
       @endif
 
-      <p class="mt-3 text-xs text-center text-navy-500">{{ __('shop.agree_prefix') }}
-        <a href="{{ url('/page/terms') }}" class="underline hover:text-navy-700">{{ __('shop.terms') }}</a> &amp;
-        <a href="{{ url('/page/refund-policy') }}" class="underline hover:text-navy-700">{{ __('shop.refund_policy') }}</a>.
+      <p class="mt-3 text-xs text-center text-ink-500">{{ __('shop.agree_prefix') }}
+        <a href="{{ url('/page/terms') }}" class="underline hover:text-ink-700">{{ __('shop.terms') }}</a> &amp;
+        <a href="{{ url('/page/refund-policy') }}" class="underline hover:text-ink-700">{{ __('shop.refund_policy') }}</a>.
       </p>
     </aside>
   </form>

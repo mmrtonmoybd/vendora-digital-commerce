@@ -54,6 +54,7 @@ return [
     'new_link_sent' => 'নতুন যাচাই লিঙ্ক পাঠানো হয়েছে।',
 
     // Order tracking
+    'your_order' => 'আপনার অর্ডার',
     'order_number' => 'অর্ডার নম্বর',
     'amount' => 'পরিমাণ',
     'submit_payment' => 'পেমেন্ট জমা দিন',
@@ -63,7 +64,9 @@ return [
     'i_received_access' => 'আমি অ্যাক্সেস পেয়েছি',
     'i_didnt_get_the_invite' => 'আমি ইনভাইট পাইনি',
     'go_to_my_account' => 'আমার অ্যাকাউন্টে যান',
+    'sender_number' => 'প্রেরকের নম্বর',
     'sender_number_placeholder' => 'প্রেরকের নম্বর ০১XXXXXXXXX',
+    'what_was_granted' => 'যা দেওয়া হয়েছে',
 
     // Auth page headings and side panel
     'forgot_heading' => 'পাসওয়ার্ড ভুলে গেছেন?',
@@ -76,6 +79,14 @@ return [
     'reset_panel_lead' => 'নতুন পাসওয়ার্ড দিন, আবার ফিরে আসুন।',
     'verify_sub' => 'কেনাকাটা শুরুর আগে শেষ ধাপ।',
     'verify_panel_lead' => 'ইমেইল নিশ্চিত করুন, আপনার অ্যাকাউন্ট প্রস্তুত।',
+    'sign_in_panel_title' => 'পাসে একটি নাম থাকা চাই।',
+    'sign_in_panel_lead' => 'চেকআউট এখন শুধু অ্যাকাউন্ট দিয়েই হয়, তাই দরজা একটাই: সাইন ইন করুন, যা কিনবেন তা এই ইমেইলেই ইস্যু হবে।',
+    'panel_checkout_note' => 'প্রতিটি পাস একটি ইমেইল ঠিকানায়, নির্ধারিত সময়ের মধ্যে ইস্যু হয়। আপনি যে ঠিকানায় সাইন ইন করবেন, সেটিতেই ইস্যু হবে।',
+    'your_details' => 'আপনার তথ্য',
+    'choose_a_password' => 'পাসওয়ার্ড বেছে নিন',
+    'email_receives_access' => 'ইনভাইট ও অ্যাকসেসের তথ্য এই ঠিকানাতেই যাবে।',
+    'reset_link_hint' => 'লিঙ্কটি ৬০ মিনিট পর্যন্ত কাজ করবে।',
+    'stamp_unverified' => 'যাচাই বাকি',
     'back_to_shop' => 'শপে ফিরে যান',
     'hide_password' => 'পাসওয়ার্ড লুকান',
     'perk_delivery' => 'নির্ধারিত সময়ের মধ্যেই অ্যাকসেস',

@@ -56,6 +56,7 @@ return [
     'new_link_sent' => 'A new verification link has been sent.',
 
     // Order tracking
+    'your_order' => 'Your order',
     'order_number' => 'Order number',
     'amount' => 'Amount',
     'submit_payment' => 'Submit payment',
@@ -65,7 +66,9 @@ return [
     'i_received_access' => 'I received access',
     'i_didnt_get_the_invite' => 'I didn\'t get the invite',
     'go_to_my_account' => 'Go to my account',
+    'sender_number' => 'Sender number',
     'sender_number_placeholder' => 'Sender number 01XXXXXXXXX',
+    'what_was_granted' => 'What was granted',
 
     // Auth page headings and side panel
     'forgot_heading' => 'Forgot password?',
@@ -78,6 +81,14 @@ return [
     'reset_panel_lead' => 'Pick a new password and you are back in.',
     'verify_sub' => 'One last step before you start shopping.',
     'verify_panel_lead' => 'Confirm your email and your account is ready to use.',
+    'sign_in_panel_title' => 'A pass needs a name on it.',
+    'sign_in_panel_lead' => 'Checkout is account-only, so this is the same door either way: sign in, and whatever you buy is issued to this email.',
+    'panel_checkout_note' => 'Every pass is issued to one email address, inside a published window. The address you sign in with is the address it is issued to.',
+    'your_details' => 'Your details',
+    'choose_a_password' => 'Choose a password',
+    'email_receives_access' => 'The invite and the access details are sent here.',
+    'reset_link_hint' => 'The link works for 60 minutes.',
+    'stamp_unverified' => 'Unverified',
     'back_to_shop' => 'Back to shop',
     'hide_password' => 'Hide password',
     'perk_delivery' => 'Access granted within the published window',

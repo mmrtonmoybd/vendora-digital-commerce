@@ -31,15 +31,25 @@
       @endforeach
     </div>
 
-    <form method="GET" class="panel mt-5 p-3 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
-      <p class="flex items-center gap-2 px-1 text-sm text-navy-500"><x-store.ui name="filter" class="w-4 h-4 text-navy-400" />
-        <b class="tnum text-navy-900">{{ $products->total() }}</b>{{ __('shop.products_found') }}
+    {{--
+      The docket header over the grid.
+
+      The count is the answer the page is giving, so it is set as a figure — large, in
+      tabular numerals — rather than as a sentence, and the two controls that change that
+      figure sit opposite it. The select is held at the chip's height so the right-hand
+      side reads as one ruled row rather than two controls of different sizes.
+    --}}
+    <form method="GET" class="reveal panel mt-5 px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p class="flex items-baseline gap-2">
+        <x-store.ui name="filter" class="w-4 h-4 self-center text-ink-400" />
+        <span class="tnum font-display text-[22px] font-extrabold leading-none text-ink-900">{{ $products->total() }}</span>
+        <span class="text-sm text-ink-500">{{ __('shop.products_found') }}</span>
       </p>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <label class="chip cursor-pointer {{ $inStockOnly ? 'chip-on' : '' }}">
           <input type="checkbox" name="in_stock" value="1" @checked($inStockOnly) onchange="this.form.submit()" class="check">
           {{ __('shop.in_stock_only') }}</label>
-        <select name="sort" onchange="this.form.submit()" class="field w-auto text-sm">
+        <select name="sort" onchange="this.form.submit()" class="field h-10 w-auto text-sm">
           @foreach (config('storefront.sorts') as $value => $label)
             <option value="{{ $value }}" @selected($sort === $value)>{{ __('shop.sort_by') }}: {{ $label }}</option>
           @endforeach
@@ -51,13 +61,15 @@
       @forelse ($products as $product)
         <x-store.product-card :product="$product" />
       @empty
+        {{-- An empty category still has to point somewhere, so the panel carries the
+             category's own mark and exactly one way out. --}}
         <div class="col-span-full panel py-16 px-6 text-center">
-          <span class="inline-grid place-items-center w-16 h-16 rounded-[var(--radius-panel)] bg-navy-50 text-navy-400 float">
+          <span class="well w-16 h-16 mx-auto rounded-[var(--radius-panel)] text-ink-400 float">
             <x-store.icon :name="$category->icon_key" class="w-7 h-7" /></span>
-          <h2 class="mt-4 font-display text-xl font-semibold text-navy-900">{{ __('shop.nothing_here_yet') }}</h2>
-          <p class="mt-1 text-navy-500">{{ __('shop.restocking_category') }}</p>
-          <a href="{{ route('home') }}#categories" class="btn btn-primary mt-6">{{ __('store.browse_categories') }}
-            <x-store.ui name="arrow-right" class="w-4 h-4" /></a>
+          <h2 class="mt-4 font-display text-[20px] font-bold text-ink-900">{{ __('shop.nothing_here_yet') }}</h2>
+          <p class="lede mt-1.5 mx-auto">{{ __('shop.restocking_category') }}</p>
+          <a href="{{ route('home') }}#categories" class="group btn btn-primary sheen mt-6">{{ __('store.browse_categories') }}
+            <x-store.ui name="arrow-right" class="w-4 h-4 icon-nudge" /></a>
         </div>
       @endforelse
     </div>

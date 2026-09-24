@@ -32,7 +32,7 @@
     </span>
   @else
     <div class="pt-3">
-      <p class="px-4 pb-2 text-xs font-medium text-navy-400">{{ __('store.language') }}</p>
+      <p class="px-4 pb-2 text-xs font-medium text-ink-400">{{ __('store.language') }}</p>
       <div class="flex flex-wrap items-center gap-2 px-4">
         @foreach ($locales as $locale)
           <a href="{{ route('locale.switch', $locale) }}"

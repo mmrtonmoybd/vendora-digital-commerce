@@ -29,6 +29,7 @@ return [
     'step_invite' => 'আমরা ইনভাইট পাঠাই',
     'step_accept' => 'গ্রহণ করে উপভোগ করুন',
     'step_fast' => 'দ্রুত',
+    'grant_terms' => 'এই অ্যাক্সেসের শর্ত',
 
     // Buy-now modal and cart
     'quantity' => 'পরিমাণ',
@@ -111,4 +112,9 @@ return [
     'support_cover' => 'সাপোর্ট কভার',
     'step_accept_hint' => 'ইনবক্স খুলে ইনভাইটেশন অ্যাকসেপ্ট করলেই কাজ শেষ।',
     'sign_in_to_order' => 'অর্ডার করতে সাইন ইন করুন।',
+
+    // Testimonials, set as countersigned dockets on the home page
+    'countersigned' => 'প্রতিস্বাক্ষরিত',
+    'rating_label' => 'রেটিং',
+    'rating_value' => '৫-এর মধ্যে :count',
 ];

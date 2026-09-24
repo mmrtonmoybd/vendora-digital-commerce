@@ -10,10 +10,11 @@
     @csrf
     <label class="block"><span class="field-label">{{ __('account.email_address') }} <span class="field-req">*</span></span>
       <span class="relative block"><x-store.ui name="mail" class="field-affix w-4 h-4" />
-        <input type="email" name="email" value="{{ old('email') }}" placeholder="you@example.com" required class="field field-icon"></span></label>
+        <input type="email" name="email" value="{{ old('email') }}" placeholder="you@example.com" required class="field field-icon"></span>
+      <span class="field-hint">{{ __('account.reset_link_hint') }}</span></label>
 
-    <button type="submit" class="btn btn-primary btn-lg btn-block sheen"><x-store.ui name="send"
-        class="w-4 h-4" />{{ __('account.email_me_reset_link') }}</button>
+    <button type="submit" class="group btn btn-primary btn-lg btn-block sheen"><x-store.ui name="send"
+        class="w-4 h-4 icon-rise" />{{ __('account.email_me_reset_link') }}</button>
 
     <p class="text-center text-sm"><a href="{{ route('login') }}" class="link">{{ __('account.back_to_sign_in') }}</a></p>
   </form>

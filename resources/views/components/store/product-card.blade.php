@@ -1,16 +1,13 @@
 @props(['product'])
 
 {{--
-  A product card.
+  A pass.
 
-  What this shop sells is access granted by a person, so the card leads with the facts a
-  buyer actually weighs: what it costs, how many seats are left, how long fulfilment takes
-  and which platform the access arrives through. Those come from the record — they are not
-  marketing copy — which is why they are set in tabular figures and given their own row
-  rather than buried under the title.
-
-  The artwork sits in a near-white well and grows a little under the cursor; the card lifts
-  and its edge picks up the accent. Everything else holds still.
+  What this shop issues is permission, so the card is shaped like the thing that gets
+  issued: an artwork panel, a perforation punched through the card's own outline, and a stub
+  below carrying the terms. Everything on the stub is read off the record — price, seats
+  left, how long the grant takes, how long it is covered — which is why it is set as ruled
+  terms in tabular figures rather than as marketing copy.
 --}}
 @php
   $discount = $product->discountPercent();
@@ -20,71 +17,77 @@
   $warranty = (int) ($product->warranty_days ?? 0);
 @endphp
 
-<article class="reveal group panel panel-hover edge-glow relative overflow-hidden flex flex-col">
+<article class="reveal group pass pass-lift relative flex flex-col" style="--tear: 232px">
   @if (filled($product->t('badge_text')))
     <div class="ribbon {{ $product->badgeClass() }}"><span>{{ $product->t('badge_text') }}</span></div>
   @endif
 
   @if ($discount)
     <span
-      class="tnum absolute top-3 right-3 z-[5] inline-flex items-center h-6 px-2 rounded-md bg-navy-900 text-white text-[11px] font-semibold">−{{ $discount }}%</span>
+      class="tnum absolute top-3 right-3 z-[5] inline-flex items-center h-[22px] px-2 rounded-[2px] bg-ink-900 font-display text-[11px] font-bold text-white">−{{ $discount }}%</span>
   @endif
 
+  {{-- The artwork panel, 200px tall, so the perforation lands in the same place on every
+       card in a row however long the names are. --}}
   <a href="{{ route('product.show', $product) }}" class="block" tabindex="-1" aria-hidden="true">
-    <div class="well aspect-[5/4] border-b border-navy-100">
+    <div class="well h-[200px] rounded-t-[var(--radius-panel)]">
       @if ($product->image)
         <img src="{{ Storage::disk('public')->url($product->image) }}" alt="" loading="lazy"
           class="zoom-in-hover absolute inset-0 w-full h-full object-fill">
       @else
-        <span class="relative grid place-items-center w-20 h-20 rounded-2xl bg-navy-900 text-white zoom-in-hover"><x-store.icon :name="$product->icon_key"
-            stroke-width="1.6" class="w-10 h-10" /></span>
+        <span class="relative grid place-items-center w-20 h-20 rounded-[var(--radius-panel)] bg-ink-900 text-white zoom-in-hover">
+          <x-store.icon :name="$product->icon_key" stroke-width="1.6" class="w-10 h-10" /></span>
       @endif
     </div>
   </a>
 
-  <div class="p-4 flex-1 flex flex-col">
+  {{-- The counterfoil: who issues it, and for what. --}}
+  <div class="px-4 pt-3 pb-4">
     @if ($product->platform)
-      <p class="flex items-center gap-1.5 text-[11.5px] font-medium text-navy-500"><x-store.ui name="layers"
-          class="w-3.5 h-3.5 text-navy-400" />{{ $product->platform->t('name') }}</p>
+      <p class="flex items-center gap-1.5 text-[11.5px] font-medium text-ink-500">
+        <x-store.ui name="layers" class="w-3.5 h-3.5 text-ink-400" />{{ $product->platform->t('name') }}
+      </p>
     @endif
 
-    <h3 class="mt-1 font-display font-semibold text-[15px] leading-snug text-navy-900 line-clamp-2 min-h-[2.6em]"><a
-        href="{{ route('product.show', $product) }}" class="hover:text-brand-700 transition">{{ $product->t('name') }}</a></h3>
+    <h3 class="mt-1 font-display text-[15px] font-bold leading-snug text-ink-900 line-clamp-2 min-h-[2.6em]">
+      <a href="{{ route('product.show', $product) }}" class="hover:text-brand-700 transition">{{ $product->t('name') }}</a>
+    </h3>
+  </div>
 
-    <div class="mt-3 flex items-baseline gap-2">
-      <span class="tnum font-display text-[22px] font-bold text-navy-900 leading-none">{{ \App\Support\Money::format($product->price) }}</span>
+  {{-- The tear, and below it the stub. --}}
+  <div class="tear mt-auto px-4 pt-4 pb-4 flex-1 flex flex-col">
+    <div class="flex items-baseline gap-2">
+      <span class="tnum font-display text-[24px] font-extrabold leading-none text-ink-900">{{ \App\Support\Money::format($product->price) }}</span>
       @if ($discount)
-        <span class="tnum text-xs text-navy-400"><s>{{ \App\Support\Money::format((int) $product->regular_price) }}</s></span>
+        <span class="tnum text-xs text-ink-400"><s>{{ \App\Support\Money::format((int) $product->regular_price) }}</s></span>
       @endif
     </div>
 
-    {{-- The record, in one row: what is left, how fast it lands, how long it is covered. --}}
-    <dl class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-navy-500">
-      <div class="flex items-center gap-1.5">
-        @if ($inStock)
-          <span class="live-dot"></span>
-        @else
-          <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
-        @endif
-        <dt class="sr-only">{{ __('shop.seats_label') }}</dt>
-        <dd class="tnum font-medium {{ $inStock ? 'text-navy-700' : 'text-brand-700' }}">
-          {{ $inStock ? __('shop.seats_left', ['count' => $product->stock]) : __('shop.out_of_stock') }}</dd>
+    <dl class="mt-3 space-y-0.5 text-[12px]">
+      <div class="kv py-0.5">
+        <dt>{{ __('shop.seats_label') }}</dt>
+        <dd class="tnum flex items-center gap-1.5 {{ $inStock ? '' : 'text-brand-700' }}">
+          @if ($inStock)
+            <span class="live-dot"></span>
+          @endif
+          {{ $inStock ? __('shop.seats_left', ['count' => $product->stock]) : __('shop.out_of_stock') }}
+        </dd>
       </div>
       @if ($sla > 0 && $inStock)
-        <div class="flex items-center gap-1.5"><x-store.ui name="clock" class="w-3.5 h-3.5 text-navy-400" />
-          <dt class="sr-only">{{ __('shop.delivery_window') }}</dt>
+        <div class="kv py-0.5">
+          <dt>{{ __('shop.delivery_window') }}</dt>
           <dd class="tnum">{{ __('shop.within_minutes', ['count' => $sla]) }}</dd>
         </div>
       @endif
       @if ($warranty > 0)
-        <div class="flex items-center gap-1.5"><x-store.ui name="shield" class="w-3.5 h-3.5 text-navy-400" />
-          <dt class="sr-only">{{ __('shop.warranty') }}</dt>
+        <div class="kv py-0.5">
+          <dt>{{ __('shop.warranty') }}</dt>
           <dd class="tnum">{{ __('shop.stat_days', ['count' => $warranty]) }}</dd>
         </div>
       @endif
     </dl>
 
-    <div class="mt-4 pt-4 rule">
+    <div class="mt-4">
       @if ($inStock)
         <div class="grid grid-cols-[auto_1fr] gap-2">
           <button type="button" @click="window.Livewire.dispatch('quick-add', { slug: '{{ $product->slug }}' })" data-track-click="add_to_cart"

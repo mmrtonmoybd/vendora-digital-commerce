@@ -16,19 +16,22 @@
 {{--
   The footer.
 
-  It closes the page on the same navy ground the masthead opened it on, so the shop reads
-  as one continuous surface. The payment rails run as a marquee because there are usually
-  more of them than fit a row, and a buyer scanning for their own rail should find it
-  without a horizontal scrollbar.
+  It closes the page on the same ink ground the masthead opened it on, guilloché and all, so
+  the shop reads as one document rather than as a page with a dark band bolted underneath.
+
+  The payment rails run as a marquee because there are usually more of them than fit a row,
+  and a buyer scanning for their own rail should find it without a horizontal scrollbar.
 --}}
-<footer class="mt-auto relative hero-ground text-navy-300 overflow-hidden">
+<footer class="mt-auto relative hero-ground text-ink-300 overflow-hidden">
   <span class="aurora"></span>
+  <span class="guilloche absolute inset-0"></span>
 
   <div class="relative wrap pt-16 pb-10 grid gap-12 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
     <div class="reveal">
-      <a href="{{ route('home') }}" class="flex items-center gap-2.5 text-white" aria-label="{{ $general->site_name }}">
-        <span class="grid place-items-center w-9 h-9 rounded-[10px] bg-brand-600"><x-store.ui name="layers" class="w-[18px] h-[18px]" stroke-width="2.2" /></span>
-        <span class="font-display text-[21px] font-bold tracking-[-0.025em]">{{ $general->site_name }}</span>
+      <a href="{{ route('home') }}" class="group flex items-center gap-2.5 text-white" aria-label="{{ $general->site_name }}">
+        <span class="grid place-items-center w-9 h-9 rounded-[var(--radius-control)] bg-brand-600 overflow-hidden sheen">
+          <x-store.ui name="layers" class="w-[18px] h-[18px]" stroke-width="2.2" /></span>
+        <span class="font-display text-[21px] font-extrabold leading-none">{{ $general->site_name }}</span>
       </a>
 
       <p class="mt-4 text-sm leading-relaxed max-w-xs text-white/60">{{ $store->st($general, 'tagline') }}</p>
@@ -58,12 +61,12 @@
 
     @foreach ($footerMenus as $menu)
       <div class="reveal">
-        <h2 class="font-display font-semibold text-white mb-4">{{ $menu->t('column_title') ?: $menu->t('name') }}</h2>
+        <h2 class="font-display font-bold text-white mb-4">{{ $menu->t('column_title') ?: $menu->t('name') }}</h2>
         <ul class="space-y-3 text-sm">
           @foreach ($menu->items as $item)
             <li><a href="{{ $item->resolvedUrl() }}"@if ($item->open_in_new_tab) target="_blank" rel="noopener" @endif
                 class="group inline-flex items-center gap-1.5 hover:text-white transition">{{ $item->t('label') }}
-                <x-store.ui name="arrow-right" class="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-60 group-hover:translate-x-0 transition" />
+                <x-store.ui name="arrow-right" class="w-3.5 h-3.5 opacity-0 group-hover:opacity-60 transition-opacity icon-nudge" />
               </a></li>
           @endforeach
         </ul>
@@ -92,8 +95,8 @@
 
   <div class="relative border-t border-white/10">
     <div class="wrap py-6 flex flex-col sm:flex-row gap-3 items-center justify-between text-sm text-white/50">
-      <p>{{ $store->st($general, 'copyright_text') }}</p>
-      <p class="flex items-center gap-2"><x-store.ui name="shield" class="w-4 h-4 text-seat-600" />{{ __('store.secure_checkout') }}</p>
+      <p class="tnum">{{ $store->st($general, 'copyright_text') }}</p>
+      <p class="flex items-center gap-2"><x-store.ui name="shield" class="w-4 h-4 text-grant-600" />{{ __('store.secure_checkout') }}</p>
     </div>
   </div>
 </footer>

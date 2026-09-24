@@ -26,16 +26,23 @@
   </x-slot:hero>
 
   <div class="wrap">
+    {{-- Each channel is a term and its value — a number, an address, a room — so it is set
+         as a ruled row rather than as a marketing tile, and the line underneath says when
+         somebody is actually on the other end of it. --}}
     <div class="stagger grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
       @foreach ($cards as [$icon, $label, $value, $note])
-        <div class="reveal panel panel-hover p-5 flex gap-4">
-          <span class="grid place-items-center w-11 h-11 rounded-[var(--radius-control)] bg-navy-900 text-white shrink-0">
+        <div class="reveal panel panel-hover p-5" style="--i: {{ $loop->index }}">
+          <span class="grid place-items-center w-11 h-11 rounded-[var(--radius-control)] bg-ink-900 text-white">
             <x-store.ui :name="$icon" class="w-5 h-5" /></span>
-          <div class="min-w-0">
-            <p class="text-xs text-navy-500">{{ $label }}</p>
-            <p class="font-semibold text-navy-900 truncate">{{ $value }}</p>
-            <p class="text-xs text-navy-500">{{ $note }}</p>
-          </div>
+
+          <dl class="mt-4">
+            <div class="kv py-0">
+              <dt>{{ $label }}</dt>
+              <dd class="tnum min-w-0 text-right break-words">{{ $value }}</dd>
+            </div>
+          </dl>
+
+          <p class="mt-1.5 text-xs text-ink-500">{{ $note }}</p>
         </div>
       @endforeach
     </div>
@@ -46,10 +53,11 @@
         {{-- Honeypot: a person never sees this, a bot fills everything it finds. --}}
         <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="sr-only" aria-hidden="true">
 
-        <div class="sm:col-span-2">
-          <h2 class="h-section">{{ __('content.send_us_a_message') }}</h2>
-          <p class="mt-1.5 text-sm text-navy-500">{{ __('content.we_usually_reply') }}</p>
-        </div>
+        <x-store.section-head
+          class="sm:col-span-2"
+          :label="__('content.support_desk')"
+          :title="__('content.send_us_a_message')"
+          :lead="__('content.we_usually_reply')" />
 
         <label class="block"><span class="field-label">{{ __('content.your_name') }} <span class="field-req">*</span></span>
           <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ __('account.full_name') }}" required class="field">
@@ -66,7 +74,7 @@
         </label>
 
         <label class="block"><span class="field-label">{{ __('content.phone') }}</span>
-          <input type="tel" name="phone" value="{{ old('phone') }}" placeholder="01XXXXXXXXX" class="field">
+          <input type="tel" name="phone" value="{{ old('phone') }}" placeholder="01XXXXXXXXX" class="field tnum">
           @error('phone')
             <span class="field-error">{{ $message }}</span>
           @enderror
@@ -92,8 +100,8 @@
             data-track-payload='{"value":0,"currency":"{{ \App\Support\Money::currencyCode() }}"}'>
             <x-store.ui name="send" class="w-4 h-4" />{{ __('content.send_message') }}</button>
           @if (session('status'))
-            <p class="flex items-center gap-1.5 text-sm font-semibold text-seat-700">
-              <x-store.ui name="check-circle" class="w-4 h-4" />{{ session('status') }}
+            <p class="note note-ok flex items-center gap-2 font-semibold">
+              <x-store.ui name="check-circle" class="w-4 h-4 shrink-0" />{{ session('status') }}
             </p>
           @endif
         </div>

@@ -43,4 +43,12 @@ return [
     'blog_lead' => 'Guides, reviews and news from our team.',
     'contact_lead' => 'Talk to a real person — we usually reply the same day.',
     'min_read' => ':count min read',
+
+    // Terms shown on an article: a docket line for when it went out and what it costs to read.
+    'published' => 'Published',
+    'read_time' => 'Read time',
+    'minutes' => ':count min',
+
+    // The pointer line above the contact form.
+    'support_desk' => 'Support desk',
 ];

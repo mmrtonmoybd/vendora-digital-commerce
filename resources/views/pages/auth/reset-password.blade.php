@@ -22,6 +22,7 @@
       <span class="relative block"><x-store.ui name="lock" class="field-affix w-4 h-4" />
         <input type="password" name="password_confirmation" placeholder="{{ __('account.repeat_password') }}" required class="field field-icon"></span></label>
 
-    <button type="submit" class="btn btn-primary btn-lg btn-block sheen">{{ __('account.reset_password') }}</button>
+    <button type="submit" class="group btn btn-primary btn-lg btn-block sheen"><x-store.ui name="key"
+        class="w-4 h-4 icon-rise" />{{ __('account.reset_password') }}</button>
   </form>
 </x-layouts.auth>

@@ -31,6 +31,7 @@ return [
     'step_invite' => 'We invite you',
     'step_accept' => 'Accept & enjoy',
     'step_fast' => 'Fast',
+    'grant_terms' => 'Terms of this grant',
 
     // Buy-now modal and cart
     'quantity' => 'Quantity',
@@ -113,4 +114,9 @@ return [
     'support_cover' => 'Support cover',
     'step_accept_hint' => 'Open your inbox, accept the invitation and you are in.',
     'sign_in_to_order' => 'Sign in to place an order.',
+
+    // Testimonials, set as countersigned dockets on the home page
+    'countersigned' => 'Countersigned',
+    'rating_label' => 'Rating',
+    'rating_value' => ':count of 5',
 ];
