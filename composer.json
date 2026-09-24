@@ -114,12 +114,10 @@
     "lint": "pint",
     "lint:test": "pint --test",
     "stan": "phpstan analyse --memory-limit=2G",
-    "parity": "@php scripts/check-classes.php",
     "test:all": [
       "@lint:test",
       "@format:test",
       "@stan",
-      "@parity",
       "@test"
     ],
     "format": "@php -r \"passthru('npx prettier --write .');\"",

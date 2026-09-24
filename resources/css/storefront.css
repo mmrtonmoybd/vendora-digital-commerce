@@ -1,14 +1,29 @@
 /* ==========================================================================
-   Vendora storefront.
+   Storefront — "Access, on the record."
 
-   The Vendora template ships a Tailwind v3 config; this is that config ported to
-   Tailwind v4's CSS-first form. The tokens are identical — the same brand scale, the same
-   surface and ink colours, the same three font families — so the utilities resolve to the
-   same values the static pages were designed against.
+   What this shop sells is permission: an agency ad account, a Business Manager seat, a
+   subscription — each granted by a person, to an email address, inside a published window.
+   So the buyer's real question is never "is this pretty", it is "will access actually
+   arrive, and what happens if it doesn't".
 
-   The compatibility block near the top restores the two v3 defaults v4 changed that this
-   template relies on (border colour and placeholder colour). Without it, every bare
-   `border-b` in the markup would render in the text colour instead of light grey.
+   The design answers that question with the operational record the system already keeps:
+   seats left, SLA minutes, warranty days, the platform the access is granted through, the
+   payment route an order took. Those figures are the visual language — set in tabular
+   figures, given their own rows, never buried under marketing copy.
+
+   Ground is cool navy rather than a tinted black, and deliberately not the shop's red: a
+   wall of brand colour reads as a clearance sale, and the accent works harder when it is
+   the only saturated thing on a page. Brand colour is reserved for one thing per screen —
+   the action the buyer came to take.
+
+   Structure:
+     1. Tailwind + sources
+     2. Theme tokens
+     3. Runtime brand variables
+     4. Base
+     5. Components (the vocabulary every page is built from)
+     6. Cached-page chrome (signed-in vs signed-out)
+     7. Motion
    ========================================================================== */
 @import "tailwindcss";
 
@@ -23,15 +38,13 @@
 @source '../../app/Http/Controllers/Storefront';
 @source '../../config/storefront.php';
 
-/* Presentation values that reach the markup from the database. Tailwind cannot see these
-   in the source, so every option offered in config/storefront.php is listed here. */
-@source inline("{from-rose-500,to-red-700,from-orange-500,to-red-600,from-fuchsia-600,to-rose-600,from-amber-500,to-orange-600,from-stone-700,to-stone-900,from-red-600,to-pink-600,from-teal-600,to-emerald-700,from-red-800,from-amber-300,to-amber-400,from-white,to-brand-50,from-stone-900,to-stone-800}");
+/* Presentation values that reach the markup from the database — payment-method chips and
+   badge styles an administrator picks in the panel. Tailwind cannot see these in source. */
 @source inline("{bg-stone-900,bg-pink-600,bg-orange-600,bg-violet-700,bg-brand-700,bg-emerald-600,bg-sky-600,bg-amber-300,bg-rose-300,bg-emerald-300,bg-sky-300,bg-stone-300}");
-@source inline("{bg-brand-50,text-brand-700,bg-amber-50,text-amber-700,bg-emerald-50,text-emerald-700,bg-sky-50,text-sky-700,bg-stone-100,text-stone-700,text-ink,text-white}");
 
 @theme {
     /* The brand scale is driven by CSS variables so the admin can re-skin the shop from
-     settings without a rebuild. See the :root block below for the defaults. */
+       settings without a rebuild. See the :root block below for the defaults. */
     --color-brand-50: rgb(var(--brand-50));
     --color-brand-100: rgb(var(--brand-100));
     --color-brand-200: rgb(var(--brand-200));
@@ -47,35 +60,49 @@
     --color-surface: rgb(var(--surface));
     --color-ink: rgb(var(--ink));
 
+    /* Two families, clearly distinct. Hind Siliguri carries the body because it is what
+       renders Bengali correctly; Sora carries headings and every figure — a geometric
+       technical face above a humanist one reads as an operations console. */
     --font-sans: "Hind Siliguri", system-ui, sans-serif;
-    --font-display: "Poppins", system-ui, sans-serif;
-    --font-script: "Kaushan Script", cursive;
+    --font-display: "Sora", system-ui, sans-serif;
+
+    /* The neutral scale. Cool navy, not a tinted black: the shop sells access to business
+       platforms and the palette should read as infrastructure. */
+    --color-navy-50: #f7f8fa;
+    --color-navy-100: #eef1f6;
+    --color-navy-200: #dbe1ea;
+    --color-navy-300: #c8d0de;
+    --color-navy-400: #94a1b8;
+    --color-navy-500: #63728d;
+    --color-navy-600: #445068;
+    --color-navy-700: #2c3650;
+    --color-navy-800: #1b2439;
+    --color-navy-900: #101a2e;
+    --color-navy-950: #0a1120;
+
+    /* Availability and settled states. Muted teal, never an acid green. */
+    --color-seat-50: #e9f6f2;
+    --color-seat-100: #d2ece5;
+    --color-seat-600: #0e7c66;
+    --color-seat-700: #0a6353;
+    --color-seat-900: #063f35;
+
+    /* Waiting on a person: manual transfers, pending grants. Clay, not a warning yellow. */
+    --color-hold-50: #fdf4e9;
+    --color-hold-100: #f8e6cd;
+    --color-hold-600: #a35f13;
+    --color-hold-700: #834c0f;
+    --color-hold-900: #52300a;
+
+    /* One radius family. Panels take the larger, controls the smaller; nothing else. */
+    --radius-panel: 0.875rem;
+    --radius-control: 0.5rem;
 }
 
-/* --- Tailwind v3 compatibility -------------------------------------------------------
-   v4 made the default border and placeholder colours currentColor. The template was drawn
-   against v3's greys and uses bare `border`, `border-t` and `border-b` in 84 places. */
-@layer base {
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-        color: var(--color-gray-400);
-    }
-}
-
-/* ==========================================================================
-   Vendora — shared styles (Tailwind handles 95%; this file holds tokens + a few
-   shapes Tailwind can't express nicely).
-   BRAND COLOR: the --brand-* RGB triplets below are overridden at runtime from
-   ThemeSettings. Default = crimson #dc2626 scale.
-   ========================================================================== */
+/* --- Runtime brand ---------------------------------------------------------------------
+   The --brand-* RGB triplets are overwritten at runtime from ThemeSettings; the default is
+   the crimson #dc2626 scale. Surface and ink are fixed — the shop may re-skin its accent,
+   but the navy structure is the design. */
 :root {
     --brand-50: 254 242 242;
     --brand-100: 254 226 226;
@@ -83,35 +110,420 @@
     --brand-300: 252 165 165;
     --brand-400: 248 113 113;
     --brand-500: 239 68 68;
-    --brand-600: 220 38 38; /* primary  #dc2626 */
-    --brand-700: 185 28 28; /* hover    #b91c1c */
-    --brand-800: 153 27 27; /* deep     #991b1b */
-    --brand-900: 127 29 29; /* darkest  #7f1d1d */
-    --surface: 252 248 247; /* page bg  #fcf8f7 */
-    --ink: 28 16 17; /* text     #1c1011 */
+    --brand-600: 220 38 38;
+    --brand-700: 185 28 28;
+    --brand-800: 153 27 27;
+    --brand-900: 127 29 29;
+    --surface: 247 248 250; /* page ground #f7f8fa — cool paper */
+    --ink: 16 26 46; /* text #101a2e — navy, not black */
 }
 
-[x-cloak] {
-    display: none !important;
+/* --- Base ---------------------------------------------------------------------------- */
+@layer base {
+    /* v4 made the default border colour currentColor; the storefront draws hairlines. */
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-navy-200);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--color-navy-400);
+    }
+
+    html {
+        scroll-behavior: smooth;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        font-family: var(--font-sans);
+    }
+
+    /* Keyboard focus is visible everywhere, in the brand colour, at one offset. */
+    :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline: 2px solid rgb(var(--brand-600));
+        outline-offset: 2px;
+        border-radius: var(--radius-control);
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Quantity inputs are steppers; the browser spinner duplicates the buttons. */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+}
+
+/* ==========================================================================
+   Components — the vocabulary every page is built from.
+
+   These exist so the same idea is spelled the same way on eleven pages. A button is a
+   button whether it sits in a modal, a checkout summary or an empty state.
+   ========================================================================== */
+@layer components {
+    /* --- Layout ---------------------------------------------------------------------- */
+
+    /* One content measure, one gutter, everywhere. */
+    .wrap {
+        @apply max-w-7xl mx-auto px-4;
+    }
+    .wrap-narrow {
+        @apply max-w-3xl mx-auto px-4;
+    }
+
+    .section {
+        @apply py-12 md:py-16;
+    }
+    .section-tight {
+        @apply py-8 md:py-10;
+    }
+
+    /* --- Dark ground ------------------------------------------------------------------ */
+
+    /* The masthead and any full-bleed dark band. Defined once as a variable so the dark
+       card below can carry exactly the same ground without repeating the gradient. */
+    .hero-ground,
+    .slab {
+        --ground:
+            radial-gradient(820px 420px at 82% -30%, rgb(var(--brand-500) / 0.22), transparent 62%),
+            linear-gradient(165deg, var(--color-navy-900) 0%, var(--color-navy-950) 100%);
+
+        background: var(--ground);
+    }
+
+    /* A measured grid, visible only where light falls on it: a console surface, not
+       decoration. */
+    .grid-field {
+        position: relative;
+    }
+    .grid-field::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+        background-size: 64px 64px;
+        mask-image: radial-gradient(760px 420px at 70% 0%, #000 0%, transparent 78%);
+    }
+
+    /* A dark card inside a light page — the one place a promotion is allowed to shout. */
+    .slab {
+        @apply relative overflow-hidden rounded-[1.25rem] text-white;
+    }
+
+    /* --- Panels ----------------------------------------------------------------------- */
+
+    /* Hairline card. One radius, one border, no shadow at rest — depth is reserved for the
+       thing the cursor is on. */
+    .panel {
+        @apply bg-white border border-navy-200 rounded-[var(--radius-panel)];
+    }
+    .panel-p {
+        @apply p-5 md:p-6;
+    }
+    .panel-head {
+        @apply px-5 md:px-6 py-4 border-b border-navy-100 flex items-center justify-between gap-4;
+    }
+    .panel-hover {
+        @apply transition duration-200;
+    }
+    .panel-hover:hover {
+        @apply border-navy-300;
+        box-shadow: 0 10px 28px -14px rgb(16 26 46 / 0.35);
+        transform: translateY(-2px);
+    }
+
+    /* --- Type ------------------------------------------------------------------------- */
+
+    .h-page {
+        @apply font-display text-[2rem] md:text-[2.75rem] font-bold leading-[1.08] tracking-[-0.02em];
+    }
+    .h-section {
+        @apply font-display text-2xl md:text-[1.75rem] font-semibold leading-tight tracking-[-0.015em] text-navy-900;
+    }
+    .h-panel {
+        @apply font-display text-[17px] font-semibold text-navy-900;
+    }
+
+    /* The small label above a section. Sentence case and brand-coloured — a quiet pointer,
+       not a tracked-out all-caps eyebrow. */
+    .label-line {
+        @apply text-[13px] font-medium text-brand-700;
+    }
+
+    .lede {
+        @apply text-navy-500 leading-relaxed max-w-[62ch];
+    }
+
+    /* Anything countable — prices, seats, minutes, order numbers — lines up column to
+       column. That alignment is the whole point of a data-led layout. */
+    .tnum {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum" 1;
+    }
+
+    /* --- Buttons ---------------------------------------------------------------------- */
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 h-11 px-5 rounded-[var(--radius-control)]
+           font-semibold text-sm whitespace-nowrap transition duration-150 select-none;
+    }
+    .btn-lg {
+        @apply h-12 px-6 text-[15px];
+    }
+    .btn-sm {
+        @apply h-9 px-3.5 text-[13px];
+    }
+    .btn-block {
+        @apply w-full;
+    }
+
+    /* The action the visitor came to take. One per screen. */
+    .btn-primary {
+        @apply bg-brand-600 text-white;
+    }
+    .btn-primary:hover {
+        @apply bg-brand-700;
+    }
+    .btn-primary:active {
+        transform: scale(0.99);
+    }
+
+    /* Structural actions: apply a coupon, go to the account, confirm a receipt. */
+    .btn-dark {
+        @apply bg-navy-900 text-white;
+    }
+    .btn-dark:hover {
+        @apply bg-navy-800;
+    }
+
+    /* The alternative that is still a real choice. */
+    .btn-quiet {
+        @apply border border-navy-200 text-navy-700 bg-white;
+    }
+    .btn-quiet:hover {
+        @apply border-navy-400 text-navy-900;
+    }
+
+    /* Same, on a dark ground. */
+    .btn-onDark {
+        @apply border border-white/25 text-white;
+    }
+    .btn-onDark:hover {
+        @apply bg-white/10;
+    }
+
+    .btn-ghost {
+        @apply text-navy-600;
+    }
+    .btn-ghost:hover {
+        @apply text-navy-900 bg-navy-100;
+    }
+
+    .btn:disabled,
+    .btn[disabled] {
+        @apply bg-navy-100 text-navy-400 border-navy-100 cursor-not-allowed;
+    }
+    .btn:disabled:hover,
+    .btn[disabled]:hover {
+        @apply bg-navy-100 text-navy-400;
+        transform: none;
+    }
+
+    /* A link that behaves like a link and still reads as an action. */
+    .link {
+        @apply font-semibold text-brand-700;
+    }
+    .link:hover {
+        @apply text-brand-800 underline;
+    }
+
+    /* --- Forms ------------------------------------------------------------------------ */
+
+    .field {
+        @apply w-full h-11 px-3.5 rounded-[var(--radius-control)] border border-navy-200 bg-white
+           text-[15px] text-navy-900 transition;
+    }
+    .field:focus {
+        @apply border-brand-500 ring-2 ring-brand-500/25 outline-none;
+    }
+    textarea.field {
+        @apply h-auto py-2.5 leading-relaxed;
+    }
+    select.field {
+        @apply pr-9;
+    }
+    .field-icon {
+        @apply pl-10;
+    }
+    .field-code {
+        @apply uppercase tracking-wide;
+    }
+    .field-code::placeholder {
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
+    .field-label {
+        @apply block text-[13px] font-semibold text-navy-700 mb-1.5;
+    }
+    .field-req {
+        @apply text-brand-600;
+    }
+    .field-hint {
+        @apply mt-1.5 block text-xs text-navy-500;
+    }
+    .field-error {
+        @apply mt-1.5 block text-xs font-semibold text-brand-700;
+    }
+    .field-affix {
+        @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-navy-400 pointer-events-none;
+    }
+
+    .check {
+        @apply w-4 h-4 rounded border-navy-300 text-brand-600;
+    }
+    .check:focus {
+        @apply ring-brand-500;
+    }
+
+    /* --- Status ----------------------------------------------------------------------- */
+
+    /* A fact about state, not a label: seats available, access granted, payment held. */
+    .flag {
+        @apply inline-flex items-center gap-1.5 h-6 px-2.5 rounded-md text-[11.5px] font-semibold;
+    }
+    .flag-live {
+        @apply bg-seat-50 text-seat-700;
+    }
+    .flag-hold {
+        @apply bg-hold-50 text-hold-700;
+    }
+    .flag-off {
+        @apply bg-navy-100 text-navy-500;
+    }
+    .flag-brand {
+        @apply bg-brand-50 text-brand-700;
+    }
+    .flag-dot {
+        @apply w-1.5 h-1.5 rounded-full bg-current;
+    }
+
+    /* Messages the page says back to a person. */
+    .note {
+        @apply rounded-[var(--radius-control)] px-4 py-3 text-sm;
+    }
+    .note-ok {
+        @apply bg-seat-50 text-seat-900;
+    }
+    .note-bad {
+        @apply bg-brand-50 text-brand-800;
+    }
+    .note-hold {
+        @apply bg-hold-50 text-hold-900;
+    }
+
+    /* Status marker on artwork. Flat, where the old template used a diagonal ribbon: a
+       ribbon announces a markdown, and this shop's advantage is reliability. */
+    .ribbon {
+        @apply absolute top-3 left-3 z-[5] pointer-events-none;
+    }
+    .ribbon span {
+        @apply inline-flex items-center h-6 px-2.5 rounded-md font-display text-[11px] font-semibold text-white bg-brand-600;
+        letter-spacing: 0.01em;
+        box-shadow: 0 1px 2px rgb(16 26 46 / 0.25);
+    }
+    .ribbon.ribbon-amber span {
+        @apply bg-hold-600;
+    }
+    .ribbon.ribbon-dark span {
+        @apply bg-navy-800;
+    }
+
+    /* --- Small parts ------------------------------------------------------------------ */
+
+    /* Filter and category chips. */
+    .chip {
+        @apply shrink-0 inline-flex items-center gap-2 h-10 px-4 rounded-[var(--radius-control)]
+           text-sm font-medium bg-white border border-navy-200 text-navy-700 transition;
+    }
+    .chip:hover {
+        @apply border-navy-400 text-navy-900;
+    }
+    .chip-on {
+        @apply bg-navy-900 text-white border-navy-900;
+    }
+    .chip-on:hover {
+        @apply bg-navy-800 text-white border-navy-800;
+    }
+
+    /* A labelled figure: the shape almost every fact on this site takes. */
+    .kv {
+        @apply flex items-baseline justify-between gap-4 py-2 text-sm;
+    }
+    .kv dt {
+        @apply text-navy-500;
+    }
+    .kv dd {
+        @apply font-semibold text-navy-900;
+    }
+
+    /* The image well on a card or a summary line: brand artwork sits on near-white. */
+    .well {
+        @apply relative bg-navy-50 overflow-hidden grid place-items-center;
+    }
+
+    .rule {
+        @apply border-t border-navy-100;
+    }
+    .rule-dashed {
+        @apply border-t border-dashed border-navy-300;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        scrollbar-width: none;
+    }
+
+    /* Editor output — CMS pages, blog bodies, product descriptions. */
+    .prose-store {
+        @apply prose prose-slate max-w-none
+           prose-headings:font-display prose-headings:tracking-[-0.015em] prose-headings:text-navy-900
+           prose-p:text-navy-600 prose-li:text-navy-600
+           prose-strong:text-navy-900
+           prose-a:text-brand-700 prose-a:font-medium;
+    }
 }
 
 /* --------------------------------------------------------------------------
    Signed-in vs signed-out chrome on an edge-cached page.
 
-   The cached HTML contains both versions of the account area and says which is
-   which; hydrate.js then stamps html[data-auth] once it knows who the visitor
-   is. Until that answer arrives neither is shown, so a cached page never
-   flashes somebody else's state.
+   The cached HTML contains both versions of the account area and says which is which;
+   hydrate.js then stamps html[data-auth] once it knows who the visitor is. Until that
+   answer arrives neither is shown, so a cached page never flashes somebody else's state.
 
-   This deliberately does NOT use x-cloak. Alpine ships an x-cloak directive
-   that strips the attribute the moment it initialises an element, and the
-   account block is an Alpine root (it owns the dropdown) — so Alpine removed
-   the cloak regardless of who was signed in, and both "Sign in" and "My
-   account" rendered at once.
+   This deliberately does NOT use x-cloak. Alpine's x-cloak directive strips the attribute
+   the moment it initialises an element, and the account block is an Alpine root (it owns
+   the dropdown) — so Alpine removed the cloak regardless of who was signed in, and both
+   "Sign in" and "My account" rendered at once.
 
-   Hiding is done with !important on the wrong branch only. The element's own
-   responsive display classes still govern when it is the right branch, which
-   is why "hidden sm:block" keeps working.
+   Hiding uses !important on the wrong branch only. The element's own responsive display
+   classes still govern when it is the right branch, which is why "hidden sm:block" works.
    -------------------------------------------------------------------------- */
 html:not([data-auth]) [data-auth-only],
 html:not([data-auth]) [data-guest-only],
@@ -124,101 +536,427 @@ html[data-auth="out"] [data-auth-only] {
 [data-cart-badge][data-cart-empty] {
     display: none !important;
 }
-html {
-    scroll-behavior: smooth;
+
+/* --------------------------------------------------------------------------
+   Motion.
+
+   One orchestrated moment — the masthead arriving, once, on load. Everything else moves
+   only in answer to something a person did.
+   -------------------------------------------------------------------------- */
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
-body {
-    font-family: "Hind Siliguri", system-ui, sans-serif;
+.rise-in {
+    animation: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.font-display {
-    font-family: "Poppins", system-ui, sans-serif;
+.rise-in-2 {
+    animation-delay: 0.09s;
 }
-.font-script {
-    font-family: "Kaushan Script", cursive;
+.rise-in-3 {
+    animation-delay: 0.18s;
 }
 
-/* Red header ground: layered gradient + soft dot grid */
-.hero-ground {
-    background:
-        radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.12) 1px, transparent 0) 0 0 / 22px 22px,
-        radial-gradient(1200px 500px at 85% -10%, rgb(var(--brand-400) / 0.55), transparent 60%),
-        linear-gradient(135deg, rgb(var(--brand-600)) 0%, rgb(var(--brand-800)) 70%, rgb(var(--brand-900)) 100%);
+@media (prefers-reduced-motion: reduce) {
+    .rise-in,
+    .rise-in-2,
+    .rise-in-3 {
+        animation: none;
+    }
+    .panel-hover:hover {
+        transform: none;
+    }
+    html {
+        scroll-behavior: auto;
+    }
 }
 
-/* Corner ribbon on product cards */
-.ribbon {
+/* ==========================================================================
+   Motion and graphics.
+
+   The shop is a live operations desk — seats move, grants land, payments settle — and the
+   surface is built to feel like that rather than like a printed catalogue. Motion here
+   does three jobs and no others:
+
+     1. Arrival. Sections rise in as they are scrolled to, once, then stay put.
+     2. Answer. Anything the cursor or keyboard touches responds immediately.
+     3. Life. A small number of always-on graphics — the aurora behind the masthead, the
+        live dot on availability, the sheen crossing a hovered card — say the desk is open.
+
+   Everything below collapses to nothing under prefers-reduced-motion, at the bottom of
+   the file.
+   ========================================================================== */
+
+/* --- Scroll arrival -------------------------------------------------------------------
+   Elements marked .reveal start displaced; resources/js/reveal.js adds .is-in when they
+   enter the viewport. Without JavaScript the fallback at the end of this block shows
+   everything, so the page is never blank. */
+.reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+        opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+}
+.reveal-left {
+    transform: translateX(-22px);
+}
+.reveal-right {
+    transform: translateX(22px);
+}
+.reveal-zoom {
+    transform: scale(0.96);
+}
+.reveal.is-in {
+    opacity: 1;
+    transform: none;
+}
+
+/* Children of a .stagger arrive in sequence rather than all at once. */
+.stagger > * {
+    transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* --- Aurora ---------------------------------------------------------------------------
+   Two slow brand-coloured lights drifting behind the dark ground. This is the one
+   always-on effect on the masthead; it is why the header does not read as a flat block. */
+@keyframes aurora-a {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(6%, 8%, 0) scale(1.18);
+    }
+}
+@keyframes aurora-b {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1.1);
+    }
+    50% {
+        transform: translate3d(-8%, -6%, 0) scale(0.92);
+    }
+}
+.aurora {
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 110px;
-    height: 110px;
+    inset: 0;
     overflow: hidden;
-    z-index: 5;
     pointer-events: none;
 }
-.ribbon span {
+.aurora::before,
+.aurora::after {
+    content: "";
     position: absolute;
-    top: 22px;
-    right: -34px;
-    width: 150px;
-    transform: rotate(45deg);
-    text-align: center;
-    font:
-        700 10px/1 "Poppins",
-        sans-serif;
-    letter-spacing: 0.08em;
-    color: #fff;
-    padding: 6px 0;
-    background: linear-gradient(90deg, rgb(var(--brand-600)), rgb(var(--brand-800)));
-    box-shadow: 0 4px 10px rgb(var(--brand-900) / 0.35);
+    width: 46rem;
+    height: 32rem;
+    border-radius: 999px;
+    filter: blur(70px);
+    opacity: 0.55;
 }
-.ribbon.ribbon-amber span {
-    background: linear-gradient(90deg, #f59e0b, #d97706);
-    color: #1c1011;
+.aurora::before {
+    top: -18rem;
+    right: -10rem;
+    background: radial-gradient(circle, rgb(var(--brand-500) / 0.55), transparent 68%);
+    animation: aurora-a 18s ease-in-out infinite;
 }
-.ribbon.ribbon-dark span {
-    background: linear-gradient(90deg, #292524, #0c0a09);
+.aurora::after {
+    bottom: -22rem;
+    left: -12rem;
+    background: radial-gradient(circle, #1d4ed866, transparent 68%);
+    animation: aurora-b 22s ease-in-out infinite;
 }
 
-/* Card art: subtle rings behind product icon */
-.art-rings {
+/* --- Sheen ----------------------------------------------------------------------------
+   A light crossing a surface on hover. Used on cards and on the primary button, so the
+   thing under the cursor reads as physical. */
+.sheen {
+    position: relative;
+    overflow: hidden;
+}
+.sheen::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -60%;
+    width: 45%;
+    pointer-events: none;
+    transform: skewX(-18deg);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.38), transparent);
+    opacity: 0;
+}
+.sheen:hover::after,
+.sheen:focus-visible::after {
+    opacity: 1;
+    animation: sheen-sweep 0.85s ease;
+}
+@keyframes sheen-sweep {
+    to {
+        left: 115%;
+    }
+}
+
+/* --- Ambient graphics ------------------------------------------------------------------ */
+
+/* A graphic that breathes. Product artwork in a hero, an illustration in an empty state. */
+@keyframes float-y {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+.float {
+    animation: float-y 6s ease-in-out infinite;
+}
+.float-slow {
+    animation-duration: 9s;
+}
+.float-delay {
+    animation-delay: -3s;
+}
+
+/* Decorative rings behind an icon: slow rotation, no focal point. */
+@keyframes spin-slow {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.spin-slow {
+    animation: spin-slow 26s linear infinite;
+}
+.spin-reverse {
+    animation-direction: reverse;
+}
+
+/* The live indicator. Availability, open support, a grant in progress. */
+@keyframes ping-ring {
+    0% {
+        transform: scale(1);
+        opacity: 0.55;
+    }
+    80%,
+    100% {
+        transform: scale(2.4);
+        opacity: 0;
+    }
+}
+.live-dot {
+    position: relative;
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-seat-600);
+}
+.live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: ping-ring 1.9s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.live-dot-brand {
+    background: rgb(var(--brand-500));
+}
+
+/* Type that carries the accent through it, moving slowly. Reserved for one phrase. */
+@keyframes grad-pan {
+    to {
+        background-position: 200% center;
+    }
+}
+.grad-text {
+    background: linear-gradient(100deg, #fff 10%, rgb(var(--brand-400)) 35%, #fff 60%, rgb(var(--brand-400)) 85%, #fff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: grad-pan 7s linear infinite;
+}
+
+/* A border that draws itself in the accent while the cursor is on the element. */
+.edge-glow {
     position: relative;
 }
-.art-rings::before {
+.edge-glow::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(130deg, rgb(var(--brand-500) / 0.9), transparent 45%, rgb(var(--brand-500) / 0.5));
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+.edge-glow:hover::before,
+.edge-glow:focus-within::before {
+    opacity: 1;
+}
+
+/* Continuous horizontal run. Platform names, payment rails, trust marks. */
+@keyframes marquee-run {
+    to {
+        transform: translateX(-50%);
+    }
+}
+.marquee {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-run 36s linear infinite;
+}
+.marquee:hover .marquee-track {
+    animation-play-state: paused;
+}
+
+/* A number counting up to its value on arrival; resources/js/reveal.js drives it. */
+.count-up {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Fine dot texture over a dark panel — grain, so a large flat area is not plastic. */
+.noise {
+    position: relative;
+}
+.noise::after {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
-    border-radius: inherit;
-    background-image:
-        radial-gradient(circle at 82% 18%, rgb(255 255 255 / 0.22) 0 16%, transparent 16.5%),
-        radial-gradient(circle at 12% 92%, rgb(255 255 255 / 0.14) 0 24%, transparent 24.5%);
+    opacity: 0.35;
+    background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.11) 1px, transparent 0);
+    background-size: 22px 22px;
 }
 
-.shadow-card {
-    box-shadow:
-        0 1px 2px rgb(28 16 17 / 0.04),
-        0 8px 24px -8px rgb(28 16 17 / 0.1);
+/* --- Interaction ----------------------------------------------------------------------- */
+
+/* Icons that answer the cursor: nudge along their own axis inside a hovered link. */
+.group:hover .icon-nudge {
+    transform: translateX(3px);
 }
-.shadow-card-hover:hover {
-    box-shadow:
-        0 2px 4px rgb(28 16 17 / 0.05),
-        0 18px 40px -12px rgb(var(--brand-700) / 0.3);
+.group:hover .icon-rise {
+    transform: translateY(-2px);
+}
+.group:hover .icon-spin {
+    transform: rotate(90deg);
+}
+.icon-nudge,
+.icon-rise,
+.icon-spin {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Hide number input spinners (qty controls) */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+/* A link whose underline grows from the left. Used across the header and footer. */
+.underline-grow {
+    position: relative;
 }
-input[type="number"] {
-    -moz-appearance: textfield;
+.underline-grow::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 2px;
+    width: 100%;
+    border-radius: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.underline-grow:hover::after,
+.underline-grow[aria-current]::after {
+    transform: scaleX(1);
 }
 
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
+/* Artwork inside a hovered card gains a little depth. */
+.zoom-in-hover {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.no-scrollbar {
-    scrollbar-width: none;
+.group:hover .zoom-in-hover {
+    transform: scale(1.06);
+}
+
+/* Press feedback on anything tappable that is not a .btn. */
+.tap {
+    transition: transform 0.12s ease;
+}
+.tap:active {
+    transform: scale(0.97);
+}
+
+/* Livewire is working: the surface dims rather than freezing. */
+[wire\:loading] {
+    transition: opacity 0.2s ease;
+}
+
+/* --- Reduced motion --------------------------------------------------------------------
+   One switch. Everything above becomes static, and .reveal must end visible or the page
+   would be empty for anyone who asked for less movement. */
+@media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-zoom {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+    .aurora::before,
+    .aurora::after,
+    .float,
+    .spin-slow,
+    .live-dot::after,
+    .grad-text,
+    .marquee-track {
+        animation: none;
+    }
+    .grad-text {
+        color: #fff;
+        background: none;
+        -webkit-background-clip: border-box;
+        background-clip: border-box;
+    }
+    .sheen::after {
+        display: none;
+    }
+    .zoom-in-hover,
+    .icon-nudge,
+    .icon-rise,
+    .icon-spin,
+    .tap {
+        transition: none;
+    }
+    .group:hover .zoom-in-hover,
+    .group:hover .icon-nudge,
+    .group:hover .icon-rise,
+    .group:hover .icon-spin {
+        transform: none;
+    }
+}
+
+/* No JavaScript: nothing that depends on an observer may stay hidden. */
+.no-js .reveal {
+    opacity: 1;
+    transform: none;
 }

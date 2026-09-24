@@ -78,4 +78,12 @@ return [
     'reset_panel_lead' => 'Pick a new password and you are back in.',
     'verify_sub' => 'One last step before you start shopping.',
     'verify_panel_lead' => 'Confirm your email and your account is ready to use.',
+    'back_to_shop' => 'Back to shop',
+    'hide_password' => 'Hide password',
+    'perk_delivery' => 'Access granted within the published window',
+    'perk_wallet' => 'One-click wallet checkout',
+    'perk_referral' => 'Referral credit on every friend',
+    'pay_securely_now' => 'Pay securely now',
+    'try_payment_again' => 'Try payment again',
+    'granting_now' => 'We are granting access now — usually within :count minutes.',
 ];

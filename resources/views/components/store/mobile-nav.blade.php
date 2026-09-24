@@ -4,67 +4,61 @@
   $mobileMenu = $mobileMenu->isNotEmpty() ? $mobileMenu : $store->menu(\App\Enums\MenuLocation::Header);
 @endphp
 
-<!-- ================= MOBILE OFF-CANVAS ================= -->
+{{-- The off-canvas drawer. Same vocabulary as the desktop header, stacked: identity, then
+     who you are, then where you can go, then the two things you came to do. --}}
 <div x-show="nav" x-cloak class="fixed inset-0 z-[70] lg:hidden" @keydown.escape.window="nav=false">
-  <div x-show="nav" x-transition.opacity class="absolute inset-0 bg-ink/60 backdrop-blur-sm" @click="nav=false"></div>
-  <aside x-show="nav" x-transition:enter="transition duration-300" x-transition:enter-start="translate-x-full" x-transition:leave="transition duration-200"
-    x-transition:leave-end="translate-x-full"
-    class="absolute right-0 top-0 h-full w-[86%] max-w-sm bg-white text-ink flex flex-col">
-    <div class="hero-ground px-5 py-5 flex items-center justify-between"><a href="{{ route('home') }}"
-        class="font-script text-2xl text-white leading-none tracking-wide select-none"
-        aria-label="{{ __('store.site_home', ['site' => $general->site_name]) }}">{{ $general->site_name }}<span class="text-amber-300">.</span></a>
-      <button @click="nav=false" class="grid place-items-center w-9 h-9 rounded-full bg-white/15 text-white" aria-label="{{ __('store.close_menu') }}"><svg
-          class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          aria-hidden="true">
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
-        </svg></button>
+  <div x-show="nav" x-transition.opacity class="absolute inset-0 bg-navy-950/70 backdrop-blur-sm" @click="nav=false"></div>
+
+  <aside x-show="nav" x-transition:enter="transition duration-300 ease-out" x-transition:enter-start="translate-x-full"
+    x-transition:leave="transition duration-200 ease-in" x-transition:leave-end="translate-x-full"
+    class="absolute right-0 top-0 h-full w-[86%] max-w-sm bg-white text-navy-900 flex flex-col">
+
+    <div class="hero-ground relative px-5 py-5 flex items-center justify-between text-white overflow-hidden">
+      <span class="aurora"></span>
+      <a href="{{ route('home') }}" class="relative flex items-center gap-2.5" aria-label="{{ __('store.site_home', ['site' => $general->site_name]) }}">
+        <span class="grid place-items-center w-9 h-9 rounded-[10px] bg-brand-600"><x-store.ui name="layers" class="w-[18px] h-[18px]"
+            stroke-width="2.2" /></span>
+        <span class="font-display text-lg font-bold tracking-[-0.02em]">{{ $general->site_name }}</span>
+      </a>
+      <button @click="nav=false" class="tap relative grid place-items-center w-9 h-9 rounded-full bg-white/15" aria-label="{{ __('store.close_menu') }}">
+        <x-store.ui name="close" class="w-5 h-5" /></button>
     </div>
-    <div class="p-4 border-b border-stone-100">
-      <a href="{{ route('login') }}" data-guest-only
-        class="flex items-center justify-center gap-2 h-11 rounded-xl bg-brand-600 text-white font-semibold"><svg class="w-4 h-4" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="8" r="5" />
-          <path d="M20 21a8 8 0 0 0-16 0" />
-        </svg> {{ __('store.sign_in_register') }}</a>
-      <div data-auth-only class="flex items-center gap-3 p-3 rounded-xl bg-brand-50">
-        <span class="grid place-items-center w-10 h-10 rounded-full bg-brand-600 text-white"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="8" r="5" />
-            <path d="M20 21a8 8 0 0 0-16 0" />
-          </svg></span>
-        <div class="flex-1">
-          <p data-user-name class="font-semibold text-sm"></p>
-          <p class="text-xs text-stone-600">{{ __('store.wallet') }}: <b data-user-balance class="text-brand-700"></b></p>
+
+    <div class="p-4 border-b border-navy-100">
+      <a href="{{ route('login') }}" data-guest-only class="btn btn-primary btn-block sheen">
+        <x-store.ui name="user" class="w-4 h-4" />{{ __('store.sign_in_register') }}</a>
+      <div data-auth-only class="flex items-center gap-3 p-3 rounded-[var(--radius-panel)] bg-navy-50 border border-navy-100">
+        <span class="grid place-items-center w-10 h-10 rounded-full bg-brand-600 text-white"><x-store.ui name="user" class="w-4 h-4" /></span>
+        <div class="flex-1 min-w-0">
+          <p data-user-name class="font-semibold text-sm truncate"></p>
+          <p class="text-xs text-navy-500">{{ __('store.wallet') }}: <b data-user-balance class="tnum text-brand-700"></b></p>
         </div>
       </div>
     </div>
-    <form action="{{ route('search') }}" class="p-4 pb-2"><label class="relative block"><span
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg></span>
-        <input name="q" type="search" value="{{ request('q') }}" placeholder="{{ __('store.search_placeholder') }}"
-          class="w-full h-11 pl-10 rounded-xl border-stone-200 focus:border-brand-500 focus:ring-brand-500"></label></form>
+
+    <form action="{{ route('search') }}" class="p-4 pb-2">
+      <label class="relative block">
+        <x-store.ui name="search" class="field-affix w-4 h-4" />
+        <input name="q" type="search" value="{{ request('q') }}" placeholder="{{ __('store.search_placeholder') }}" class="field field-icon">
+      </label>
+    </form>
+
     <nav class="p-2 flex-1 overflow-y-auto">
       @foreach ($mobileMenu as $item)
         <a href="{{ $item->resolvedUrl() }}"@if ($item->open_in_new_tab) target="_blank" rel="noopener" @endif
-          class="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-brand-50 font-medium">{{ $item->t('label') }}<svg
-            class="w-4 h-4 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <path d="M5 12h14" />
-            <path d="m12 5 7 7-7 7" />
-          </svg></a>
+          class="group flex items-center justify-between px-4 py-3 rounded-[var(--radius-control)] hover:bg-navy-50 font-medium">{{ $item->t('label') }}
+          <x-store.ui name="arrow-right" class="w-4 h-4 text-brand-600 icon-nudge" /></a>
       @endforeach
       <x-store.language-switcher variant="panel" />
       <x-store.currency-switcher variant="panel" />
     </nav>
-    <div class="p-4 border-t border-stone-100 grid grid-cols-2 gap-2">
-      <a href="{{ route('cart') }}" class="h-11 flex items-center justify-center gap-1 rounded-xl bg-amber-300 font-semibold">{{ __('store.my_cart') }} (<span
-          data-cart-count>0</span>)</a>
-      <form method="POST" action="{{ route('logout') }}" data-auth-only>@csrf<button type="submit"
-          class="w-full h-11 rounded-xl border border-stone-200 font-semibold">{{ __('store.log_out') }}</button></form>
+
+    <div class="p-4 border-t border-navy-100 grid grid-cols-2 gap-2">
+      <a href="{{ route('cart') }}" class="btn btn-dark"><x-store.ui name="cart" class="w-4 h-4" />{{ __('store.my_cart') }} (<span data-cart-count
+          class="tnum">0</span>)</a>
+      <form method="POST" action="{{ route('logout') }}" data-auth-only>@csrf<button type="submit" class="btn btn-quiet btn-block">
+          <x-store.ui name="logout" class="w-4 h-4" />{{ __('store.log_out') }}</button></form>
+      <a href="{{ route('home') }}" data-guest-only class="btn btn-quiet">{{ __('store.home') }}</a>
     </div>
   </aside>
 </div>

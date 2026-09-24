@@ -24,8 +24,13 @@ use Livewire\WithFileUploads;
 /**
  * Checkout for a whole basket.
  *
- * Same contract as the buy-now modal: this screen is a convenience layer and
- * CheckoutService re-validates everything before an order exists.
+ * This is the only screen an order is assembled on. Buy now and the "+" button both do the
+ * same thing — put a line in the cart — so everything an order needs beyond the line itself
+ * is collected here: where the access should go, whatever each product requires before
+ * anyone can grant it, and how it gets paid for.
+ *
+ * It is still a convenience layer. CheckoutService re-validates all of it before an order
+ * exists.
  */
 final class CheckoutPage extends Component
 {
@@ -54,6 +59,13 @@ final class CheckoutPage extends Component
 
     public string $error = '';
 
+    /**
+     * What each line still needs, keyed by cart item then by field.
+     *
+     * @var array<int, array<string, string>>
+     */
+    public array $lineFields = [];
+
     public function mount(CartService $carts): void
     {
         $user = auth()->user();
@@ -62,6 +74,7 @@ final class CheckoutPage extends Component
         $this->customerPhone = $user?->phone ?? '';
         $this->coupon = (string) session('cart_coupon', '');
         $this->paymentKey = $this->defaultPaymentKey($carts);
+        $this->primeLineFields($carts);
 
         if ($this->coupon !== '') {
             $this->applyCoupon();
@@ -91,7 +104,7 @@ final class CheckoutPage extends Component
 
     public function place(CheckoutService $checkout, CartService $carts): mixed
     {
-        $cart = $carts->current()->load('items.product');
+        $cart = $carts->current()->load('items.product.fields');
         $method = $this->method();
 
         $this->error = $this->validateInput($cart, $method);
@@ -99,6 +112,10 @@ final class CheckoutPage extends Component
         if ($this->error !== '') {
             return null;
         }
+
+        // The answers belong to the line, not to this component: an order is built from
+        // cart items, and the customer may still go back and edit the cart.
+        $this->storeLineFields($cart);
 
         $screenshotPath = null;
 
@@ -178,7 +195,7 @@ final class CheckoutPage extends Component
 
     public function render(CartService $carts): View
     {
-        $cart = $carts->current()->load('items.product.category');
+        $cart = $carts->current()->load(['items.product.category', 'items.product.fields']);
 
         return view('livewire.checkout-page', [
             'items' => $cart->items,
@@ -198,6 +215,10 @@ final class CheckoutPage extends Component
 
     private function validateInput(Cart $cart, ?PaymentMethod $method): string
     {
+        if (auth()->guest()) {
+            return __('shop.sign_in_to_order');
+        }
+
         if ($cart->items->isEmpty()) {
             return 'Your cart is empty.';
         }
@@ -222,9 +243,47 @@ final class CheckoutPage extends Component
             return 'Enter your phone number (01XXXXXXXXX) to pay online.';
         }
 
+        foreach ($cart->items as $item) {
+            foreach ($item->product?->fields ?? [] as $field) {
+                if ($field->required && trim((string) ($this->lineFields[$item->getKey()][$field->key] ?? '')) === '') {
+                    return __('shop.field_required', ['field' => $field->label, 'product' => (string) $item->product?->name]);
+                }
+            }
+        }
+
         $problems = app(CartService::class)->validateLines($cart);
 
         return $problems[0] ?? '';
+    }
+
+    /**
+     * Fills the form with whatever each line already carries, and with the first option of
+     * any select — so a customer only types what genuinely has to be typed.
+     */
+    private function primeLineFields(CartService $carts): void
+    {
+        foreach ($carts->current()->load('items.product.fields')->items as $item) {
+            $stored = $item->fields ?? [];
+
+            foreach ($item->product?->fields ?? [] as $field) {
+                $this->lineFields[$item->getKey()][$field->key] = (string) ($stored[$field->key] ?? ($field->options[0] ?? ''));
+            }
+        }
+    }
+
+    /** Writes the answers back onto the cart lines the order will be built from. */
+    private function storeLineFields(Cart $cart): void
+    {
+        foreach ($cart->items as $item) {
+            $answers = array_filter(
+                $this->lineFields[$item->getKey()] ?? [],
+                fn ($value): bool => trim((string) $value) !== '',
+            );
+
+            if ($answers !== ($item->fields ?? [])) {
+                $item->update(['fields' => $answers]);
+            }
+        }
     }
 
     private function defaultPaymentKey(CartService $carts): string

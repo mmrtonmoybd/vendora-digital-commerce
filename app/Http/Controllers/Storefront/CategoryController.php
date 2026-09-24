@@ -22,6 +22,7 @@ final class CategoryController extends Controller
         $inStockOnly = $request->boolean('in_stock');
 
         $products = Product::query()
+            ->with(['category', 'platform'])
             ->active()
             ->with('category:id,name,slug')
             ->where(function (Builder $query) use ($category): void {

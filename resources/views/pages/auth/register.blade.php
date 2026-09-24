@@ -7,80 +7,61 @@
   :panel-title="__('account.join_in_a_minute')"
   :panel-lead="__('account.register_panel_lead')">
   @if ($auth->google_login_enabled && filled($auth->google_client_id))
-    <a href="{{ route('auth.google') }}"
-      class="w-full h-12 inline-flex items-center justify-center gap-3 rounded-xl bg-white ring-1 ring-stone-200 font-semibold hover:bg-stone-50"><svg
-        class="w-5 h-5 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        aria-hidden="true">
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 12h6" />
-        <path d="M18 12a6 6 0 1 1-1.8-4.3" />
-      </svg> {{ __('account.continue_with_google') }}</a>
-    <div class="my-6 flex items-center gap-3 text-xs text-stone-400 uppercase tracking-wider"><span
-        class="flex-1 h-px bg-stone-200"></span>{{ __('account.or') }}<span class="flex-1 h-px bg-stone-200"></span></div>
+    <a href="{{ route('auth.google') }}" class="btn btn-quiet btn-lg btn-block">
+      <x-store.ui name="globe" class="w-[18px] h-[18px] text-brand-600" />{{ __('account.continue_with_google') }}</a>
+    <div class="my-6 flex items-center gap-3 text-xs text-navy-400">
+      <span class="flex-1 h-px bg-navy-200"></span>{{ __('account.or') }}<span class="flex-1 h-px bg-navy-200"></span>
+    </div>
   @endif
+
   <x-store.auth-errors />
+
   <form class="grid sm:grid-cols-2 gap-4" method="POST" action="{{ route('register.store') }}">
     @csrf
-    <div class="sm:col-span-2"><label class="block"><span class="text-sm font-semibold">{{ __('account.full_name') }} <span
-            class="text-brand-600">*</span></span>
-        <span class="relative block mt-1.5"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"><svg class="w-4 h-4" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="8" r="5" />
-              <path d="M20 21a8 8 0 0 0-16 0" />
-            </svg></span><input type="text" name="name" value="{{ old('name') }}" placeholder="{{ __('account.your_name') }}" required
-            class="w-full h-11 pl-10 rounded-xl border-stone-200 focus:border-brand-500 focus:ring-brand-500"></span></label></div>
-    <div class="sm:col-span-2"><label class="block"><span class="text-sm font-semibold">{{ __('account.email_address') }} <span
-            class="text-brand-600">*</span></span>
-        <span class="relative block mt-1.5"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"><svg class="w-4 h-4" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect width="20" height="16" x="2" y="4" rx="2" />
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg></span><input type="email" name="email" value="{{ old('email') }}" placeholder="you@example.com" required
-            class="w-full h-11 pl-10 rounded-xl border-stone-200 focus:border-brand-500 focus:ring-brand-500"></span></label></div>
-    <label class="block"><span class="text-sm font-semibold">{{ __('account.phone') }}</span>
-      <span class="relative block mt-1.5"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"><svg class="w-4 h-4" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path
-              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-          </svg></span><input type="tel" name="phone" value="{{ old('phone') }}" placeholder="01XXXXXXXXX"
-          class="w-full h-11 pl-10 rounded-xl border-stone-200 focus:border-brand-500 focus:ring-brand-500"></span></label>
-    <label class="block"><span class="text-sm font-semibold">{{ __('account.referral_code') }}</span>
-      <span class="relative block mt-1.5"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"><svg class="w-4 h-4" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="8" width="18" height="4" rx="1" />
-            <path d="M12 8v13" />
-            <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
-            <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5" />
-          </svg></span>
+
+    <label class="block sm:col-span-2"><span class="field-label">{{ __('account.full_name') }} <span class="field-req">*</span></span>
+      <span class="relative block"><x-store.ui name="user" class="field-affix w-4 h-4" />
+        <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ __('account.your_name') }}" required
+          class="field field-icon"></span></label>
+
+    <label class="block sm:col-span-2"><span class="field-label">{{ __('account.email_address') }} <span class="field-req">*</span></span>
+      <span class="relative block"><x-store.ui name="mail" class="field-affix w-4 h-4" />
+        <input type="email" name="email" value="{{ old('email') }}" placeholder="you@example.com" required class="field field-icon"></span></label>
+
+    <label class="block"><span class="field-label">{{ __('account.phone') }}</span>
+      <span class="relative block"><x-store.ui name="phone" class="field-affix w-4 h-4" />
+        <input type="tel" name="phone" value="{{ old('phone') }}" placeholder="01XXXXXXXXX" class="field field-icon"></span></label>
+
+    <label class="block"><span class="field-label">{{ __('account.referral_code') }}</span>
+      <span class="relative block"><x-store.ui name="gift" class="field-affix w-4 h-4" />
         <input name="referral_code" value="{{ old('referral_code', $referralCode) }}" placeholder="{{ __('account.optional') }}"
-          class="w-full h-11 pl-10 rounded-xl border-stone-200 uppercase placeholder:normal-case focus:border-brand-500 focus:ring-brand-500 {{ $referralCode !== '' ? 'bg-emerald-50 border-emerald-300' : '' }}"></span>
+          class="field field-icon field-code {{ $referralCode !== '' ? 'border-seat-600 bg-seat-50' : '' }}"></span>
       @if ($referralCode !== '')
-        <span class="mt-1 block text-xs text-emerald-700 font-semibold">{{ __('account.referral_applied') }}</span>
+        <span class="mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-seat-700">
+          <x-store.ui name="check-circle" class="w-3.5 h-3.5" />{{ __('account.referral_applied') }}</span>
       @endif
     </label>
-    <label class="block"><span class="text-sm font-semibold">{{ __('account.password') }} <span class="text-brand-600">*</span></span>
-      <span class="relative block mt-1.5"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"><svg class="w-4 h-4" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect width="18" height="11" x="3" y="11" rx="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg></span><input type="password" name="password" placeholder="{{ __('account.min_8_characters') }}" required
-          class="w-full h-11 pl-10 rounded-xl border-stone-200 focus:border-brand-500 focus:ring-brand-500"></span></label>
-    <label class="block"><span class="text-sm font-semibold">{{ __('account.confirm_password') }} <span class="text-brand-600">*</span></span>
-      <span class="relative block mt-1.5"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"><svg class="w-4 h-4" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect width="18" height="11" x="3" y="11" rx="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg></span><input type="password" name="password_confirmation" placeholder="{{ __('account.repeat_password') }}" required
-          class="w-full h-11 pl-10 rounded-xl border-stone-200 focus:border-brand-500 focus:ring-brand-500"></span></label>
-    <label class="sm:col-span-2 flex items-start gap-2 text-sm"><input type="checkbox" name="terms" value="1" required
-        class="mt-0.5 rounded text-brand-600 focus:ring-brand-500"> <span>{{ __('account.i_agree_to_the') }} <a href="{{ url('/page/terms') }}"
-          class="text-brand-700 font-semibold">{{ __('account.terms') }}</a> {{ __('account.and') }} <a href="{{ url('/page/privacy') }}"
-          class="text-brand-700 font-semibold">{{ __('account.privacy_policy') }}</a>.</span></label>
-    <div class="sm:col-span-2"><button type="submit" data-track-click="sign_up"
-        data-track-payload='{"value":0,"currency":"{{ \App\Support\Money::currencyCode() }}"}'
-        class="w-full h-12 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-800 text-white font-semibold shadow-lg shadow-brand-700/25 hover:from-brand-700 hover:to-brand-900">{{ __('account.create_account') }}</button>
+
+    <label class="block"><span class="field-label">{{ __('account.password') }} <span class="field-req">*</span></span>
+      <span class="relative block"><x-store.ui name="lock" class="field-affix w-4 h-4" />
+        <input type="password" name="password" placeholder="{{ __('account.min_8_characters') }}" required class="field field-icon"></span></label>
+
+    <label class="block"><span class="field-label">{{ __('account.confirm_password') }} <span class="field-req">*</span></span>
+      <span class="relative block"><x-store.ui name="lock" class="field-affix w-4 h-4" />
+        <input type="password" name="password_confirmation" placeholder="{{ __('account.repeat_password') }}" required class="field field-icon"></span></label>
+
+    <label class="sm:col-span-2 flex items-start gap-2.5 text-sm text-navy-600">
+      <input type="checkbox" name="terms" value="1" required class="check mt-0.5">
+      <span>{{ __('account.i_agree_to_the') }} <a href="{{ url('/page/terms') }}" class="link">{{ __('account.terms') }}</a>
+        {{ __('account.and') }} <a href="{{ url('/page/privacy') }}" class="link">{{ __('account.privacy_policy') }}</a>.</span></label>
+
+    <div class="sm:col-span-2">
+      <button type="submit" data-track-click="sign_up" data-track-payload='{"value":0,"currency":"{{ \App\Support\Money::currencyCode() }}"}'
+        class="btn btn-primary btn-lg btn-block sheen">{{ __('account.create_account') }}<x-store.ui name="arrow-right" class="w-4 h-4" /></button>
     </div>
   </form>
-  <p class="mt-6 text-center text-sm text-stone-600">{{ __('account.already_have_account') }} <a href="{{ route('login') }}"
-      class="font-semibold text-brand-700 hover:underline">{{ __('account.sign_in') }}</a></p>
+
+  <p class="mt-6 text-center text-sm text-navy-500">{{ __('account.already_have_account') }}
+    <a href="{{ route('login') }}" class="link">{{ __('account.sign_in') }}</a>
+  </p>
 </x-layouts.auth>

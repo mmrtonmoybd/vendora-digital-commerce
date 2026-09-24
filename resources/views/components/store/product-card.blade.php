@@ -1,72 +1,100 @@
 @props(['product'])
 
+{{--
+  A product card.
+
+  What this shop sells is access granted by a person, so the card leads with the facts a
+  buyer actually weighs: what it costs, how many seats are left, how long fulfilment takes
+  and which platform the access arrives through. Those come from the record — they are not
+  marketing copy — which is why they are set in tabular figures and given their own row
+  rather than buried under the title.
+
+  The artwork sits in a near-white well and grows a little under the cursor; the card lifts
+  and its edge picks up the accent. Everything else holds still.
+--}}
 @php
   $discount = $product->discountPercent();
   $inStock = $product->isInStock();
   $track = app(\App\Services\TrackingService::class)->product($product);
+  $sla = (int) ($product->fulfillment_sla_minutes ?? 0);
+  $warranty = (int) ($product->warranty_days ?? 0);
 @endphp
 
-<article
-  class="group relative bg-white rounded-2xl shadow-card shadow-card-hover ring-1 ring-black/5 overflow-hidden flex flex-col transition hover:-translate-y-0.5">
+<article class="reveal group panel panel-hover edge-glow relative overflow-hidden flex flex-col">
   @if (filled($product->t('badge_text')))
     <div class="ribbon {{ $product->badgeClass() }}"><span>{{ $product->t('badge_text') }}</span></div>
-  @else
   @endif
-  <a href="{{ route('product.show', $product) }}" class="block p-3 pb-0">
-    <div class="aspect-[4/3] rounded-xl bg-gradient-to-br {{ $product->gradient }} art-rings relative grid place-items-center overflow-hidden">
-      {{-- The icon tile is the stand-in for a missing photograph, not an overlay: with a
-           real product image it sat on top of the artwork and obscured the brand. --}}
+
+  @if ($discount)
+    <span
+      class="tnum absolute top-3 right-3 z-[5] inline-flex items-center h-6 px-2 rounded-md bg-navy-900 text-white text-[11px] font-semibold">−{{ $discount }}%</span>
+  @endif
+
+  <a href="{{ route('product.show', $product) }}" class="block" tabindex="-1" aria-hidden="true">
+    <div class="well aspect-[5/4] border-b border-navy-100">
       @if ($product->image)
-        <img src="{{ Storage::disk('public')->url($product->image) }}" alt="{{ $product->t('name') }}" loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover">
+        <img src="{{ Storage::disk('public')->url($product->image) }}" alt="" loading="lazy"
+          class="zoom-in-hover absolute inset-0 w-full h-full object-fill">
       @else
-        <span
-          class="grid place-items-center w-24 h-24 rounded-3xl bg-white/15 ring-1 ring-white/25 backdrop-blur-sm text-white rotate-[-6deg] group-hover:rotate-0 group-hover:scale-105 transition duration-300"><x-store.icon
-            :name="$product->icon_key" stroke-width="1.6" class="w-14 h-14" /></span>
+        <span class="relative grid place-items-center w-20 h-20 rounded-2xl bg-navy-900 text-white zoom-in-hover"><x-store.icon :name="$product->icon_key"
+            stroke-width="1.6" class="w-10 h-10" /></span>
       @endif
-      <span
-        class="absolute bottom-2 left-2 px-2 py-0.5 rounded-md bg-black/25 text-white text-[10px] font-semibold tracking-wide uppercase">{{ $product->category?->name }}</span>
     </div>
   </a>
-  <div class="p-4 pt-3 flex-1 flex flex-col">
-    <h3 class="font-display font-semibold text-[15px] leading-snug line-clamp-2 min-h-[2.6em]"><a href="{{ route('product.show', $product) }}"
-        class="hover:text-brand-700">{{ $product->t('name') }}</a></h3>
-    <div class="mt-3 flex items-end justify-between gap-2">
-      <div>
-        <p class="text-xl font-display font-bold text-brand-700 leading-none">{{ \App\Support\Money::format($product->price) }}</p>
-        @if ($discount)
-          <p class="mt-1 text-xs text-stone-500"><s>{{ \App\Support\Money::format((int) $product->regular_price) }}</s> <span
-              class="text-emerald-700 font-semibold">-{{ $discount }}%</span></p>
-        @endif
-      </div>
-      @if ($inStock)
-        <span
-          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 text-xs font-semibold"><span
-            class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>{{ __('shop.pcs', ['count' => $product->stock]) }}</span>
-      @else
-        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 text-red-700 ring-1 ring-red-600/20 text-xs font-semibold"><span
-            class="w-1.5 h-1.5 rounded-full bg-red-500"></span>{{ __('shop.pcs', ['count' => 0]) }}</span>
+
+  <div class="p-4 flex-1 flex flex-col">
+    @if ($product->platform)
+      <p class="flex items-center gap-1.5 text-[11.5px] font-medium text-navy-500"><x-store.ui name="layers"
+          class="w-3.5 h-3.5 text-navy-400" />{{ $product->platform->t('name') }}</p>
+    @endif
+
+    <h3 class="mt-1 font-display font-semibold text-[15px] leading-snug text-navy-900 line-clamp-2 min-h-[2.6em]"><a
+        href="{{ route('product.show', $product) }}" class="hover:text-brand-700 transition">{{ $product->t('name') }}</a></h3>
+
+    <div class="mt-3 flex items-baseline gap-2">
+      <span class="tnum font-display text-[22px] font-bold text-navy-900 leading-none">{{ \App\Support\Money::format($product->price) }}</span>
+      @if ($discount)
+        <span class="tnum text-xs text-navy-400"><s>{{ \App\Support\Money::format((int) $product->regular_price) }}</s></span>
       @endif
     </div>
-    <div class="mt-auto">
+
+    {{-- The record, in one row: what is left, how fast it lands, how long it is covered. --}}
+    <dl class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-navy-500">
+      <div class="flex items-center gap-1.5">
+        @if ($inStock)
+          <span class="live-dot"></span>
+        @else
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-600"></span>
+        @endif
+        <dt class="sr-only">{{ __('shop.seats_label') }}</dt>
+        <dd class="tnum font-medium {{ $inStock ? 'text-navy-700' : 'text-brand-700' }}">
+          {{ $inStock ? __('shop.seats_left', ['count' => $product->stock]) : __('shop.out_of_stock') }}</dd>
+      </div>
+      @if ($sla > 0 && $inStock)
+        <div class="flex items-center gap-1.5"><x-store.ui name="clock" class="w-3.5 h-3.5 text-navy-400" />
+          <dt class="sr-only">{{ __('shop.delivery_window') }}</dt>
+          <dd class="tnum">{{ __('shop.within_minutes', ['count' => $sla]) }}</dd>
+        </div>
+      @endif
+      @if ($warranty > 0)
+        <div class="flex items-center gap-1.5"><x-store.ui name="shield" class="w-3.5 h-3.5 text-navy-400" />
+          <dt class="sr-only">{{ __('shop.warranty') }}</dt>
+          <dd class="tnum">{{ __('shop.stat_days', ['count' => $warranty]) }}</dd>
+        </div>
+      @endif
+    </dl>
+
+    <div class="mt-4 pt-4 rule">
       @if ($inStock)
-        <div class="mt-4 grid grid-cols-[auto_1fr] gap-2"><button type="button"
-            @click="window.Livewire.dispatch('quick-add', { slug: '{{ $product->slug }}' })" data-track-click="add_to_cart"
-            data-track-payload='@json($track)'
-            class="h-11 px-3 inline-flex items-center gap-2 rounded-xl ring-1 ring-brand-600 text-brand-700 font-semibold hover:bg-brand-50"
-            aria-label="{{ __('shop.add_to_cart') }} — {{ $product->t('name') }}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M5 12h14" />
-              <path d="M12 5v14" />
-            </svg></button><button type="button" @click="window.Livewire.dispatch('open-buy', { slug: '{{ $product->slug }}' })"
-            class="h-11 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-800 text-white font-semibold shadow-md shadow-brand-700/25 hover:from-brand-700 hover:to-brand-900 active:scale-[.98] transition">{{ __('shop.buy_now') }}
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              aria-hidden="true">
-              <circle cx="8" cy="21" r="1" />
-              <circle cx="19" cy="21" r="1" />
-              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-          </svg></button></div>@else<button type="button" disabled
-          class="mt-4 w-full h-11 rounded-xl bg-stone-100 text-stone-400 font-semibold cursor-not-allowed">{{ __('shop.out_of_stock') }}</button>
+        <div class="grid grid-cols-[auto_1fr] gap-2">
+          <button type="button" @click="window.Livewire.dispatch('quick-add', { slug: '{{ $product->slug }}' })" data-track-click="add_to_cart"
+            data-track-payload='@json($track)' class="btn btn-quiet w-10 px-0"
+            aria-label="{{ __('shop.add_to_cart') }} — {{ $product->t('name') }}"><x-store.ui name="plus" class="w-4 h-4" /></button>
+          <button type="button" @click="window.Livewire.dispatch('buy-now', { slug: '{{ $product->slug }}' })"
+            class="btn btn-primary sheen">{{ __('shop.buy_now') }}<x-store.ui name="arrow-right" class="w-4 h-4 icon-nudge" /></button>
+        </div>
+      @else
+        <button type="button" disabled class="btn btn-block" aria-disabled="true">{{ __('shop.out_of_stock') }}</button>
       @endif
     </div>
   </div>

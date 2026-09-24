@@ -9,7 +9,7 @@
     'mainClass' => '',
 ])
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-currency="{{ $store->commerce()->currency_symbol }}">
+<html class="no-js" lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-currency="{{ $store->commerce()->currency_symbol }}">
 
 <head>
   <meta charset="utf-8">
@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Kaushan+Script&family=Poppins:wght@500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   @vite(['resources/css/storefront.css', 'resources/js/storefront.js'])
   <x-store.brand-vars :brand-hex="$store->theme()->brand_hex" />
@@ -41,7 +41,7 @@
   {!! $store->seo()->custom_head_html !!}
 </head>
 
-<body class="bg-surface text-ink antialiased min-h-screen flex flex-col overflow-x-clip" x-data="{ nav: false }" :class="nav && 'overflow-hidden'">
+<body class="bg-surface text-navy-900 antialiased min-h-screen flex flex-col overflow-x-clip" x-data="{ nav: false }" :class="nav && 'overflow-hidden'">
   @if (filled($store->seo()->gtm_id))
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $store->seo()->gtm_id }}" height="0" width="0"
         style="display:none;visibility:hidden"></iframe></noscript>
@@ -57,7 +57,7 @@
 
   <x-store.footer />
 
-  <livewire:buy-now-modal />
+  <livewire:cart-actions />
 
   <x-store.support-float />
 

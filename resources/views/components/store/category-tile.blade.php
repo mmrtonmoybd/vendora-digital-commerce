@@ -1,23 +1,33 @@
-@props(['category'])
+@props(['category', 'count' => null])
 
+{{--
+  A category tile.
+
+  The category's own artwork fills the tile behind a dark scrim — these are platform logos
+  on their own backgrounds, several of them white, and the label is white text. The scrim
+  lifts a little under the cursor while the artwork grows, so the tile reveals what it is
+  as you reach for it.
+--}}
 <a href="{{ route('category.show', $category) }}"
-  class="group relative overflow-hidden rounded-2xl bg-gradient-to-br {{ $category->gradient }} text-white p-4 md:p-5 min-h-[128px] flex flex-col justify-between shadow-md hover:-translate-y-1 hover:shadow-xl transition">
-  {{-- The category's own artwork, dimmed so the label stays readable on top of it. The
-       decorative disc and icon are the fallback when a category has no image. --}}
+  class="group relative overflow-hidden rounded-[var(--radius-panel)] bg-navy-900 text-white min-h-[140px] p-4 md:p-5 flex flex-col justify-between panel-hover border border-navy-900">
   @if ($category->image)
-    <img src="{{ Storage::disk('public')->url($category->image) }}" alt="" loading="lazy"
-      class="absolute inset-0 w-full h-full object-cover">
-    {{-- A scrim, not just a low opacity: these are brand logos on their own backgrounds,
-         some of them white, and the tile's label is white text. --}}
-    <span class="absolute inset-0 bg-ink/60 transition duration-500"></span>
+    <img src="{{ Storage::disk('public')->url($category->image) }}" alt="" loading="lazy" class="zoom-in-hover absolute inset-0 w-full h-full object-fill">
+    <span class="absolute inset-0 bg-navy-950/70 group-hover:bg-navy-950/55 transition duration-300"></span>
   @else
-    <span class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10 group-hover:scale-125 transition duration-500"></span>
+    <span class="absolute inset-0 hero-ground"></span>
+    <span class="absolute -right-8 -top-8 w-28 h-28 rounded-full border border-white/10 spin-slow"></span>
   @endif
-  <span class="relative grid place-items-center w-11 h-11 rounded-xl bg-white/20 ring-1 ring-white/30"><x-store.icon :name="$category->icon_key" class="w-5 h-5" /></span>
-  <span class="relative flex items-end justify-between gap-2"><span class="font-display font-semibold leading-tight">{{ $category->t('name') }}</span><svg
-      class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
-    </svg></span>
+
+  <span class="relative grid place-items-center w-11 h-11 rounded-[var(--radius-control)] bg-white/15 border border-white/20 backdrop-blur-sm">
+    <x-store.icon :name="$category->icon_key" class="w-5 h-5" /></span>
+
+  <span class="relative">
+    @if ($count !== null)
+      <span class="tnum block text-[11.5px] text-white/60">{{ __('shop.products_count', ['count' => $count]) }}</span>
+    @endif
+    <span class="flex items-end justify-between gap-2">
+      <span class="font-display font-semibold leading-tight">{{ $category->t('name') }}</span>
+      <x-store.ui name="arrow-right" class="w-4 h-4 shrink-0 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition" />
+    </span>
+  </span>
 </a>

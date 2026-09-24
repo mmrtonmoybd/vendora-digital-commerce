@@ -1,12 +1,9 @@
 /**
- * Vendora storefront behaviour.
+ * Storefront behaviour.
  *
- * This is design/vendora/assets/app.js with the demo removed: no localStorage cart, no fake
- * auth toggle, no client-side order numbers. Those moved to the server — the cart is a
- * database row, auth is a session, and order numbers are issued by CheckoutService.
- *
- * What stays is the purely visual part: the toast store, the clipboard helper and the money
- * formatter the template's markup already calls.
+ * Everything a visitor's browser does that is not a Livewire round trip: the toast store,
+ * the clipboard helper, the money formatter the markup calls, plus the two modules that
+ * make a cached page personal (hydrate) and a scrolled page move (reveal).
  *
  * Alpine is not imported here. Livewire ships its own copy, and loading a second one makes
  * every x-data initialise twice.
@@ -14,6 +11,8 @@
 import "./bootstrap";
 import "./tracking";
 import "./hydrate";
+import "./reveal";
+import "./load-more";
 
 const currency = document.documentElement.dataset.currency || "৳";
 

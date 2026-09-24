@@ -58,4 +58,13 @@ return [
     'increase' => 'Increase',
     'decrease' => 'Decrease',
     'currency' => 'Currency',
+    'categories' => 'Categories',
+    'previous' => 'Previous',
+    'next' => 'Next',
+    'pagination' => 'Pagination',
+    'load_more' => 'Load more',
+    'loading' => 'Loading',
+    'uploading' => 'Uploading',
+    'showing_of' => 'Showing :shown of :total',
+    'secure_checkout' => 'Secure checkout',
 ];

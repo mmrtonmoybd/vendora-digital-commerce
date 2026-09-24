@@ -31,7 +31,7 @@ final class HomeController extends Controller
                 ->where('show_on_home', true)
                 ->ordered()
                 ->with([
-                    'activeProducts' => fn ($q) => $q->with('category')->limit($perSection),
+                    'activeProducts' => fn ($q) => $q->with(['category', 'platform'])->limit($perSection),
                 ])
                 ->withCount(['products as active_products_count' => fn ($q) => $q->where('is_active', true)])
                 ->get(),

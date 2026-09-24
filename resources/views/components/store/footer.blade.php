@@ -5,79 +5,95 @@
   $methods = $store->footerPaymentMethods();
 
   $socials = array_filter([
-      'WhatsApp' => filled($contact->whatsapp) ? 'https://wa.me/' . preg_replace('/\D/', '', $contact->whatsapp) : null,
-      'Telegram' => filled($contact->telegram) ? 'https://t.me/' . ltrim($contact->telegram, '@') : null,
-      'Facebook' => $contact->facebook,
-      'YouTube' => $contact->youtube,
-      'Discord' => $contact->discord,
+      'whatsapp' => filled($contact->whatsapp) ? 'https://wa.me/' . preg_replace('/\D/', '', $contact->whatsapp) : null,
+      'telegram' => filled($contact->telegram) ? 'https://t.me/' . ltrim($contact->telegram, '@') : null,
+      'facebook' => $contact->facebook,
+      'youtube' => $contact->youtube,
+      'discord' => $contact->discord,
   ]);
-
-  $socialIcons = [
-      'WhatsApp' => '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-',
-      'Telegram' => '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
-      'Facebook' =>
-          '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-      'YouTube' => '<path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/>',
-      'Discord' => '<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
-  ];
 @endphp
 
-<!-- ================= FOOTER ================= -->
-<footer class="mt-auto relative bg-[#1a0d0e] text-stone-400 pt-20">
-  <svg class="absolute top-0 left-0 w-full h-10 -translate-y-[98%] text-[#1a0d0e]" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
-    <path fill="currentColor" d="M0,40 C300,0 600,60 900,30 C1150,5 1300,30 1440,20 L1440,60 L0,60 Z" />
-  </svg>
-  <div class="max-w-7xl mx-auto px-4 grid gap-10 lg:grid-cols-[1.3fr_repeat(4,1fr)]">
-    <div>
-      <a href="{{ route('home') }}" class="font-script text-4xl text-white leading-none tracking-wide select-none"
-        aria-label="{{ $general->site_name }} home">{{ $general->site_name }}<span class="text-amber-300">.</span></a>
-      <p class="mt-4 text-sm leading-relaxed max-w-xs">{{ $store->st($general, 'tagline') }}</p>
-      <div class="mt-5 space-y-2 text-sm">
+{{--
+  The footer.
+
+  It closes the page on the same navy ground the masthead opened it on, so the shop reads
+  as one continuous surface. The payment rails run as a marquee because there are usually
+  more of them than fit a row, and a buyer scanning for their own rail should find it
+  without a horizontal scrollbar.
+--}}
+<footer class="mt-auto relative hero-ground text-navy-300 overflow-hidden">
+  <span class="aurora"></span>
+
+  <div class="relative wrap pt-16 pb-10 grid gap-12 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+    <div class="reveal">
+      <a href="{{ route('home') }}" class="flex items-center gap-2.5 text-white" aria-label="{{ $general->site_name }}">
+        <span class="grid place-items-center w-9 h-9 rounded-[10px] bg-brand-600"><x-store.ui name="layers" class="w-[18px] h-[18px]" stroke-width="2.2" /></span>
+        <span class="font-display text-[21px] font-bold tracking-[-0.025em]">{{ $general->site_name }}</span>
+      </a>
+
+      <p class="mt-4 text-sm leading-relaxed max-w-xs text-white/60">{{ $store->st($general, 'tagline') }}</p>
+
+      <div class="mt-6 space-y-2.5 text-sm">
         @if (filled($contact->phone))
-          <a href="tel:{{ preg_replace('/\s+/', '', $contact->phone) }}" class="flex items-center gap-2 hover:text-white"><svg class="w-4 h-4 text-brand-400"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path
-                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-            </svg> {{ $contact->phone }}</a>
+          <a href="tel:{{ preg_replace('/\s+/', '', $contact->phone) }}" class="group flex items-center gap-2.5 hover:text-white transition">
+            <x-store.ui name="phone" class="w-4 h-4 text-brand-400 icon-rise" />{{ $contact->phone }}</a>
         @endif
         @if (filled($contact->email))
-          <a href="mailto:{{ $contact->email }}" class="flex items-center gap-2 hover:text-white"><svg class="w-4 h-4 text-brand-400" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect width="20" height="16" x="2" y="4" rx="2" />
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg> {{ $contact->email }}</a>
+          <a href="mailto:{{ $contact->email }}" class="group flex items-center gap-2.5 hover:text-white transition">
+            <x-store.ui name="mail" class="w-4 h-4 text-brand-400 icon-rise" />{{ $contact->email }}</a>
         @endif
+        <p class="flex items-center gap-2.5 text-white/60"><span class="live-dot"></span>{{ $store->st($general, 'support_hours') }}</p>
       </div>
-      <div class="mt-5 flex flex-wrap gap-2">
-        @foreach ($socials as $label => $url)
-          <a href="{{ $url }}" target="_blank" rel="noopener" aria-label="{{ $label }}" title="{{ $label }}"
-            class="grid place-items-center w-10 h-10 rounded-full bg-white/5 ring-1 ring-white/10 hover:bg-brand-600 hover:ring-brand-600 transition"><svg
-              class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              aria-hidden="true">{!! $socialIcons[$label] !!}</svg></a>
-        @endforeach
-      </div>
+
+      @if ($socials)
+        <div class="mt-6 flex flex-wrap gap-2">
+          @foreach ($socials as $network => $url)
+            <a href="{{ $url }}" target="_blank" rel="noopener" aria-label="{{ ucfirst($network) }}" title="{{ ucfirst($network) }}"
+              class="tap grid place-items-center w-10 h-10 rounded-[var(--radius-control)] bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-brand-600 hover:border-brand-600 transition">
+              <x-store.ui :name="$network" class="w-4 h-4" /></a>
+          @endforeach
+        </div>
+      @endif
     </div>
+
     @foreach ($footerMenus as $menu)
-      <div>
-        <h4 class="font-display font-semibold text-white mb-4">{{ $menu->t('column_title') ?: $menu->t('name') }}</h4>
-        <ul class="space-y-2.5 text-sm">
+      <div class="reveal">
+        <h2 class="font-display font-semibold text-white mb-4">{{ $menu->t('column_title') ?: $menu->t('name') }}</h2>
+        <ul class="space-y-3 text-sm">
           @foreach ($menu->items as $item)
             <li><a href="{{ $item->resolvedUrl() }}"@if ($item->open_in_new_tab) target="_blank" rel="noopener" @endif
-                class="hover:text-white hover:translate-x-0.5 inline-block transition">{{ $item->t('label') }}</a></li>
+                class="group inline-flex items-center gap-1.5 hover:text-white transition">{{ $item->t('label') }}
+                <x-store.ui name="arrow-right" class="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-60 group-hover:translate-x-0 transition" />
+              </a></li>
           @endforeach
         </ul>
       </div>
     @endforeach
   </div>
-  <div class="mt-14 border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row gap-3 items-center justify-between text-sm">
-      <p>{{ $store->st($general, 'copyright_text') }}</p>
-      <div class="flex items-center gap-2 text-xs"><span class="text-stone-500">{{ __('store.we_accept') }}</span>
-        @foreach ($methods as $method)
-          <span class="px-2 py-1 rounded {{ $method->chip_color }} text-white font-bold">{{ $method->t('name') }}</span>
-        @endforeach
+
+  @if ($methods->isNotEmpty())
+    {{-- The rails this shop settles on, running continuously. Pauses on hover so a buyer
+         can read the one they were looking for. --}}
+    <div class="relative border-t border-white/10 py-5">
+      <div class="wrap flex items-center gap-6">
+        <span class="hidden sm:block shrink-0 text-xs text-white/40">{{ __('store.we_accept') }}</span>
+        <div class="marquee flex-1">
+          <div class="marquee-track gap-3">
+            @foreach ($methods->concat($methods) as $method)
+              <span
+                class="shrink-0 inline-flex items-center gap-2 h-9 px-3.5 rounded-[var(--radius-control)] bg-white/5 border border-white/10 text-white text-xs font-semibold">
+                <span class="w-2 h-2 rounded-full {{ $method->chip_color }}"></span>{{ $method->t('name') }}</span>
+            @endforeach
+          </div>
+        </div>
       </div>
+    </div>
+  @endif
+
+  <div class="relative border-t border-white/10">
+    <div class="wrap py-6 flex flex-col sm:flex-row gap-3 items-center justify-between text-sm text-white/50">
+      <p>{{ $store->st($general, 'copyright_text') }}</p>
+      <p class="flex items-center gap-2"><x-store.ui name="shield" class="w-4 h-4 text-seat-600" />{{ __('store.secure_checkout') }}</p>
     </div>
   </div>
 </footer>

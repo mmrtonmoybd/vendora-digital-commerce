@@ -40,4 +40,7 @@ return [
     'email_card' => 'Email',
     'whatsapp' => 'WhatsApp',
     'office' => 'Office',
+    'blog_lead' => 'Guides, reviews and news from our team.',
+    'contact_lead' => 'Talk to a real person — we usually reply the same day.',
+    'min_read' => ':count min read',
 ];

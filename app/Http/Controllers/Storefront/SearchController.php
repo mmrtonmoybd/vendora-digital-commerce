@@ -18,6 +18,7 @@ final class SearchController extends Controller
         $term = trim($request->string('q')->toString());
 
         $products = Product::query()
+            ->with(['category', 'platform'])
             ->active()
             ->with('category:id,name,slug')
             ->when($term !== '', fn (Builder $q) => $this->applySearch($q, $term))

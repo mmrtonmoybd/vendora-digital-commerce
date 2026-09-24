@@ -51,11 +51,6 @@ jobs:
       - name: Static analysis (Larastan, level 6)
         run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress --error-format=github
 
-      - name: Template parity
-        # The storefront is a slice of design/vendora. This fails if a Tailwind class was
-        # invented rather than taken from the template.
-        run: php scripts/check-classes.php
-
   # ---------------------------------------------------------------------------
   # Formatting of everything Pint does not own: Blade, CSS, JS, JSON, YAML.
   # ---------------------------------------------------------------------------

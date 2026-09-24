@@ -4,10 +4,11 @@
     Deliberately self-contained: no Vite bundle, no layout component, no database, no
     settings lookup that is allowed to throw. An error page's whole job is to render when
     something else has failed, and a 500 page that itself depends on the database is a
-    white screen at the worst possible moment.
+    white screen at the worst possible moment. That is also why the design system is
+    repeated inline here instead of imported — the tokens are copied, not linked.
 
-    The brand colour is read defensively and falls back to the template's own red, so the
-    page still looks like the shop even when the settings table is unreachable.
+    The brand colour is read defensively and falls back to the shop's own red, so the page
+    still looks like the shop even when the settings table is unreachable.
 
     $code     HTTP status
     $title    short headline
@@ -16,7 +17,7 @@
 --}}
 @php
   $brand = '#dc2626';
-  $siteName = 'Vendora';
+  $siteName = config('app.name');
 
   try {
       $brand = app(\App\Settings\ThemeSettings::class)->brand_hex ?: $brand;
@@ -35,8 +36,14 @@
   <title>{{ $code }} — {{ $title }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --brand: {{ $brand }};
+      --navy-900: #101a2e;
+      --navy-950: #0a1120;
+    }
+
     *,
     *::before,
     *::after {
@@ -50,70 +57,86 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 22px;
       padding: 24px;
-      background: #faf9f7;
-      color: #1c1917;
+      background:
+        radial-gradient(760px 420px at 78% -20%, color-mix(in srgb, var(--brand) 26%, transparent), transparent 62%),
+        linear-gradient(165deg, var(--navy-900), var(--navy-950));
+      color: #fff;
       font-family: 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
       font-size: 16px;
-      line-height: 1.6;
-      text-align: center;
+      line-height: 1.65;
     }
 
-    .card {
+    /* The same measured grid the storefront's dark bands carry. */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(700px 420px at 50% 0%, #000, transparent 78%);
+    }
+
+    main {
+      position: relative;
       width: 100%;
-      max-width: 560px;
-      background: #fff;
-      border-radius: 24px;
-      padding: 44px 32px 36px;
-      box-shadow: 0 10px 40px rgba(28, 25, 23, .08);
-      box-shadow: 0 10px 40px rgba(28, 25, 23, .08), 0 0 0 1px rgba(0, 0, 0, .04);
+      max-width: 540px;
     }
 
-    .badge {
-      display: inline-block;
-      font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
-      font-size: 13px;
+    .mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+      font-size: 19px;
       font-weight: 700;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-      color: {{ $brand }};
-      background: color-mix(in srgb, {{ $brand }} 10%, white);
-      border-radius: 999px;
-      padding: 6px 16px;
+      letter-spacing: -.02em;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .mark span {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--brand);
     }
 
     .code {
-      font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
-      font-size: clamp(64px, 18vw, 104px);
-      font-weight: 800;
-      line-height: 1;
-      letter-spacing: -2px;
-      margin: 18px 0 6px;
-      background: linear-gradient(135deg, {{ $brand }}, color-mix(in srgb, {{ $brand }} 55%, #1c1917));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+      font-size: clamp(72px, 20vw, 128px);
+      font-weight: 700;
+      line-height: .95;
+      letter-spacing: -.045em;
+      margin: 28px 0 4px;
+      font-variant-numeric: tabular-nums;
     }
 
     h1 {
-      font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+      font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
       font-size: 24px;
-      font-weight: 700;
+      font-weight: 600;
+      letter-spacing: -.02em;
       margin: 0 0 10px;
     }
 
     p {
-      margin: 0 auto;
-      max-width: 42ch;
-      color: #57534e;
+      margin: 0;
+      max-width: 46ch;
+      color: rgba(255, 255, 255, .62);
     }
 
     .actions {
-      margin-top: 26px;
+      margin-top: 30px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      justify-content: center;
     }
 
     a.btn {
@@ -122,71 +145,56 @@
       gap: 8px;
       height: 46px;
       padding: 0 22px;
-      border-radius: 999px;
+      border-radius: 8px;
       font-weight: 600;
       font-size: 15px;
       text-decoration: none;
-      transition: background-color .15s ease, color .15s ease;
+      transition: background-color .15s ease, border-color .15s ease;
     }
 
     a.primary {
-      background: {{ $brand }};
+      background: var(--brand);
       color: #fff;
     }
 
     a.primary:hover {
-      background: color-mix(in srgb, {{ $brand }} 82%, black);
+      background: color-mix(in srgb, var(--brand) 84%, black);
     }
 
     a.ghost {
-      background: #f5f5f4;
-      color: #1c1917;
+      border: 1px solid rgba(255, 255, 255, .25);
+      color: #fff;
     }
 
     a.ghost:hover {
-      background: #e7e5e4;
+      background: rgba(255, 255, 255, .1);
+    }
+
+    a:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
     }
 
     footer {
-      margin-top: 26px;
+      position: relative;
       font-size: 13px;
-      color: #a8a29e;
-    }
-
-    footer a {
-      color: inherit;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      body {
-        background: #12100f;
-        color: #f5f5f4;
-      }
-
-      .card {
-        background: #1c1917;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .06);
-      }
-
-      p {
-        color: #a8a29e;
-      }
-
-      a.ghost {
-        background: #292524;
-        color: #f5f5f4;
-      }
-
-      a.ghost:hover {
-        background: #44403c;
-      }
+      color: rgba(255, 255, 255, .35);
     }
   </style>
 </head>
 
 <body>
-  <main class="card">
-    <span class="badge">{{ $siteName }}</span>
+  <main>
+    <a class="mark" href="{{ url('/') }}">
+      <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true">
+          <path d="m12 2 9 5-9 5-9-5Z" />
+          <path d="m3 12 9 5 9-5" />
+          <path d="m3 17 9 5 9-5" />
+        </svg></span>{{ $siteName }}
+    </a>
+
     <div class="code">{{ $code }}</div>
     <h1>{{ $title }}</h1>
     <p>{{ $message }}</p>
@@ -197,9 +205,7 @@
     </div>
   </main>
 
-  <footer>
-    &copy; {{ date('Y') }} {{ $siteName }}
-  </footer>
+  <footer>&copy; {{ date('Y') }} {{ $siteName }}</footer>
 </body>
 
 </html>

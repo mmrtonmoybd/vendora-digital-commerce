@@ -51,4 +51,13 @@ return [
     'increase' => 'বাড়ান',
     'decrease' => 'কমান',
     'currency' => 'মুদ্রা',
+    'categories' => 'ক্যাটাগরি',
+    'previous' => 'আগের',
+    'next' => 'পরের',
+    'pagination' => 'পেজিনেশন',
+    'load_more' => 'আরও দেখুন',
+    'loading' => 'লোড হচ্ছে',
+    'uploading' => 'আপলোড হচ্ছে',
+    'showing_of' => ':total টির মধ্যে :shown টি দেখানো হচ্ছে',
+    'secure_checkout' => 'নিরাপদ চেকআউট',
 ];

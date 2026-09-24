@@ -35,7 +35,18 @@ Route::get('/product/{product:slug}', ProductController::class)->name('product.s
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+/*
+ | Checkout is for account holders only.
+ |
+ | Everything this shop sells is access granted to a person and then supported afterwards —
+ | a warranty to honour, a replacement to issue, a ticket to answer. All of that needs an
+ | account to hang off, so an order is never placed by an anonymous session. A guest who
+ | gets this far keeps their cart: the session cart is merged into the account's at sign-in,
+ | and the intended URL brings them straight back here.
+ */
+Route::get('/checkout', [CheckoutController::class, 'index'])
+    ->middleware('auth')
+    ->name('checkout');
 
 Route::get('/order/{order:order_number}/pay', [OrderPayController::class, 'show'])->name('order.pay');
 Route::get('/order/{order:order_number}/invoice', [OrderPayController::class, 'invoice'])
