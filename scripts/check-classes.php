@@ -44,6 +44,7 @@ $reviewedExceptions = [
     'sr-only' => 'Accessibility text the demo had no forms to need.',
 
     'object-cover' => 'The demo renders gradient placeholders; real uploaded product images need cropping.',
+
     'col-span-full' => 'Empty-state row inside the product grid. The demo always had products.',
 
     // The template has no language switcher at all — the shop was single-language. These

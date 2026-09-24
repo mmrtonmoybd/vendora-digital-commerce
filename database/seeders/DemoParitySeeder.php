@@ -25,7 +25,7 @@ use App\Models\Stat;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
@@ -45,8 +45,8 @@ final class DemoParitySeeder extends Seeder
         $site = $this->readTemplateData();
 
         $this->seedPlatforms();
-        $categories = $this->seedCategories($site['products'] ?? []);
-        $this->seedProducts($site['products'] ?? [], $categories);
+        $categories = $this->seedCategories();
+        $this->seedProducts($categories);
         $this->seedPaymentMethods($site['payments'] ?? []);
         $this->seedCoupons($site['coupons'] ?? []);
         $this->seedHeroSlides();
@@ -98,50 +98,24 @@ final class DemoParitySeeder extends Seeder
     }
 
     /**
-     * @param  array<string, array<string, mixed>>  $products
+     * The catalogue's categories.
+     *
      * @return array<string, Category>
      */
-    private function seedCategories(array $products): array
+    private function seedCategories(): array
     {
-        // Category order follows first appearance in the template, which is the order the
-        // home page sections are laid out in.
-        $seen = [];
-
-        foreach ($products as $product) {
-            $slug = (string) $product['category'];
-
-            if (! isset($seen[$slug])) {
-                $seen[$slug] = [
-                    'name' => (string) $product['categoryName'],
-                    'gradient' => (string) $product['grad'],
-                    'icon_key' => (string) $product['icon'],
-                ];
-            }
-        }
-
-        $descriptions = [
-            'streaming' => 'Movies, series, music and anime — shared or private profiles.',
-            'software' => 'Genuine retail keys with lifetime activation support.',
-            'gaming' => 'Instant game top-ups using only your Player ID. No passwords, no waiting.',
-            'giftcards' => 'Store credit delivered to your email in minutes.',
-            'vpn' => 'No-logs VPN and device security, multi-device plans.',
-            'design' => 'Design suites and AI writing tools on annual plans.',
-            'cloud' => 'Cloud storage and backup with sync across devices.',
-            'courses' => 'Video courses and eBooks with lifetime access.',
-        ];
-
         $categories = [];
-        $order = 0;
 
-        foreach ($seen as $slug => $data) {
-            $categories[$slug] = Category::updateOrCreate(
-                ['slug' => $slug],
+        foreach ((array) config('demo-catalogue.categories', []) as $order => $data) {
+            $categories[$data['slug']] = Category::updateOrCreate(
+                ['slug' => $data['slug']],
                 [
                     'name' => $data['name'],
-                    'short_description' => $descriptions[$slug] ?? null,
+                    'short_description' => $data['short_description'],
                     'icon_key' => $data['icon_key'],
                     'gradient' => $data['gradient'],
-                    'sort_order' => $order++,
+                    'image' => $this->installImage($data['image'] ?? null, 'categories'),
+                    'sort_order' => $order,
                     'is_active' => true,
                     'show_on_home' => true,
                     'show_in_nav' => false,
@@ -153,15 +127,15 @@ final class DemoParitySeeder extends Seeder
     }
 
     /**
-     * @param  array<string, array<string, mixed>>  $products
+     * The catalogue itself, with its artwork.
+     *
      * @param  array<string, Category>  $categories
      */
-    private function seedProducts(array $products, array $categories): void
+    private function seedProducts(array $categories): void
     {
         $platforms = Platform::pluck('id', 'slug');
-        $order = 0;
 
-        foreach ($products as $slug => $data) {
+        foreach ((array) config('demo-catalogue.products', []) as $order => $data) {
             $category = $categories[$data['category']] ?? null;
 
             if ($category === null) {
@@ -169,69 +143,73 @@ final class DemoParitySeeder extends Seeder
             }
 
             $product = Product::updateOrCreate(
-                ['slug' => $slug],
+                ['slug' => $data['slug']],
                 [
                     'category_id' => $category->getKey(),
-                    'platform_id' => $this->platformFor((string) $data['category'], $platforms),
-                    'name' => (string) $data['name'],
-                    'short' => (string) ($data['short'] ?? ''),
-                    'description' => '<p>'.e((string) ($data['short'] ?? '')).'</p>',
+                    'platform_id' => $platforms[$data['platform']] ?? null,
+                    'name' => $data['name'],
+                    'short' => $data['short'],
+                    'description' => '<p>'.e((string) $data['short']).'</p>',
                     'delivery_info' => '<p>Access is granted to the email you enter at checkout. Accept the invitation from your inbox to activate it.</p>',
-                    'icon_key' => (string) $data['icon'],
-                    'gradient' => (string) $data['grad'],
-                    // The template's prices are whole taka; the ledger is paisa.
+                    'icon_key' => $data['icon_key'],
+                    'gradient' => $data['gradient'],
+                    'image' => $this->installImage($data['image']),
+                    // The catalogue is written in whole taka; the ledger is paisa.
                     'price' => ((int) $data['price']) * 100,
-                    'regular_price' => isset($data['regular']) ? ((int) $data['regular']) * 100 : null,
+                    'regular_price' => $data['regular_price'] !== null ? ((int) $data['regular_price']) * 100 : null,
                     'stock' => (int) $data['stock'],
-                    'min_qty' => (int) $data['min'],
-                    'max_qty' => (int) $data['max'],
-                    'badge_text' => $data['badge'] ?? null,
-                    'badge_style' => $this->badgeStyleFor($data['badge'] ?? null),
+                    'min_qty' => 1,
+                    'max_qty' => 5,
+                    'badge_text' => $data['badge_text'],
+                    'badge_style' => $data['badge_style'],
                     'is_active' => true,
-                    'sort_order' => $order++,
-                    'access_role' => 'Member access',
-                    'fulfillment_sla_minutes' => 30,
-                    'warranty_days' => 7,
+                    'sort_order' => $order,
+                    'access_role' => $data['access_role'],
+                    'fulfillment_sla_minutes' => (int) $data['fulfillment_sla_minutes'],
+                    'warranty_days' => (int) $data['warranty_days'],
                     'customer_instructions' => 'Check your inbox (and spam) for the invitation, then accept it to get access.',
-                    'features' => "Access granted to your own email\nWorks on every device you sign in from\n7-day replacement warranty\nReal human support, 9AM – 2AM",
+                    'features' => "Access granted to your own email\nWorks on every device you sign in from\n".$data['warranty_days']."-day replacement warranty\nReal human support, 9AM – 2AM",
                     'rating' => 49,
                     'reviews_count' => 100 + ((int) $data['stock'] * 7),
                 ],
             );
 
             $product->fields()->delete();
-
-            foreach (($data['fields'] ?? []) as $index => $field) {
-                $product->fields()->create([
-                    'key' => (string) $field['key'],
-                    'label' => (string) $field['label'],
-                    'type' => (string) $field['type'],
-                    'options' => $field['options'] ?? null,
-                    'placeholder' => $field['placeholder'] ?? null,
-                    'required' => (bool) ($field['required'] ?? false),
-                    'sort_order' => $index,
-                ]);
-            }
         }
+
+        // Anything left from an earlier catalogue is not part of this one.
+        Product::query()
+            ->whereNotIn('slug', array_column((array) config('demo-catalogue.products', []), 'slug'))
+            ->delete();
+
+        Category::query()
+            ->whereNotIn('slug', array_column((array) config('demo-catalogue.categories', []), 'slug'))
+            ->delete();
     }
 
-    /** @param Collection<string, int> $platforms */
-    private function platformFor(string $categorySlug, $platforms): ?int
+    /**
+     * Copy a bundled thumbnail onto the public disk and return its path.
+     *
+     * Bundled rather than downloaded: the shop has to seed the same way on a laptop with
+     * no internet as it does in CI, and a remote image would leave a dead thumbnail behind
+     * the first time that host changed anything.
+     */
+    private function installImage(?string $file, string $directory = 'products'): ?string
     {
-        return match ($categorySlug) {
-            'gaming' => $platforms['tiktok-business-center'] ?? null,
-            'design', 'software' => $platforms['meta-business-manager'] ?? null,
-            default => $platforms['direct-account-access'] ?? null,
-        };
-    }
+        if ($file === null) {
+            return null;
+        }
 
-    private function badgeStyleFor(?string $badge): string
-    {
-        return match ($badge) {
-            'NEW', 'INSTANT', 'HOT' => 'amber',
-            null => 'brand',
-            default => 'brand',
-        };
+        $source = database_path('seeders/assets/demo/products/'.$file);
+
+        if (! is_file($source)) {
+            return null;
+        }
+
+        $path = $directory.'/'.$file;
+        Storage::disk('public')->put($path, (string) file_get_contents($source));
+
+        return $path;
     }
 
     /** @param array<int, array<string, mixed>> $payments */
@@ -285,17 +263,22 @@ final class DemoParitySeeder extends Seeder
 
     private function seedHeroSlides(): void
     {
-        $slides = [
-            ['eyebrow' => 'Weekend deal', 'title' => 'StreamBox Premium from ৳ 349', 'subtitle' => '4K plan · private profile · 30-day replacement', 'icon_key' => 'play', 'gradient' => 'from-amber-300 to-amber-400', 'text_class' => 'text-ink'],
-            ['eyebrow' => "Gamers' corner", 'title' => 'Top-up in under 2 minutes', 'subtitle' => 'Just your Player ID — no password, ever', 'icon_key' => 'gamepad', 'gradient' => 'from-white to-brand-50', 'text_class' => 'text-ink'],
-            ['eyebrow' => 'Pay your way', 'title' => 'bKash · Nagad · Rocket · Card', 'subtitle' => 'Or pay instantly from your wallet', 'icon_key' => 'wallet', 'gradient' => 'from-stone-900 to-stone-800', 'text_class' => 'text-white'],
-        ];
+        HeroSlide::query()->delete();
 
-        foreach ($slides as $index => $slide) {
-            HeroSlide::updateOrCreate(
-                ['title' => $slide['title']],
-                $slide + ['button_text' => 'Shop now', 'button_url' => '#categories', 'sort_order' => $index, 'is_active' => true],
-            );
+        foreach ((array) config('demo-catalogue.slides', []) as $index => $slide) {
+            HeroSlide::create([
+                'eyebrow' => $slide['eyebrow'],
+                'title' => $slide['title'],
+                'subtitle' => $slide['subtitle'],
+                'button_text' => $slide['button_text'],
+                'button_url' => $slide['button_url'],
+                'image' => $this->installImage($slide['image'] ?? null, 'slides'),
+                'icon_key' => $slide['icon_key'],
+                'gradient' => $slide['gradient'],
+                'text_class' => $slide['text_class'],
+                'sort_order' => $index,
+                'is_active' => true,
+            ]);
         }
     }
 

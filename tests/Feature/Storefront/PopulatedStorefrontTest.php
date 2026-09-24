@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Category;
+use App\Models\HeroSlide;
 use App\Models\Order;
 use App\Models\Post;
 use App\Models\Product;
@@ -12,6 +13,7 @@ use Database\Seeders\DemoParitySeeder;
 use Database\Seeders\OrderSourceSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Every public page, rendered against a shop that actually has stock in it.
@@ -137,4 +139,49 @@ it('tells the browser the visitor is signed in, and who', function (): void {
         ->assertOk()
         ->assertJson(['authenticated' => true])
         ->assertJsonPath('user.email', $customer->email);
+});
+
+/**
+ * The demo catalogue ships with its own artwork.
+ *
+ * Bundled in database/seeders/assets, not downloaded, so seeding produces the same shop on
+ * a machine with no network as it does in CI.
+ */
+it('gives every demo product and category a real image', function (): void {
+    $productsWithout = Product::query()->whereNull('image')->pluck('name');
+    $categoriesWithout = Category::query()->whereNull('image')->pluck('name');
+
+    expect($productsWithout)->toBeEmpty()
+        ->and($categoriesWithout)->toBeEmpty();
+});
+
+it('stores those images where the storefront can serve them', function (): void {
+    $product = Product::query()->whereNotNull('image')->firstOrFail();
+
+    expect(Storage::disk('public')->exists($product->image))->toBeTrue();
+});
+
+/**
+ * Every hero slide points somewhere that exists.
+ *
+ * A slider is navigation: a slide whose button leads to a 404 is worse than no slide.
+ */
+it('points every hero slide at a page that resolves', function (): void {
+    $slides = HeroSlide::query()->where('is_active', true)->get();
+
+    expect($slides)->not->toBeEmpty();
+
+    $broken = [];
+
+    foreach ($slides as $slide) {
+        if (! str_starts_with((string) $slide->button_url, '/')) {
+            continue;
+        }
+
+        if ($this->get($slide->button_url)->getStatusCode() !== 200) {
+            $broken[] = $slide->title.' → '.$slide->button_url;
+        }
+    }
+
+    expect($broken)->toBe([]);
 });

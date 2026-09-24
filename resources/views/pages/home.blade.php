@@ -16,9 +16,15 @@
       <div class="grid lg:grid-cols-[1.1fr_1fr] gap-10 items-center pt-6 md:pt-12">
         <div>
           <span class="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-white/10 ring-1 ring-white/20 text-sm">
-            <span class="flex -space-x-1.5"><span class="w-6 h-6 rounded-full ring-2 ring-brand-700 bg-amber-300"></span><span
-                class="w-6 h-6 rounded-full ring-2 ring-brand-700 bg-rose-300"></span><span
-                class="w-6 h-6 rounded-full ring-2 ring-brand-700 bg-white"></span></span>
+            {{-- Real faces rather than coloured discs: the badge is a social-proof cue and
+                 three blank circles read as a loading state. Bundled in public/images/trust
+                 so nothing is hotlinked. --}}
+            <span class="flex -space-x-1.5"><img src="{{ asset('images/trust/1.jpg') }}" alt="" width="24" height="24" loading="lazy"
+                class="w-6 h-6 rounded-full ring-2 ring-brand-700 object-cover"><img src="{{ asset('images/trust/2.jpg') }}" alt="" width="24"
+                height="24" loading="lazy"
+                class="w-6 h-6 rounded-full ring-2 ring-brand-700 object-cover"><img src="{{ asset('images/trust/3.jpg') }}" alt="" width="24"
+                height="24" loading="lazy"
+                class="w-6 h-6 rounded-full ring-2 ring-brand-700 object-cover"></span>
             {{ $store->st($home, 'hero_badge') }}</span>
           <h1 class="mt-5 font-display text-4xl sm:text-5xl lg:text-[3.6rem] font-extrabold leading-[1.05] tracking-tight">
             {{ $store->st($home, 'hero_title_before') }}<br><span
@@ -56,8 +62,15 @@
               <div x-show="i==={{ $index }}" x-transition:enter="transition duration-500" x-transition:enter-start="opacity-0 translate-x-6"
                 class="absolute inset-0 rounded-3xl bg-gradient-to-br {{ $slide->gradient }} {{ $slide->text_class }} p-7 md:p-9 flex flex-col justify-between overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 w-56 h-56 rounded-full bg-brand-600/10"></div>
-                <div class="absolute right-6 top-6 grid place-items-center w-20 h-20 rounded-2xl bg-brand-600 text-white rotate-6 shadow-xl"><x-store.icon
-                    :name="$slide->icon_key" stroke-width="1.8" class="w-9 h-9" /></div>
+                {{-- The slide shows the thing it links to. Where a slide has no artwork the
+                     icon tile below stands in, as it did before. --}}
+                @if ($slide->image)
+                  <img src="{{ Storage::disk('public')->url($slide->image) }}" alt="" loading="lazy"
+                    class="absolute right-6 top-6 w-20 h-20 rounded-2xl object-cover rotate-6 shadow-xl">
+                @else
+                  <div class="absolute right-6 top-6 grid place-items-center w-20 h-20 rounded-2xl bg-brand-600 text-white rotate-6 shadow-xl"><x-store.icon
+                      :name="$slide->icon_key" stroke-width="1.8" class="w-9 h-9" /></div>
+                @endif
                 <span
                   class="inline-flex w-fit px-3 py-1 rounded-full bg-brand-600 text-white text-xs font-bold uppercase tracking-wider">{{ $slide->t('eyebrow') }}</span>
                 <div>

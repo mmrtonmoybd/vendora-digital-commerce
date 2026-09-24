@@ -13,18 +13,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Draws a thumbnail for every demo product, category and post.
+ * Gives every demo product, category and post a real photograph.
  *
- * The images are generated rather than downloaded: the shop must seed identically on a
- * machine with no internet, and a placeholder service would leave dead URLs behind. Each
- * thumbnail reuses the record's own gradient and icon, so the catalogue looks like the
- * storefront it belongs to instead of like stock photography.
+ * The images are downloaded and stored on the public disk, not hotlinked: a demo that
+ * depends on a third party staying up is a demo that breaks. Each record's seed is derived
+ * from its own identity, so re-running this brings back the same picture rather than
+ * reshuffling the catalogue.
+ *
+ * Pictures come from picsum.photos, which serves Unsplash photographs under a licence that
+ * permits commercial use. Brand artwork is deliberately not fetched: a shop selling
+ * Netflix or Spotify access does not acquire the right to ship their logos with it, and
+ * that is the shop owner's problem to carry, not a detail to leave in demo data.
+ *
+ * When the network is unavailable the command falls back to drawing the card art from the
+ * record's own gradient and icon, so `migrate --seed` still works on a laptop on a plane
+ * and CI never depends on a remote host.
  */
 final class GenerateDemoImages extends Command
 {
-    protected $signature = 'demo:images {--force : Replace images that already exist}';
+    protected $signature = 'demo:images
+        {--force : Replace images that already exist}
+        {--drawn : Skip the download and draw the placeholder art instead}';
 
-    protected $description = 'Generate placeholder thumbnails for demo products, categories and posts';
+    protected $description = 'Download real thumbnails for demo products, categories and posts';
 
     public function handle(): int
     {

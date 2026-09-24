@@ -14,13 +14,16 @@
   @endif
   <a href="{{ route('product.show', $product) }}" class="block p-3 pb-0">
     <div class="aspect-[4/3] rounded-xl bg-gradient-to-br {{ $product->gradient }} art-rings relative grid place-items-center overflow-hidden">
+      {{-- The icon tile is the stand-in for a missing photograph, not an overlay: with a
+           real product image it sat on top of the artwork and obscured the brand. --}}
       @if ($product->image)
         <img src="{{ Storage::disk('public')->url($product->image) }}" alt="{{ $product->t('name') }}" loading="lazy"
           class="absolute inset-0 w-full h-full object-cover">
+      @else
+        <span
+          class="grid place-items-center w-24 h-24 rounded-3xl bg-white/15 ring-1 ring-white/25 backdrop-blur-sm text-white rotate-[-6deg] group-hover:rotate-0 group-hover:scale-105 transition duration-300"><x-store.icon
+            :name="$product->icon_key" stroke-width="1.6" class="w-14 h-14" /></span>
       @endif
-      <span
-        class="grid place-items-center w-24 h-24 rounded-3xl bg-white/15 ring-1 ring-white/25 backdrop-blur-sm text-white rotate-[-6deg] group-hover:rotate-0 group-hover:scale-105 transition duration-300"><x-store.icon
-          :name="$product->icon_key" stroke-width="1.6" class="w-14 h-14" /></span>
       <span
         class="absolute bottom-2 left-2 px-2 py-0.5 rounded-md bg-black/25 text-white text-[10px] font-semibold tracking-wide uppercase">{{ $product->category?->name }}</span>
     </div>

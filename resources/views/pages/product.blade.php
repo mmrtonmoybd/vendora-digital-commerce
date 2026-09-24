@@ -62,12 +62,15 @@
         @endif
         <div
           class="aspect-square md:aspect-[5/4] rounded-xl bg-gradient-to-br {{ $product->gradient }} art-rings relative grid place-items-center overflow-hidden">
+          {{-- Same as the card: the icon tile stands in for a missing photograph rather
+               than sitting on top of one. --}}
           @if ($product->image)
             <img src="{{ Storage::disk('public')->url($product->image) }}" alt="{{ $product->t('name') }}" class="absolute inset-0 w-full h-full object-cover">
+          @else
+            <span
+              class="grid place-items-center w-24 h-24 rounded-3xl bg-white/15 ring-1 ring-white/25 backdrop-blur-sm text-white rotate-[-6deg] group-hover:rotate-0 group-hover:scale-105 transition duration-300"><x-store.icon
+                :name="$product->icon_key" stroke-width="1.6" class="w-20 h-20" /></span>
           @endif
-          <span
-            class="grid place-items-center w-24 h-24 rounded-3xl bg-white/15 ring-1 ring-white/25 backdrop-blur-sm text-white rotate-[-6deg] group-hover:rotate-0 group-hover:scale-105 transition duration-300"><x-store.icon
-              :name="$product->icon_key" stroke-width="1.6" class="w-20 h-20" /></span>
           <span
             class="absolute bottom-2 left-2 px-2 py-0.5 rounded-md bg-black/25 text-white text-[10px] font-semibold tracking-wide uppercase">{{ $product->category?->t('name') }}</span>
         </div>
